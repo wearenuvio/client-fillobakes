@@ -1,0 +1,165 @@
+"use client";
+
+import * as React from "react";
+import Image from "next/image";
+import { cn } from "@/lib/cn";
+import { Stamp } from "@/components/ui/Stamp";
+import { Button } from "@/components/ui/Button";
+import { QtyStepper } from "@/components/ui/QtyStepper";
+import { LoafGlyph } from "@/components/ui/LineArt";
+import { formatINR } from "@/lib/format";
+import { useCartStore, qtyOf } from "@/store/cart";
+import type { ProductImage } from "@/lib/images";
+
+/**
+ * The product stage — DESIGN-v2 §3 Product.
+ *
+ * Left: a 1:1 well with the cutout floating in it, the seal pressed into a
+ * corner, and thumbs beneath (v1, v2, one lifestyle photograph). Right: the
+ * buy column. Both halves are one client component because the gallery and the
+ * stepper are the only interactive things on the page and splitting them costs
+ * a second bundle for nothing.
+ */
+
+export function ProductGalleryV2({
+  images,
+  alt,
+  soldOut = false,
+}: {
+  images: ProductImage[];
+  alt: string;
+  soldOut?: boolean;
+}) {
+  const [index, setIndex] = React.useState(0);
+  const active = images[index];
+
+  return (
+    <div>
+      <div className="relative aspect-square overflow-hidden rounded-xl bg-well">
+        {active ? (
+          <Image
+            key={active.src}
+            src={active.src}
+            alt={alt}
+            fill
+            priority
+            sizes="(min-width: 1024px) 46vw, 92vw"
+            className={cn(
+              active.kind === "cutout"
+                ? "scale-[0.8] object-contain cutout"
+                : "object-cover",
+              soldOut && "opacity-70 grayscale-[.6]",
+            )}
+          />
+        ) : (
+          <span className="grid size-full place-items-center">
+            <LoafGlyph size={180} className="text-muted opacity-60" />
+          </span>
+        )}
+
+        <Stamp
+          lines={["baked this", "morning"]}
+          size={78}
+          className="absolute right-4 bottom-4 sm:right-6 sm:bottom-6"
+        />
+      </div>
+
+      {images.length > 1 ? (
+        <ul className="mt-4 flex gap-3">
+          {images.map((image, i) => (
+            <li key={image.src}>
+              <button
+                type="button"
+                onClick={() => setIndex(i)}
+                aria-label={`View image ${i + 1} of ${images.length}`}
+                aria-current={i === index ? "true" : undefined}
+                className={cn(
+                  "grid size-20 place-items-center overflow-hidden rounded-lg border bg-well",
+                  "transition-colors duration-[var(--dur-base)]",
+                  i === index
+                    ? "border-ink"
+                    : "border-line hover:border-muted",
+                )}
+              >
+                <Image
+                  src={image.src}
+                  alt=""
+                  width={160}
+                  height={160}
+                  sizes="80px"
+                  className={cn(
+                    image.kind === "cutout"
+                      ? "w-[78%] object-contain"
+                      : "size-full object-cover",
+                  )}
+                />
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </div>
+  );
+}
+
+export function ProductAddBlock({
+  slug,
+  name,
+  price,
+  soldOut = false,
+}: {
+  slug: string;
+  name: string;
+  price: number;
+  soldOut?: boolean;
+}) {
+  const lines = useCartStore((s) => s.lines);
+  const add = useCartStore((s) => s.add);
+  const increment = useCartStore((s) => s.increment);
+  const decrement = useCartStore((s) => s.decrement);
+  const openCart = useCartStore((s) => s.open);
+  const qty = qtyOf(lines, slug);
+
+  if (soldOut) {
+    return (
+      <div>
+        <Button variant="secondary" size="lg" fullWidth>
+          Tell me when it is back
+        </Button>
+        <p className="mt-3 text-body-sm text-muted">
+          It sold out this morning. We bake it again on the next run.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex flex-wrap items-center gap-3">
+        {qty > 0 ? (
+          <QtyStepper
+            qty={qty}
+            onIncrement={() => increment(slug)}
+            onDecrement={() => decrement(slug)}
+            label={`Quantity of ${name}`}
+          />
+        ) : null}
+        <Button
+          size="lg"
+          className="flex-1"
+          onClick={() => {
+            add(slug);
+            openCart();
+          }}
+        >
+          {qty > 0
+            ? `Added — ${formatINR(price * qty)}`
+            : `Add to order — ${formatINR(price)}`}
+        </Button>
+      </div>
+      <p className="mt-3 text-body-sm text-muted">
+        Order by 8pm for tomorrow&rsquo;s delivery.
+      </p>
+    </div>
+  );
+}

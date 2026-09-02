@@ -1,0 +1,1451 @@
+{
+  "$schema": "internal://fillobakes/seo/v1",
+  "meta": {
+    "generated": "2026-09-03",
+    "siteName": "Fillo Bakes",
+    "baseUrl": "https://www.fillobakes.com",
+    "defaultLocale": "en-IN",
+    "criticalContext": "As of the 18 Aug 2026 audit, NO core page on fillobakes.com renders a <title> tag. No meta descriptions, no canonicals, no OG tags, no favicon, no JSON-LD. Only /shokupan has a title, and it is missing from sitemap.xml. This file is the fix. Every route below must ship with its title, description, canonical, OG image and JSON-LD server-rendered.",
+    "titleRules": [
+      "Under 60 characters where possible. Brand suffix ' | Fillo Bakes' only where it fits.",
+      "Lead with the noun a person would type, not with the brand.",
+      "'Bangalore' in the title beats 'Bengaluru' for search volume; use 'Bengaluru' in body copy and 'Bangalore' in titles and keywords. Both appear on the page so both are indexed.",
+      "No emoji. No exclamation marks. Sentence case except proper nouns."
+    ],
+    "descriptionRules": [
+      "140-160 characters. One fact, one differentiator, one action.",
+      "Include 'eggless' and 'Bengaluru/Bangalore' wherever true.",
+      "Never promise a delivery time the van cannot keep."
+    ],
+    "globalJsonLd": [
+      {
+        "type": "Organization",
+        "placement": "every page",
+        "fields": {
+          "name": "Fillo Bakes",
+          "legalName": "Wise Eats SuperFood OPC Pvt Ltd",
+          "founder": [
+            "Neha S Nirmal",
+            "Nischal Vasant Meethal"
+          ],
+          "foundingDate": "2025-12",
+          "telephone": "+91-86189-06902",
+          "email": "wiseeatsindia@gmail.com",
+          "sameAs": [
+            "https://www.instagram.com/fillo_bakes"
+          ]
+        }
+      },
+      {
+        "type": "BreadcrumbList",
+        "placement": "every page below the home page"
+      }
+    ],
+    "openGraph": {
+      "defaultImage": "/og/fillo-crumb-1200x630.jpg",
+      "note": "OG image does not exist yet. It should be the torn shokupan cross-section, not the logo. Needs shooting.",
+      "twitterCard": "summary_large_image"
+    },
+    "keywordStrategy": {
+      "primary": [
+        "shokupan bangalore",
+        "japanese milk bread bangalore",
+        "eggless bakery bangalore"
+      ],
+      "secondary": [
+        "japanese bakery bangalore",
+        "eggless bread bangalore",
+        "anpan bangalore",
+        "karepan bangalore",
+        "fruit sando bangalore",
+        "milk bread bangalore",
+        "moving bakery bangalore"
+      ],
+      "longTail": [
+        "how to store shokupan",
+        "is shokupan eggless",
+        "japanese curry bread india",
+        "eggless japanese bread delivery",
+        "bread delivery bangalore subscription",
+        "vegetarian bakery bengaluru"
+      ],
+      "note": "No keyword volume data was available in this workspace. Rankings should be validated with a real keyword tool before the priorities below are treated as final. /shokupan is already proven to rank, which is why the whole cluster is built around it."
+    },
+    "accountRoutesNote": "Every /account/* route, /login and /logout is noindex, nofollow. They exist in this file so the mock has a canonical route list and a title for the browser tab, not for search.",
+    "routeMapVersion": "Final route map, research/DECISIONS.md v2 (2026-09-03). Where this file conflicted with research/competitors/journey-recommendation.md, the journey doc won.",
+    "pSeoNote": "/areas/[area] and /van/[route] are the two programmatic clusters. Both are gated on real route names and run days, which do not exist as content yet. Do not generate area pages for neighbourhoods the van cannot actually reach — thin serviceability pages for unserved areas are a quality risk, which is why the two 'not-yet' pages are deliberately waitlist-led and set to a lower priority."
+  },
+  "routes": [
+    {
+      "route": "/",
+      "title": "Fillo Bakes — eggless Japanese bakery, Bangalore",
+      "metaDescription": "Japanese milk bread baked fresh every morning in Bengaluru. All vegetarian, all eggless. Delivered in a two-hour window, or catch the van on your street.",
+      "h1": "Japanese milk bread. Baked this morning.",
+      "keywords": [
+        "japanese bakery bangalore",
+        "eggless bakery bangalore",
+        "shokupan bangalore",
+        "moving bakery bangalore",
+        "japanese milk bread bangalore"
+      ],
+      "jsonLd": [
+        "Bakery",
+        "WebSite"
+      ],
+      "jsonLdNotes": "Bakery is a subtype of LocalBusiness and Store. Include address (Bengaluru, Karnataka), telephone, openingHours Mo-Su 10:00-19:00, priceRange ₹99-₹280, servesCuisine Japanese, and areaServed as the list of serviceable neighbourhoods. Do NOT publish a street address as the storefront — it is a van, not a shop. Use areaServed plus a GeoCircle.",
+      "priority": 1.0,
+      "changefreq": "daily"
+    },
+    {
+      "route": "/shop",
+      "title": "This week's bake — 23 eggless bakes | Fillo Bakes",
+      "metaDescription": "Shokupan, anpan, karepan, pies and fruit sandos. 23 items, ₹99 to ₹280, all vegetarian and eggless, baked fresh in Bengaluru. See what is left today.",
+      "h1": "This week's bake",
+      "keywords": [
+        "eggless bakery bangalore",
+        "japanese bakery menu bangalore",
+        "shokupan bangalore",
+        "anpan bangalore",
+        "buy japanese bread bangalore"
+      ],
+      "jsonLd": [
+        "CollectionPage",
+        "ItemList"
+      ],
+      "jsonLdNotes": "ItemList of all 23 Products with name, url, image, offers.price, offers.availability. availability must be live — InStock / OutOfStock — because the site publishes honest counts.",
+      "priority": 0.9,
+      "changefreq": "daily"
+    },
+    {
+      "route": "/shop/all",
+      "title": "All 23 bakes | Fillo Bakes Bangalore",
+      "metaDescription": "Everything we make: shokupan, anpan, karepan, pies, strudels and fruit sandos. 23 items, ₹99 to ₹280, all vegetarian and eggless.",
+      "h1": "All 23 bakes",
+      "keywords": [
+        "japanese bakery menu bangalore",
+        "eggless bakery bangalore",
+        "all products fillo bakes"
+      ],
+      "jsonLd": [
+        "CollectionPage",
+        "ItemList"
+      ],
+      "jsonLdNotes": "This is the canonical catalogue listing. /shop is run-filtered and should carry a canonical to itself, not to this page — they answer different questions.",
+      "priority": 0.85,
+      "changefreq": "weekly",
+      "note": "Answers 'what do you make', separate from /shop which answers 'what can I get on Saturday'. Every card carries an availability badge."
+    },
+    {
+      "route": "/product/[slug]",
+      "title": "[Product name] — ₹[price] | Fillo Bakes",
+      "metaDescription": "[shortDescription] Eggless, vegetarian, baked fresh in Bengaluru. Delivered in a two-hour window or from the van.",
+      "h1": "[Product name]",
+      "keywords": [
+        "[product name] bangalore",
+        "eggless [category] bangalore"
+      ],
+      "jsonLd": [
+        "Product",
+        "BreadcrumbList"
+      ],
+      "jsonLdNotes": "Product with offers (INR, price, availability, priceValidUntil), brand Fillo Bakes, and suitableForDiet https://schema.org/VegetarianDiet. Do NOT emit AggregateRating until real per-product reviews exist — fabricated ratings are a manual-action risk. Emit hasAllergen/additionalProperty only from products.json allergens.contains, never from allergens.likely.",
+      "template": true,
+      "priority": 0.8,
+      "changefreq": "weekly"
+    },
+    {
+      "route": "/product/milk-shokupan",
+      "title": "Milk Shokupan — Japanese milk bread, Bangalore | ₹200",
+      "metaDescription": "Soft Japanese milk loaf, baked eggless in Bengaluru. Fine crumb, square slice, no preservatives. ₹200, delivered fresh or from the van.",
+      "h1": "Milk Shokupan",
+      "keywords": [
+        "shokupan bangalore",
+        "japanese milk bread bangalore",
+        "milk bread bangalore",
+        "eggless shokupan",
+        "buy shokupan india"
+      ],
+      "jsonLd": [
+        "Product",
+        "BreadcrumbList"
+      ],
+      "priority": 0.9,
+      "note": "The single highest-value product URL on the site. It is the head term the existing /shokupan page already ranks for."
+    },
+    {
+      "route": "/product/japanese-marble-bread",
+      "title": "Japanese Marble Bread — chocolate shokupan | ₹200",
+      "metaDescription": "Soft Japanese milk bread with chocolate swirled through it. Eggless, vegetarian, baked fresh in Bengaluru. ₹200.",
+      "h1": "Japanese Marble Bread",
+      "keywords": [
+        "marble bread bangalore",
+        "chocolate milk bread bangalore",
+        "japanese bread bangalore",
+        "eggless chocolate bread"
+      ],
+      "jsonLd": [
+        "Product",
+        "BreadcrumbList"
+      ],
+      "priority": 0.7
+    },
+    {
+      "route": "/product/blue-pea-bread",
+      "title": "Blue Pea Bread — butterfly pea milk bread | ₹250",
+      "metaDescription": "Naturally blue milk bread coloured with butterfly pea flower. No artificial colour. Eggless and vegetarian, baked fresh in Bengaluru. ₹250.",
+      "h1": "Blue Pea Bread",
+      "keywords": [
+        "blue pea bread bangalore",
+        "butterfly pea bread",
+        "natural blue bread india",
+        "eggless milk bread bangalore"
+      ],
+      "jsonLd": [
+        "Product",
+        "BreadcrumbList"
+      ],
+      "priority": 0.7
+    },
+    {
+      "route": "/product/chocolate-shokupan",
+      "title": "Chocolate Shokupan — Japanese chocolate bread | ₹250",
+      "metaDescription": "Chocolate worked through the whole dough, not swirled. Soft Japanese loaf, eggless and vegetarian, baked fresh in Bengaluru. ₹250.",
+      "h1": "Chocolate Shokupan",
+      "keywords": [
+        "chocolate shokupan",
+        "japanese chocolate bread bangalore",
+        "eggless chocolate bread bangalore"
+      ],
+      "jsonLd": [
+        "Product",
+        "BreadcrumbList"
+      ],
+      "priority": 0.7
+    },
+    {
+      "route": "/product/strawberry-an-pan",
+      "title": "Strawberry An Pan — Japanese cream bun | ₹189",
+      "metaDescription": "Soft Japanese milk bun filled with strawberry and cream. Eggless and vegetarian, baked fresh in Bengaluru. ₹189.",
+      "h1": "Strawberry An Pan",
+      "keywords": [
+        "anpan bangalore",
+        "japanese cream bun bangalore",
+        "strawberry bun bangalore",
+        "eggless japanese buns"
+      ],
+      "jsonLd": [
+        "Product",
+        "BreadcrumbList"
+      ],
+      "priority": 0.7
+    },
+    {
+      "route": "/product/custard-an-pan",
+      "title": "Custard An Pan — Japanese custard bun | ₹159",
+      "metaDescription": "Soft Japanese milk bun with custard cream in the middle. Eggless custard, vegetarian, baked fresh in Bengaluru. ₹159.",
+      "h1": "Custard An Pan",
+      "keywords": [
+        "custard bun bangalore",
+        "anpan bangalore",
+        "eggless custard bun",
+        "japanese bakery bangalore"
+      ],
+      "jsonLd": [
+        "Product",
+        "BreadcrumbList"
+      ],
+      "priority": 0.7
+    },
+    {
+      "route": "/product/choco-an-pan",
+      "title": "Choco An Pan — Japanese chocolate bun | ₹159",
+      "metaDescription": "Japanese chocolate bun with chocolate cream inside. Eggless and vegetarian, baked fresh in Bengaluru. ₹159.",
+      "h1": "Choco An Pan",
+      "keywords": [
+        "chocolate bun bangalore",
+        "anpan bangalore",
+        "eggless chocolate bun"
+      ],
+      "jsonLd": [
+        "Product",
+        "BreadcrumbList"
+      ],
+      "priority": 0.6,
+      "note": "301 from the legacy /product/choco-la."
+    },
+    {
+      "route": "/product/pistachio-an-pan",
+      "title": "Pistachio An Pan — pistachio cream bun | ₹159",
+      "metaDescription": "Soft Japanese milk bun filled with pistachio cream. Eggless and vegetarian. Contains pistachio. Baked fresh in Bengaluru. ₹159.",
+      "h1": "Pistachio An Pan",
+      "keywords": [
+        "pistachio bun bangalore",
+        "anpan bangalore",
+        "japanese bakery bangalore"
+      ],
+      "jsonLd": [
+        "Product",
+        "BreadcrumbList"
+      ],
+      "priority": 0.6
+    },
+    {
+      "route": "/product/tiramisu-an-pan",
+      "title": "Tiramisu An Pan — coffee cream bun | ₹189",
+      "metaDescription": "Soft Japanese milk bun with a tiramisu cream filling. Eggless and vegetarian, baked fresh in Bengaluru. ₹189.",
+      "h1": "Tiramisu An Pan",
+      "keywords": [
+        "tiramisu bun bangalore",
+        "coffee bun bangalore",
+        "anpan bangalore"
+      ],
+      "jsonLd": [
+        "Product",
+        "BreadcrumbList"
+      ],
+      "priority": 0.6
+    },
+    {
+      "route": "/product/cookie-n-cream-an-pan",
+      "title": "Cookie n Cream An Pan — cream-filled bun | ₹189",
+      "metaDescription": "Soft Japanese milk bun with cookies-and-cream filling. Eggless and vegetarian, baked fresh in Bengaluru. ₹189.",
+      "h1": "Cookie n Cream An Pan",
+      "keywords": [
+        "cookies and cream bun bangalore",
+        "anpan bangalore",
+        "eggless cream bun"
+      ],
+      "jsonLd": [
+        "Product",
+        "BreadcrumbList"
+      ],
+      "priority": 0.6
+    },
+    {
+      "route": "/product/banana-biscoff-an-pan",
+      "title": "Banana Biscoff An Pan — cream-filled bun | ₹189",
+      "metaDescription": "Soft Japanese milk bun with banana and Biscoff cream, topped with fresh banana. Eggless, vegetarian, same-day only. ₹189.",
+      "h1": "Banana Biscoff An Pan",
+      "keywords": [
+        "banana biscoff bun bangalore",
+        "anpan bangalore",
+        "eggless bun bangalore"
+      ],
+      "jsonLd": [
+        "Product",
+        "BreadcrumbList"
+      ],
+      "priority": 0.6,
+      "note": "301 from /product/banana-biscoff, currently a soft 404."
+    },
+    {
+      "route": "/product/seoul-spice",
+      "title": "Seoul Spice — gochujang karepan | ₹159",
+      "metaDescription": "Gochujang-glazed sweet potato in a Japanese-style stuffed bun. Eggless, vegetarian, baked fresh in Bengaluru. ₹159.",
+      "h1": "Seoul Spice",
+      "keywords": [
+        "karepan bangalore",
+        "korean bun bangalore",
+        "gochujang bread bangalore",
+        "savoury bun bangalore"
+      ],
+      "jsonLd": [
+        "Product",
+        "BreadcrumbList"
+      ],
+      "priority": 0.7
+    },
+    {
+      "route": "/product/tex-mex-zest",
+      "title": "Tex Mex Zest — jalapeno cheese karepan | ₹159",
+      "metaDescription": "Jalapeno, bell pepper and three cheeses in a soft stuffed bun. Eggless, vegetarian, baked fresh in Bengaluru. ₹159.",
+      "h1": "Tex Mex Zest",
+      "keywords": [
+        "karepan bangalore",
+        "cheese bun bangalore",
+        "jalapeno bread bangalore",
+        "savoury bun bangalore"
+      ],
+      "jsonLd": [
+        "Product",
+        "BreadcrumbList"
+      ],
+      "priority": 0.7
+    },
+    {
+      "route": "/product/bangalore-bloom",
+      "title": "Bangalore Bloom — veg puff, ₹99 | Fillo Bakes",
+      "metaDescription": "Mixed vegetables and potato in a light, airy puff. Eggless and vegetarian, baked fresh in Bengaluru. ₹99, the cheapest thing we bake.",
+      "h1": "Bangalore Bloom",
+      "keywords": [
+        "veg puff bangalore",
+        "eggless puff bangalore",
+        "vegetable pastry bangalore"
+      ],
+      "jsonLd": [
+        "Product",
+        "BreadcrumbList"
+      ],
+      "priority": 0.7,
+      "note": "Entry-price SKU. Point paid and social traffic here."
+    },
+    {
+      "route": "/product/kyoto-curry",
+      "title": "Kyoto Curry — Japanese curry pastry | ₹129",
+      "metaDescription": "Japanese-style vegetable curry folded into golden pastry. Milder and sweeter than Indian curry. Eggless and vegetarian. ₹129.",
+      "h1": "Kyoto Curry",
+      "keywords": [
+        "japanese curry bread bangalore",
+        "curry pastry bangalore",
+        "japanese curry india",
+        "eggless curry puff"
+      ],
+      "jsonLd": [
+        "Product",
+        "BreadcrumbList"
+      ],
+      "priority": 0.7
+    },
+    {
+      "route": "/product/calcutta-blaze",
+      "title": "Calcutta Blaze — spicy paneer pastry | ₹129",
+      "metaDescription": "Spicy paneer in tonkatsu sauce, folded into pastry. Eggless and vegetarian, baked fresh in Bengaluru. ₹129.",
+      "h1": "Calcutta Blaze",
+      "keywords": [
+        "paneer pastry bangalore",
+        "spicy puff bangalore",
+        "eggless paneer puff"
+      ],
+      "jsonLd": [
+        "Product",
+        "BreadcrumbList"
+      ],
+      "priority": 0.6
+    },
+    {
+      "route": "/product/umami-melt",
+      "title": "Umami Melt — mushroom cheese pastry | ₹129",
+      "metaDescription": "Mushroom and cheese cooked down into a thick filling, in flaky pastry. No chilli. Eggless and vegetarian. ₹129.",
+      "h1": "Umami Melt",
+      "keywords": [
+        "mushroom pastry bangalore",
+        "cheese puff bangalore",
+        "eggless savoury pastry"
+      ],
+      "jsonLd": [
+        "Product",
+        "BreadcrumbList"
+      ],
+      "priority": 0.6
+    },
+    {
+      "route": "/product/korean-whisper",
+      "title": "Korean Whisper — garlic cheese pastry | ₹129",
+      "metaDescription": "Spring onion, garlic and cream cheese in flaky pastry, after Korean garlic bread. Eggless and vegetarian. ₹129.",
+      "h1": "Korean Whisper",
+      "keywords": [
+        "korean garlic bread bangalore",
+        "garlic cheese pastry bangalore",
+        "eggless savoury pastry"
+      ],
+      "jsonLd": [
+        "Product",
+        "BreadcrumbList"
+      ],
+      "priority": 0.6,
+      "note": "301 targets for the dead /product/garlic-cheese-twists and /product/taipei-whisper sitemap entries."
+    },
+    {
+      "route": "/product/orchard-melt",
+      "title": "Orchard Melt — spiced apple strudel | ₹129",
+      "metaDescription": "Warm spiced apple in crisp folded layers. Eggless and vegetarian, baked fresh in Bengaluru. ₹129.",
+      "h1": "Orchard Melt",
+      "keywords": [
+        "apple strudel bangalore",
+        "eggless strudel bangalore",
+        "apple pastry bangalore"
+      ],
+      "jsonLd": [
+        "Product",
+        "BreadcrumbList"
+      ],
+      "priority": 0.6
+    },
+    {
+      "route": "/product/mawa-melt",
+      "title": "Mawa Melt — mawa cardamom strudel | ₹129",
+      "metaDescription": "Milky mawa and cardamom in a crisp strudel with crumble. Eggless and vegetarian, baked fresh in Bengaluru. ₹129.",
+      "h1": "Mawa Melt",
+      "keywords": [
+        "mawa pastry bangalore",
+        "cardamom dessert bangalore",
+        "indian fusion pastry bangalore"
+      ],
+      "jsonLd": [
+        "Product",
+        "BreadcrumbList"
+      ],
+      "priority": 0.6
+    },
+    {
+      "route": "/product/fruit-sando",
+      "title": "Fruit Sando — Japanese fruit sandwich | ₹250",
+      "metaDescription": "Crustless shokupan, whipped cream and seasonal fruit, cut so the fruit shows. Eggless and vegetarian. Same-day only. ₹250.",
+      "h1": "Fruit Sando",
+      "keywords": [
+        "fruit sando bangalore",
+        "japanese fruit sandwich bangalore",
+        "fruit sandwich india",
+        "eggless fruit sando"
+      ],
+      "jsonLd": [
+        "Product",
+        "BreadcrumbList"
+      ],
+      "priority": 0.8,
+      "note": "Fruit sando is a rising search term in Indian metros and Fillo has three SKUs and almost no photography for them."
+    },
+    {
+      "route": "/product/strawberry-cream-fruit-sando",
+      "title": "Strawberry Cream Fruit Sando | ₹280",
+      "metaDescription": "Crustless shokupan with strawberry whipped cream and seasonal fruit. Eggless and vegetarian, same-day only. ₹280.",
+      "h1": "Strawberry Cream Fruit Sando",
+      "keywords": [
+        "strawberry sando bangalore",
+        "fruit sando bangalore",
+        "japanese fruit sandwich"
+      ],
+      "jsonLd": [
+        "Product",
+        "BreadcrumbList"
+      ],
+      "priority": 0.7,
+      "note": "301 from /product/strawberry-cream, currently a soft 404."
+    },
+    {
+      "route": "/product/custard-cream-fruit-sando",
+      "title": "Custard Cream Fruit Sando | ₹280",
+      "metaDescription": "Crustless shokupan with custard cream and seasonal fruit. Eggless and vegetarian, same-day only. ₹280.",
+      "h1": "Custard Cream Fruit Sando",
+      "keywords": [
+        "custard sando bangalore",
+        "fruit sando bangalore",
+        "japanese fruit sandwich"
+      ],
+      "jsonLd": [
+        "Product",
+        "BreadcrumbList"
+      ],
+      "priority": 0.7
+    },
+    {
+      "route": "/boxes",
+      "title": "Boxes — curated and build-your-own | Fillo Bakes",
+      "metaDescription": "Three boxes we've put together, or build your own six. A loaf and three bakes, six filled buns, or six savoury. All eggless, baked the morning they go out.",
+      "h1": "Boxes",
+      "keywords": [
+        "bakery box bangalore",
+        "bread hamper bangalore",
+        "gift box bakery bengaluru",
+        "eggless hamper bangalore"
+      ],
+      "jsonLd": [
+        "CollectionPage",
+        "ItemList",
+        "Product"
+      ],
+      "jsonLdNotes": "Each curated box is a Product with an Offer. Prices are [Est.] — do not emit price markup until confirmed.",
+      "priority": 0.8,
+      "note": "A box is a product. The subscription is the Standing Order. The two words never overlap."
+    },
+    {
+      "route": "/van",
+      "title": "Track the van — Fillo Moving Bakery, Bangalore",
+      "metaDescription": "Where the Fillo bread van is right now, and which routes it runs this week. Live position, stops, and the times it reaches each neighbourhood.",
+      "h1": "The van",
+      "keywords": [
+        "moving bakery bangalore",
+        "bread van bangalore",
+        "fillo bakes van",
+        "bakery van route bangalore",
+        "mobile bakery bengaluru"
+      ],
+      "jsonLd": [
+        "WebPage",
+        "Bakery"
+      ],
+      "jsonLdNotes": "Reference the Bakery entity and list areaServed. Do not mark the live map up as an Event. The page must be server-rendered above the map so it is indexable when the van is parked.",
+      "priority": 0.9,
+      "changefreq": "hourly",
+      "note": "Off-air is the default state five days a week. The schedule is the indexable content; the live map is not."
+    },
+    {
+      "route": "/van/[route]",
+      "title": "The [route] run — stops and times | Fillo Bakes",
+      "metaDescription": "Where the Fillo van stops on the [route] run, what time it reaches each one, and what is on board. Order by 8pm the evening before.",
+      "h1": "The [route] run",
+      "keywords": [
+        "bread van [route]",
+        "fillo bakes [route]",
+        "bakery van stops bangalore"
+      ],
+      "jsonLd": [
+        "WebPage",
+        "Bakery",
+        "BreadcrumbList"
+      ],
+      "template": true,
+      "priority": 0.7,
+      "changefreq": "weekly",
+      "note": "Shareable and indexable per route. This is the QR target on the van's glass case and on the bag. Four in the mock: indiranagar, koramangala, banaswadi, hsr-layout. Must be readable when the van is parked."
+    },
+    {
+      "route": "/van/indiranagar",
+      "title": "The Indiranagar run — stops and times | Fillo Bakes",
+      "metaDescription": "Where the Fillo bread van stops on the Indiranagar run, what time it reaches each stop, and what is on board. Runs saturdays.",
+      "h1": "The Indiranagar run",
+      "keywords": [
+        "bread van indiranagar",
+        "fillo bakes indiranagar",
+        "japanese bakery indiranagar",
+        "bakery van stops bangalore"
+      ],
+      "jsonLd": [
+        "WebPage",
+        "Bakery",
+        "BreadcrumbList"
+      ],
+      "priority": 0.7,
+      "changefreq": "weekly",
+      "note": "Mock route. Run days [TBC] — 'Saturdays' is a fixture, not a founder-confirmed schedule."
+    },
+    {
+      "route": "/van/koramangala",
+      "title": "The Koramangala run — stops and times | Fillo Bakes",
+      "metaDescription": "Where the Fillo bread van stops on the Koramangala run, what time it reaches each stop, and what is on board. Runs thursdays and saturdays.",
+      "h1": "The Koramangala run",
+      "keywords": [
+        "bread van koramangala",
+        "fillo bakes koramangala",
+        "japanese bakery koramangala",
+        "bakery van stops bangalore"
+      ],
+      "jsonLd": [
+        "WebPage",
+        "Bakery",
+        "BreadcrumbList"
+      ],
+      "priority": 0.7,
+      "changefreq": "weekly",
+      "note": "Mock route. Run days [TBC] — 'Thursdays and Saturdays' is a fixture, not a founder-confirmed schedule."
+    },
+    {
+      "route": "/van/banaswadi",
+      "title": "The Banaswadi run — stops and times | Fillo Bakes",
+      "metaDescription": "Where the Fillo bread van stops on the Banaswadi run, what time it reaches each stop, and what is on board. Runs saturdays.",
+      "h1": "The Banaswadi run",
+      "keywords": [
+        "bread van banaswadi",
+        "fillo bakes banaswadi",
+        "japanese bakery banaswadi",
+        "bakery van stops bangalore"
+      ],
+      "jsonLd": [
+        "WebPage",
+        "Bakery",
+        "BreadcrumbList"
+      ],
+      "priority": 0.7,
+      "changefreq": "weekly",
+      "note": "Mock route. Run days [TBC] — 'Saturdays' is a fixture, not a founder-confirmed schedule."
+    },
+    {
+      "route": "/van/hsr-layout",
+      "title": "The HSR Layout run — stops and times | Fillo Bakes",
+      "metaDescription": "Where the Fillo bread van stops on the HSR Layout run, what time it reaches each stop, and what is on board. Runs sundays.",
+      "h1": "The HSR Layout run",
+      "keywords": [
+        "bread van hsr layout",
+        "fillo bakes hsr layout",
+        "japanese bakery hsr layout",
+        "bakery van stops bangalore"
+      ],
+      "jsonLd": [
+        "WebPage",
+        "Bakery",
+        "BreadcrumbList"
+      ],
+      "priority": 0.7,
+      "changefreq": "weekly",
+      "note": "Mock route. Run days [TBC] — 'Sundays' is a fixture, not a founder-confirmed schedule."
+    },
+    {
+      "route": "/areas/[area]",
+      "title": "[Area] — Japanese milk bread delivered | Fillo Bakes",
+      "metaDescription": "Does the Fillo van reach [Area]? Run days, stops, delivery windows and the fee, before you put anything in a cart.",
+      "h1": "Japanese milk bread in [Area]",
+      "keywords": [
+        "japanese bread [area]",
+        "eggless bakery [area]",
+        "bread delivery [area] bangalore"
+      ],
+      "jsonLd": [
+        "WebPage",
+        "Bakery",
+        "FAQPage"
+      ],
+      "jsonLdNotes": "One Bakery entity with areaServed set to this area. FAQPage only for the delivery questions on this page; do not duplicate the same Q&As in /faq schema.",
+      "priority": 0.8,
+      "template": true,
+      "note": "The only realistic local-SEO lane this business has. Six in the mock: banaswadi, indiranagar, koramangala, hsr-layout, whitefield (not served), jayanagar (waitlist)."
+    },
+    {
+      "route": "/areas/banaswadi",
+      "title": "Japanese milk bread in Banaswadi | Fillo Bakes",
+      "metaDescription": "Yes, we reach Banaswadi. The van runs saturdays. Catch it at a stop for free, or home delivery for ₹49. Order by 8pm the evening before.",
+      "h1": "Japanese milk bread in Banaswadi",
+      "keywords": [
+        "japanese bread banaswadi",
+        "eggless bakery banaswadi",
+        "bread delivery banaswadi",
+        "shokupan banaswadi",
+        "bakery near me bangalore"
+      ],
+      "jsonLd": [
+        "WebPage",
+        "Bakery",
+        "FAQPage"
+      ],
+      "priority": 0.8,
+      "serviceability": "served",
+      "note": "Serviceability state is a fixture. Real areas and run days [TBC] — founders."
+    },
+    {
+      "route": "/areas/indiranagar",
+      "title": "Japanese milk bread in Indiranagar | Fillo Bakes",
+      "metaDescription": "Yes, we reach Indiranagar. The van runs saturdays. Catch it at a stop for free, or home delivery for ₹49. Order by 8pm the evening before.",
+      "h1": "Japanese milk bread in Indiranagar",
+      "keywords": [
+        "japanese bread indiranagar",
+        "eggless bakery indiranagar",
+        "bread delivery indiranagar",
+        "shokupan indiranagar",
+        "bakery near me bangalore"
+      ],
+      "jsonLd": [
+        "WebPage",
+        "Bakery",
+        "FAQPage"
+      ],
+      "priority": 0.8,
+      "serviceability": "served",
+      "note": "Serviceability state is a fixture. Real areas and run days [TBC] — founders."
+    },
+    {
+      "route": "/areas/koramangala",
+      "title": "Japanese milk bread in Koramangala | Fillo Bakes",
+      "metaDescription": "Yes, we reach Koramangala. The van runs thursdays and saturdays. Catch it at a stop for free, or home delivery for ₹49. Order by 8pm the evening before.",
+      "h1": "Japanese milk bread in Koramangala",
+      "keywords": [
+        "japanese bread koramangala",
+        "eggless bakery koramangala",
+        "bread delivery koramangala",
+        "shokupan koramangala",
+        "bakery near me bangalore"
+      ],
+      "jsonLd": [
+        "WebPage",
+        "Bakery",
+        "FAQPage"
+      ],
+      "priority": 0.8,
+      "serviceability": "served",
+      "note": "Serviceability state is a fixture. Real areas and run days [TBC] — founders."
+    },
+    {
+      "route": "/areas/hsr-layout",
+      "title": "Japanese milk bread in HSR Layout | Fillo Bakes",
+      "metaDescription": "The Fillo van stops in HSR Layout on sundays. Catch it at a stop for free, or check whether home delivery reaches your street.",
+      "h1": "Japanese milk bread in HSR Layout",
+      "keywords": [
+        "japanese bread hsr layout",
+        "eggless bakery hsr layout",
+        "bread delivery hsr layout",
+        "shokupan hsr layout",
+        "bakery near me bangalore"
+      ],
+      "jsonLd": [
+        "WebPage",
+        "Bakery",
+        "FAQPage"
+      ],
+      "priority": 0.75,
+      "serviceability": "catch-van-only",
+      "note": "Serviceability state is a fixture. Real areas and run days [TBC] — founders."
+    },
+    {
+      "route": "/areas/whitefield",
+      "title": "Japanese milk bread in Whitefield | Fillo Bakes",
+      "metaDescription": "We don't reach Whitefield yet. Tell us you're there — we plan the van's routes by demand, and a cluster of requests in one area is what moves it.",
+      "h1": "Japanese milk bread in Whitefield",
+      "keywords": [
+        "japanese bread whitefield",
+        "eggless bakery whitefield",
+        "bread delivery whitefield",
+        "shokupan whitefield",
+        "bakery near me bangalore"
+      ],
+      "jsonLd": [
+        "WebPage",
+        "Bakery",
+        "FAQPage"
+      ],
+      "priority": 0.5,
+      "serviceability": "not-yet",
+      "note": "Serviceability state is a fixture. Real areas and run days [TBC] — founders."
+    },
+    {
+      "route": "/areas/jayanagar",
+      "title": "Japanese milk bread in Jayanagar | Fillo Bakes",
+      "metaDescription": "We don't reach Jayanagar yet. Tell us you're there — we plan the van's routes by demand, and a cluster of requests in one area is what moves it.",
+      "h1": "Japanese milk bread in Jayanagar",
+      "keywords": [
+        "japanese bread jayanagar",
+        "eggless bakery jayanagar",
+        "bread delivery jayanagar",
+        "shokupan jayanagar",
+        "bakery near me bangalore"
+      ],
+      "jsonLd": [
+        "WebPage",
+        "Bakery",
+        "FAQPage"
+      ],
+      "priority": 0.5,
+      "serviceability": "not-yet",
+      "note": "Serviceability state is a fixture. Real areas and run days [TBC] — founders."
+    },
+    {
+      "route": "/areas",
+      "title": "Where we deliver in Bengaluru | Fillo Bakes",
+      "metaDescription": "Every neighbourhood the Fillo van reaches, the days it runs, and the ones we haven't got to yet. Add your area and we plan routes by demand.",
+      "h1": "Where we go",
+      "keywords": [
+        "bread delivery areas bangalore",
+        "bakery delivery bengaluru",
+        "japanese bread delivery bangalore"
+      ],
+      "jsonLd": [
+        "CollectionPage",
+        "ItemList"
+      ],
+      "priority": 0.8,
+      "note": "The index for the /areas/[area] cluster. Also the destination for the announcement bar's out-of-area state."
+    },
+    {
+      "route": "/fillo-plus",
+      "title": "Fillo+ — free membership, coins on every order",
+      "metaDescription": "Fillo+ is free. Join with your phone number, earn 2 coins for every ₹100 you spend, and take ₹25 off at 25 coins. Coins never expire.",
+      "h1": "Fillo+ is free.",
+      "keywords": [
+        "fillo plus",
+        "free bakery membership bangalore",
+        "bakery loyalty bangalore",
+        "fillo bakes rewards"
+      ],
+      "jsonLd": [
+        "WebPage"
+      ],
+      "priority": 0.6,
+      "note": "The ₹1 join fee is removed. Every reference to it must go, on this page and in schema."
+    },
+    {
+      "route": "/standing-order",
+      "title": "The Standing Order — weekly bread, Bangalore",
+      "metaDescription": "Put your loaf on the van's list and stop reordering. Delivered on your route's run day, every week. Skip any week, pause anytime, cancel in one tap.",
+      "h1": "Bread, standing. Every Saturday.",
+      "keywords": [
+        "bread subscription bangalore",
+        "weekly bread delivery bangalore",
+        "standing order bakery",
+        "milk bread subscription bangalore"
+      ],
+      "jsonLd": [
+        "Product",
+        "WebPage"
+      ],
+      "jsonLdNotes": "Model each tier as a Product with an Offer. Prices are [TBC] — do not emit price markup until the founders confirm them.",
+      "priority": 0.8,
+      "note": "Never call this a box. The word imports frozen-crate expectations and collides with /boxes, which is a different product."
+    },
+    {
+      "route": "/gifting",
+      "title": "Send bread as a gift | Fillo Bakes Bangalore",
+      "metaDescription": "Pick a Saturday, write a note, and we hand it over. Prices hidden from the recipient by default. Eggless Japanese bread, baked that morning.",
+      "h1": "Send bread to someone",
+      "keywords": [
+        "send bread as gift bangalore",
+        "bakery gift delivery bengaluru",
+        "food gift bangalore",
+        "gift bread india"
+      ],
+      "jsonLd": [
+        "WebPage"
+      ],
+      "priority": 0.7,
+      "note": "Gifting is a structural conversion driver in India and Fillo already owns the date and slot machinery."
+    },
+    {
+      "route": "/gift-cards",
+      "title": "Gift cards | Fillo Bakes",
+      "metaDescription": "For when you don't know which Saturday, or which bread. Delivered on WhatsApp on the date you pick.",
+      "h1": "Gift cards",
+      "keywords": [
+        "bakery gift card bangalore",
+        "gift voucher bakery bengaluru"
+      ],
+      "jsonLd": [
+        "Product",
+        "WebPage"
+      ],
+      "priority": 0.6,
+      "note": "The thing that still converts on a sold-out day. When the run is gone this is the only purchase left on the site, so it is linked from the sold-out state."
+    },
+    {
+      "route": "/about",
+      "title": "Our story — a moving bakery in Bengaluru | Fillo Bakes",
+      "metaDescription": "Fillo Bakes was started in December 2025 by Neha S Nirmal and Nischal Vasant Meethal to bring fresh bread to the street, the way milk already arrives.",
+      "h1": "Bread, delivered on a route",
+      "keywords": [
+        "fillo bakes founders",
+        "japanese bakery bengaluru story",
+        "moving bakery india",
+        "eggless bakery founders bangalore"
+      ],
+      "jsonLd": [
+        "AboutPage",
+        "Organization"
+      ],
+      "priority": 0.7
+    },
+    {
+      "route": "/journal",
+      "title": "From the van — the Fillo Bakes journal",
+      "metaDescription": "Notes on Japanese bread, eggless baking and the route. Why we bake without eggs, what happens between 4am and the last stop, and why the menu is 23 items.",
+      "h1": "From the van",
+      "keywords": [
+        "japanese bread blog india",
+        "eggless baking blog",
+        "shokupan guide"
+      ],
+      "jsonLd": [
+        "Blog",
+        "ItemList"
+      ],
+      "priority": 0.6,
+      "note": "Replaces /blogpage and its 23 duplicate stubs. 301 /blogpage here and let every /blogpage/undefined link 404 properly. Definition pages moved to /guides."
+    },
+    {
+      "route": "/guides/what-is-shokupan",
+      "title": "What is shokupan? Japanese milk bread, explained",
+      "metaDescription": "Shokupan is Japan's everyday loaf: fine crumb, thin crust, pulls apart in soft sheets. What it is, how it is made, and how ours is made without eggs.",
+      "h1": "What is shokupan",
+      "keywords": [
+        "what is shokupan",
+        "shokupan bangalore",
+        "japanese milk bread",
+        "japanese milk bread bangalore",
+        "shokupan meaning"
+      ],
+      "jsonLd": [
+        "Article",
+        "BreadcrumbList"
+      ],
+      "jsonLdNotes": "Article with author (a named founder, not 'Fillo Bakes team'), datePublished, image, and a mainEntityOfPage. A named human author is the E-E-A-T signal that matters here.",
+      "priority": 0.9,
+      "note": "Moved out of the journal into the guides cluster. A guide is undated and maintained; a journal post is dated and never updated. /shokupan stays live as the commercial page and links here."
+    },
+    {
+      "route": "/journal/why-eggless",
+      "title": "Why eggless — and why it is the hard part",
+      "metaDescription": "Egg is a non-vegetarian ingredient under Indian labelling rules, so eggless is easy to claim. Keeping the crumb without it is the part that took months.",
+      "h1": "Why eggless",
+      "keywords": [
+        "eggless bakery bangalore",
+        "eggless bread bangalore",
+        "is shokupan eggless",
+        "eggless japanese bread",
+        "eggless milk bread recipe india"
+      ],
+      "jsonLd": [
+        "Article",
+        "BreadcrumbList"
+      ],
+      "priority": 0.9
+    },
+    {
+      "route": "/guides/an-pan",
+      "title": "What is an anpan? The Japanese filled bun",
+      "metaDescription": "The original anpan was filled with sweet red bean paste and sold in Ginza from 1875. Ours are filled with cream. What the bun is, and why we still call it anpan.",
+      "h1": "What is an anpan",
+      "keywords": [
+        "anpan bangalore",
+        "what is anpan",
+        "japanese buns bangalore",
+        "red bean bun india"
+      ],
+      "jsonLd": [
+        "Article",
+        "BreadcrumbList"
+      ],
+      "priority": 0.7,
+      "status": "commissioned"
+    },
+    {
+      "route": "/guides/what-is-karepan",
+      "title": "What is a karepan? Japanese curry bread",
+      "metaDescription": "Curry bread has been a Japanese bakery staple since the 1920s, usually crumbed and fried. What karepan is, and what we do differently.",
+      "h1": "What is a karepan",
+      "keywords": [
+        "karepan",
+        "japanese curry bread india",
+        "curry bun bangalore",
+        "what is kare pan"
+      ],
+      "jsonLd": [
+        "Article",
+        "BreadcrumbList"
+      ],
+      "priority": 0.7,
+      "status": "commissioned"
+    },
+    {
+      "route": "/journal/how-to-eat-a-fruit-sando",
+      "title": "How to eat a fruit sando",
+      "metaDescription": "Crustless milk bread, whipped cream, fruit arranged so the cut face shows. When to eat it, how to cut it, and why it does not keep.",
+      "h1": "How to eat a fruit sando",
+      "keywords": [
+        "fruit sando bangalore",
+        "japanese fruit sandwich",
+        "how to eat fruit sando",
+        "fruit sandwich india"
+      ],
+      "jsonLd": [
+        "Article",
+        "BreadcrumbList"
+      ],
+      "priority": 0.7,
+      "status": "commissioned"
+    },
+    {
+      "route": "/journal/a-day-on-the-route",
+      "title": "A day on the route",
+      "metaDescription": "From the first mix to the last stop, with real timestamps. What a day at a moving bakery in Bengaluru actually looks like.",
+      "h1": "A day on the route",
+      "keywords": [
+        "moving bakery bangalore",
+        "bread van bangalore",
+        "bakery behind the scenes india"
+      ],
+      "jsonLd": [
+        "Article",
+        "BreadcrumbList"
+      ],
+      "priority": 0.6,
+      "status": "commissioned"
+    },
+    {
+      "route": "/guides/how-to-store-shokupan",
+      "title": "How to keep milk bread fresh",
+      "metaDescription": "How long a milk loaf keeps in Bengaluru, why the fridge is the wrong place for it, how to revive day-two bread, and what to do on day three.",
+      "h1": "How to keep milk bread",
+      "keywords": [
+        "how to store milk bread",
+        "how to store shokupan",
+        "keep bread fresh india",
+        "reheat milk bread"
+      ],
+      "jsonLd": [
+        "Article",
+        "HowTo",
+        "BreadcrumbList"
+      ],
+      "jsonLdNotes": "HowTo is appropriate here and only here. Do not publish until the founders supply real storage times — this is a food-safety claim.",
+      "priority": 0.7,
+      "status": "blocked on founder input"
+    },
+    {
+      "route": "/guides/[slug]",
+      "title": "[Guide title] | Fillo Bakes",
+      "metaDescription": "[One-sentence definition.] From Fillo Bakes, an eggless Japanese bakery in Bengaluru.",
+      "h1": "[Guide title]",
+      "keywords": [],
+      "jsonLd": [
+        "Article",
+        "BreadcrumbList"
+      ],
+      "template": true,
+      "priority": 0.7,
+      "note": "Four guides in the mock. Guides are undated and maintained; journal posts are dated and never updated. Every guide links from the products it explains."
+    },
+    {
+      "route": "/journal/why-23-items",
+      "title": "Why the menu is 23 items",
+      "metaDescription": "More than 300 first-time tasters worked through everything before the van ran a route. This is what survived, and why the menu stays short.",
+      "h1": "Why the menu is 23 items",
+      "keywords": [
+        "fillo bakes menu",
+        "small menu bakery",
+        "japanese bakery bengaluru"
+      ],
+      "jsonLd": [
+        "Article",
+        "BreadcrumbList"
+      ],
+      "priority": 0.5,
+      "status": "commissioned"
+    },
+    {
+      "route": "/faq",
+      "title": "Questions — delivery, eggless, allergens | Fillo Bakes",
+      "metaDescription": "Do we reach your area, how late you can order, what eggless actually means, allergens, refunds, and the difference between Fillo+ and the Standing Order.",
+      "h1": "Questions",
+      "keywords": [
+        "fillo bakes faq",
+        "eggless bakery bangalore",
+        "bread delivery bangalore",
+        "is it vegan bakery bangalore"
+      ],
+      "jsonLd": [
+        "FAQPage"
+      ],
+      "jsonLdNotes": "All 15 Q&As. Mark up only questions whose answers are final — any answer still containing a [TBC] must be excluded from the schema until it is filled in.",
+      "priority": 0.8
+    },
+    {
+      "route": "/contact",
+      "title": "Contact Fillo Bakes — WhatsApp, email, Bengaluru",
+      "metaDescription": "WhatsApp +91 86189 06902, or email wiseeatsindia@gmail.com. Bengaluru, Karnataka. Open Monday to Sunday, 10:00 AM to 7:00 PM.",
+      "h1": "Talk to us",
+      "keywords": [
+        "fillo bakes contact",
+        "japanese bakery bangalore contact",
+        "bakery whatsapp bangalore"
+      ],
+      "jsonLd": [
+        "ContactPage",
+        "Bakery"
+      ],
+      "priority": 0.6
+    },
+    {
+      "route": "/franchise",
+      "title": "Franchise and partnerships | Fillo Bakes",
+      "metaDescription": "Run a Fillo Bakes route. Physical store, cloud kitchen, pop-up or moving bakery. Tell us about you and we will get back to you.",
+      "h1": "Partner with Fillo Bakes",
+      "keywords": [
+        "bakery franchise bangalore",
+        "food franchise india",
+        "moving bakery franchise"
+      ],
+      "jsonLd": [
+        "WebPage"
+      ],
+      "priority": 0.4,
+      "note": "Set robots to index but do not spend link equity here. Blocker: the live dummy phone number +91 98765 43210 must be removed before this page is indexed at all."
+    },
+    {
+      "route": "/checkout",
+      "title": "Checkout | Fillo Bakes",
+      "metaDescription": "",
+      "h1": "How do you want it?",
+      "keywords": [],
+      "jsonLd": [],
+      "robots": "noindex, nofollow",
+      "priority": null
+    },
+    {
+      "route": "/order/[id]",
+      "title": "Order confirmed | Fillo Bakes",
+      "metaDescription": "",
+      "h1": "Got it.",
+      "keywords": [],
+      "jsonLd": [],
+      "robots": "noindex, nofollow",
+      "template": true,
+      "priority": null
+    },
+    {
+      "route": "/cart",
+      "title": "Your box | Fillo Bakes",
+      "metaDescription": "",
+      "h1": "Your box",
+      "keywords": [],
+      "jsonLd": [],
+      "robots": "noindex, follow",
+      "priority": null
+    },
+    {
+      "route": "/policies/shipping",
+      "title": "Delivery policy | Fillo Bakes",
+      "metaDescription": "How the van delivers: fixed routes with run days across Bengaluru, two-hour windows, the 8pm cutoff, what delivery costs, and what happens if you are out.",
+      "h1": "Delivery",
+      "keywords": [
+        "bread delivery policy",
+        "bakery delivery bangalore"
+      ],
+      "jsonLd": [
+        "WebPage"
+      ],
+      "priority": 0.3,
+      "note": "Path moved from /shipping. Visible title changes from 'Shipping Policy' to 'Delivery'. The current page describes couriers and 1-2 business days, contradicting the entire model."
+    },
+    {
+      "route": "/policies/refund",
+      "title": "Refunds and cancellations | Fillo Bakes",
+      "metaDescription": "We cannot take returns on fresh bread. If a box arrives damaged, wrong or not right, message us within 24 hours with a photo and we will sort it.",
+      "h1": "Refunds",
+      "keywords": [
+        "bakery refund policy"
+      ],
+      "jsonLd": [
+        "WebPage"
+      ],
+      "priority": 0.3
+    },
+    {
+      "route": "/policies/terms",
+      "title": "Terms and conditions | Fillo Bakes",
+      "metaDescription": "The terms governing orders placed with Fillo Bakes, operated by Wise Eats SuperFood OPC Pvt Ltd, Bengaluru.",
+      "h1": "Terms and conditions",
+      "keywords": [],
+      "jsonLd": [
+        "WebPage"
+      ],
+      "priority": 0.2
+    },
+    {
+      "route": "/policies/privacy",
+      "title": "Privacy policy | Fillo Bakes",
+      "metaDescription": "What we collect, why we collect it, and how to have it deleted. Payments are handled by Razorpay and we do not store card details.",
+      "h1": "Privacy policy",
+      "keywords": [],
+      "jsonLd": [
+        "WebPage"
+      ],
+      "priority": 0.2
+    },
+    {
+      "route": "/policies/payment",
+      "title": "Payment and security | Fillo Bakes",
+      "metaDescription": "UPI, cards, netbanking and wallets through Razorpay. We never store your card details. How to raise a payment issue.",
+      "h1": "Payment and security",
+      "keywords": [
+        "upi bakery payment",
+        "razorpay bakery"
+      ],
+      "jsonLd": [
+        "WebPage"
+      ],
+      "priority": 0.2
+    },
+    {
+      "route": "/login",
+      "title": "Sign in | Fillo Bakes",
+      "metaDescription": "",
+      "h1": "Sign in",
+      "keywords": [],
+      "jsonLd": [],
+      "robots": "noindex, nofollow",
+      "priority": null
+    },
+    {
+      "route": "/logout",
+      "title": "Signed out | Fillo Bakes",
+      "h1": "Signed out",
+      "metaDescription": "",
+      "keywords": [],
+      "jsonLd": [],
+      "robots": "noindex, nofollow",
+      "priority": null
+    },
+    {
+      "route": "/account",
+      "title": "Your account | Fillo Bakes",
+      "metaDescription": "",
+      "h1": "Hello, [name]",
+      "keywords": [],
+      "jsonLd": [],
+      "robots": "noindex, nofollow",
+      "template": true,
+      "priority": null
+    },
+    {
+      "route": "/account/orders",
+      "title": "Orders | Fillo Bakes",
+      "metaDescription": "",
+      "h1": "Orders",
+      "keywords": [],
+      "jsonLd": [],
+      "robots": "noindex, nofollow",
+      "priority": null
+    },
+    {
+      "route": "/account/orders/[id]",
+      "title": "Order [id] | Fillo Bakes",
+      "metaDescription": "",
+      "h1": "Order [id]",
+      "keywords": [],
+      "jsonLd": [],
+      "robots": "noindex, nofollow",
+      "template": true,
+      "priority": null
+    },
+    {
+      "route": "/account/addresses",
+      "title": "Addresses | Fillo Bakes",
+      "metaDescription": "",
+      "h1": "Addresses",
+      "keywords": [],
+      "jsonLd": [],
+      "robots": "noindex, nofollow",
+      "priority": null
+    },
+    {
+      "route": "/account/rewards",
+      "title": "Your Fillo coins | Fillo Bakes",
+      "metaDescription": "",
+      "h1": "[n] coins",
+      "keywords": [],
+      "jsonLd": [],
+      "robots": "noindex, nofollow",
+      "template": true,
+      "priority": null,
+      "note": "Replaces /fillo-plus/dashboard, which today is an email box that returns a number. 301 the old URL here."
+    },
+    {
+      "route": "/account/subscription",
+      "title": "Your standing order | Fillo Bakes",
+      "metaDescription": "",
+      "h1": "Your standing order",
+      "keywords": [],
+      "jsonLd": [],
+      "robots": "noindex, nofollow",
+      "template": true,
+      "priority": null
+    },
+    {
+      "route": "/account/subscription/setup",
+      "title": "Set up a standing order | Fillo Bakes",
+      "h1": "Set up a standing order",
+      "metaDescription": "",
+      "keywords": [],
+      "jsonLd": [],
+      "robots": "noindex, nofollow",
+      "priority": null
+    },
+    {
+      "route": "/account/alerts",
+      "title": "Alerts | Fillo Bakes",
+      "metaDescription": "",
+      "h1": "What we send you",
+      "keywords": [],
+      "jsonLd": [],
+      "robots": "noindex, nofollow",
+      "priority": null
+    },
+    {
+      "route": "/account/gift-cards",
+      "title": "Gift cards | Fillo Bakes",
+      "h1": "Gift cards",
+      "metaDescription": "",
+      "keywords": [],
+      "jsonLd": [],
+      "robots": "noindex, nofollow",
+      "priority": null
+    },
+    {
+      "route": "/account/settings",
+      "title": "Settings | Fillo Bakes",
+      "h1": "Settings",
+      "metaDescription": "",
+      "keywords": [],
+      "jsonLd": [],
+      "robots": "noindex, nofollow",
+      "priority": null
+    },
+    {
+      "route": "/404",
+      "title": "Not found | Fillo Bakes",
+      "metaDescription": "",
+      "h1": "We don't bake that.",
+      "keywords": [],
+      "jsonLd": [],
+      "robots": "noindex, follow",
+      "priority": null,
+      "note": "Must return HTTP 404 or 410. The current site returns HTTP 200 with a 'Product Not Found' body for eight sitemap URLs, which is a soft 404 and actively harmful."
+    },
+    {
+      "route": "/500",
+      "title": "Something broke | Fillo Bakes",
+      "h1": "That's on us.",
+      "metaDescription": "",
+      "keywords": [],
+      "jsonLd": [],
+      "robots": "noindex, nofollow",
+      "priority": null,
+      "note": "Must return HTTP 500. No stack trace, no error code the customer cannot use."
+    },
+    {
+      "route": "/offline",
+      "title": "Offline | Fillo Bakes",
+      "h1": "You're offline.",
+      "metaDescription": "",
+      "keywords": [],
+      "jsonLd": [],
+      "robots": "noindex, nofollow",
+      "priority": null,
+      "note": "PWA shell. The run schedule and menu are cacheable; the live map is not. Building the van page schedule-first is what makes this page useful."
+    },
+    {
+      "route": "/shokupan",
+      "title": "Shokupan bread in Bangalore — Japanese milk bread",
+      "metaDescription": "Authentic Japanese shokupan, baked eggless in Bengaluru. Cloud-soft crumb, subtle sweetness, no preservatives. Delivered fresh or from the van.",
+      "h1": "Shokupan — Japanese milk bread",
+      "keywords": [
+        "shokupan bangalore",
+        "japanese milk bread bangalore",
+        "shokupan bread bangalore",
+        "authentic japanese bread bangalore",
+        "buy shokupan bangalore"
+      ],
+      "jsonLd": [
+        "WebPage",
+        "Bakery",
+        "FAQPage"
+      ],
+      "priority": 1.0,
+      "decision": "KEEP THIS URL LIVE. It is currently the only page on the site with a title tag and it is documented as ranking. Do NOT 301 it into the journal. Instead: keep /shokupan as a commercial landing page that sells the loaf, add it to sitemap.xml (it is currently missing), and link it to /journal/what-is-shokupan as the editorial companion. Two pages, two intents, cross-linked, no cannibalisation. This supersedes the /shokupan redirect suggested in products.json."
+    }
+  ],
+  "sitemapNotes": [
+    "The current sitemap lists 12 /product/* URLs, of which 8 render 'Product Not Found' at HTTP 200. Remove all 12 and replace with the 23 real /shop/[slug] URLs.",
+    "/fillo-plus, /franchise, /blogpage and /shokupan are all absent from the current sitemap. The new sitemap must include every route in this file except those marked noindex.",
+    "Add lastmod per URL, driven by the CMS, not a build-time constant.",
+    "Every dead legacy URL gets a 301 from the redirects array in products.json.",
+    "Exclude /login, /logout, /account/*, /checkout, /cart, /order/*, /500 and /offline from sitemap.xml entirely.",
+    "Old flat policy URLs (/shipping, /refund, /terms, /privacy, /payment-policy) 301 to /policies/*.",
+    "Retired: /blogpage -> /journal, /fillo-plus/dashboard -> /account/rewards, /track -> /van, /signin -> /login, /delivery -> /areas, /fillo-plus/weekly-box -> /standing-order, /shop/[slug] -> /product/[slug]."
+  ],
+  "openIssuesBlockingSeo": [
+    "No title tags site-wide. This is the single highest-impact fix in the entire rebuild and costs nothing.",
+    "No favicon.",
+    "No OG image. The default crumb shot does not exist and must be photographed.",
+    "FSSAI licence number unknown, so LocalBusiness markup is incomplete.",
+    "No street address exists — it is a van. Bakery markup must use areaServed and a GeoCircle rather than a fake storefront address. Publishing a fake address to satisfy schema would be worse than an incomplete entity.",
+    "No real per-product reviews exist. Do not emit AggregateRating until they do.",
+    "Two different contact emails are published across the site, which breaks NAP consistency for local search.",
+    "Route names and run days do not exist as content. /van/[route] and /areas/[area] are the two highest-value new SEO surfaces and neither can ship until the founders supply them.",
+    "The delivery fee (₹49) and free-delivery threshold (₹499) are marked [TBC] in DECISIONS.md. They appear in area-page meta descriptions, so those metas are provisional."
+  ]
+}

@@ -1,0 +1,424 @@
+/* ==========================================================================
+   Fillo Bakes — Design Tokens v1.0
+   Implements design/DESIGN.md. Every value here is traceable to the logo
+   (assets/logo/fillo-bakes-logo.png) or to a sampled pixel in moodboard/*.webp.
+
+   Load order:  tokens.css  →  base/reset  →  components
+   In Next.js, prefer next/font/google over the @import below and assign the
+   resulting CSS variables to --font-display / --font-sans / --font-mono /
+   --font-kana. The @import is the non-Next reference and the token contract.
+   ========================================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Hanken+Grotesk:ital,wght@0,400..700;1,400..700&family=Instrument+Serif:ital@0;1&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap");
+
+:root {
+  color-scheme: light;
+
+  /* ------------------------------------------------------------------
+     1. COLOUR — PRIMARY (from the logo, fixed)
+     ------------------------------------------------------------------ */
+  --color-navy: #023d5d;        /* logo blob fill, 10,496 sampled px */
+  --color-logo-cream: #fffde8;  /* logo wordmark fill, 66,181 sampled px */
+
+  /* ------------------------------------------------------------------
+     2. COLOUR — PAPER SCALE (backgrounds & surfaces)
+     Synthesised from mb-1 #FAF9F5, mb-2 #FBFAF6, mb-4 #FCF3EC,
+     mb-5 #F4EFE9, mb-8 #F0EFEA and the wells #EDECE8 / #E8DBCB / #DEDACE
+     ------------------------------------------------------------------ */
+  --color-paper-0: #fffdf7;   /* card / dialog / drawer / input surface */
+  --color-paper-50: #fbf7ef;  /* PAGE BACKGROUND — default body */
+  --color-paper-100: #f4eee3; /* alternating band, scrolled header */
+  --color-paper-200: #ebe3d5; /* product image wells, tinted callouts, skeletons */
+  --color-paper-300: #ded4c2; /* hairlines & dividers on paper, disabled surfaces */
+  --color-paper-400: #c9bca5; /* decorative rules, seal rings, dot leaders, line art */
+
+  /* ------------------------------------------------------------------
+     3. COLOUR — INK SCALE (the logo navy, extended)
+     Contrast vs --color-paper-50 noted per step.
+     ------------------------------------------------------------------ */
+  --color-ink-900: #04212f; /* 15.55:1 — dark full-bleed bands, footer, map ink */
+  --color-ink-800: #023d5d; /* 10.75:1 — headings, primary fill, active nav (= logo) */
+  --color-ink-700: #0f4e70; /*  8.38:1 — primary hover, link hover, info */
+  --color-ink-600: #2e5f79; /*  6.49:1 — BODY COPY, secondary text, icons */
+  --color-ink-500: #4a7085; /*  4.98:1 — meta, timestamps, placeholders, kana */
+  --color-ink-400: #8aa5b4; /*  2.42:1 — NON-TEXT on paper; text only on ink-900 (6.43:1) */
+
+  /* ------------------------------------------------------------------
+     4. COLOUR — ACCENT "KILN"  (mb-5 CTA, 4,558 sampled px)
+     6.32:1 on paper-50. FORBIDDEN on ink-900 (2.46:1) — use crumb there.
+     ------------------------------------------------------------------ */
+  --color-kiln: #9e3b26;
+  --color-kiln-700: #7e2e1d; /* hover / pressed */
+  --color-kiln-100: #f2ded6; /* tint well; carries kiln text at 5.2:1 */
+
+  /* ------------------------------------------------------------------
+     5. COLOUR — SIGNAL "CRUMB"  (mb-6 caramel #C8A36F + mb-7 yellow chip)
+     2.09:1 on paper — FILL ONLY. 7.45:1 on ink-900 — legal text on dark.
+     Permitted uses: van pulse, baked-today stamp, Fillo+ coins, star
+     ratings, the marquee rule on the dark band. Nothing else.
+     ------------------------------------------------------------------ */
+  --color-crumb: #e4a11b;
+  --color-crumb-ink: #8a6210; /* 5.12:1 — the only crumb-family text colour on paper */
+
+  /* ------------------------------------------------------------------
+     6. COLOUR — SEMANTIC STATES
+     ------------------------------------------------------------------ */
+  --color-success: #1f6b4a;      /* 6.03:1 */
+  --color-success-tint: #e1efe7;
+  --color-warning: #8f5a0b;      /* 5.41:1 */
+  --color-warning-tint: #f6ead5;
+  --color-danger: #9e2a20;       /* 7.00:1 — sibling of kiln; one red family */
+  --color-danger-tint: #f5e0dc;
+  --color-info: #0f4e70;         /* 8.38:1 — = ink-700 */
+  --color-info-tint: #dfeaf1;
+
+  /* ------------------------------------------------------------------
+     7. COLOUR — CATEGORY HINTS (6)
+     HINTS ONLY: a 2px underline, a 5px dot, an active filter chip.
+     Never a card / tile / button fill. Use the -ink variant for text.
+     ------------------------------------------------------------------ */
+  --cat-breads: #c8a36f;          /* mb-6 caramel — crust */
+  --cat-breads-ink: #8a6636;      /* 4.87:1 */
+  --cat-anpan: #9e3b26;           /* = kiln — red bean */
+  --cat-anpan-ink: #9e3b26;       /* 6.32:1 */
+  --cat-karepan: #b4700f;         /* curry amber */
+  --cat-karepan-ink: #8a5609;     /* 5.75:1 */
+  --cat-pies: #7a5230;            /* mb-3 sepia, lifted */
+  --cat-pies-ink: #7a5230;        /* 6.39:1 */
+  --cat-sandos: #b9455c;          /* mb-8 red, desaturated to strawberry-cream */
+  --cat-sandos-ink: #b9455c;      /* 4.83:1 */
+  --cat-weekly: #023d5d;          /* brand navy — the house pick */
+  --cat-weekly-ink: #023d5d;      /* 10.75:1 */
+
+  /* ------------------------------------------------------------------
+     8. COLOUR — OVERLAYS
+     ------------------------------------------------------------------ */
+  --color-scrim: rgba(4, 33, 47, 0.55); /* navy-tinted, never neutral black */
+  --color-veil: rgba(4, 33, 47, 0.06);  /* pressed state on paper */
+
+  /* ------------------------------------------------------------------
+     9. TYPOGRAPHY — FAMILIES
+     ------------------------------------------------------------------ */
+  --font-display: "Instrument Serif", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-sans: "Hanken Grotesk", ui-sans-serif, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: "DM Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-kana: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+
+  /* 10. TYPOGRAPHY — FLUID SCALE (390px → 1440px viewport) */
+  --text-display-2xl: clamp(3.25rem, 1.486rem + 7.238vw, 8rem);      /*  52 → 128 */
+  --text-display-xl: clamp(2.75rem, 1.543rem + 4.952vw, 6rem);       /*  44 →  96 */
+  --text-display-lg: clamp(2.25rem, 1.507rem + 3.048vw, 4.25rem);    /*  36 →  68 */
+  --text-display-md: clamp(1.875rem, 1.457rem + 1.714vw, 3rem);      /*  30 →  48 */
+  --text-display-sm: clamp(1.5rem, 1.221rem + 1.143vw, 2.25rem);     /*  24 →  36 */
+  --text-title-lg: clamp(1.25rem, 1.157rem + 0.381vw, 1.5rem);       /*  20 →  24 */
+  --text-title: 1.125rem;                                            /*  18 */
+  --text-body-lg: clamp(1.0625rem, 1.016rem + 0.19vw, 1.1875rem);    /*  17 →  19 */
+  --text-body: 1rem;                                                 /*  16 */
+  --text-body-sm: 0.875rem;                                          /*  14 */
+  --text-caption: 0.8125rem;                                         /*  13 */
+  --text-micro: 0.6875rem;                                           /*  11 — mono, UPPERCASE */
+  --text-nano: 0.625rem;                                             /*  10 — mono, UPPERCASE */
+
+  /* 11. TYPOGRAPHY — LINE HEIGHTS */
+  --leading-display-2xl: 0.88;
+  --leading-display-xl: 0.92;
+  --leading-display-lg: 0.98;
+  --leading-display-md: 1.06;
+  --leading-display-sm: 1.14;
+  --leading-title-lg: 1.28;
+  --leading-title: 1.35;
+  --leading-body-lg: 1.62;
+  --leading-body: 1.6;
+  --leading-body-sm: 1.55;
+  --leading-caption: 1.45;
+  --leading-micro: 1.3;
+  --leading-nano: 1.2;
+
+  /* 12. TYPOGRAPHY — TRACKING */
+  --tracking-display-2xl: -0.02em;
+  --tracking-display-xl: -0.018em;
+  --tracking-display-lg: -0.015em;
+  --tracking-display-md: -0.01em;
+  --tracking-display-sm: -0.005em;
+  --tracking-title-lg: -0.005em;
+  --tracking-normal: 0em;
+  --tracking-caption: 0.005em;
+  --tracking-micro: 0.12em;
+  --tracking-nano: 0.16em;
+  --tracking-kana: 0.06em;
+
+  /* 13. TYPOGRAPHY — WEIGHTS
+     Display is ALWAYS 400. Instrument Serif ships only 400 to enforce this. */
+  --weight-display: 400;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-mono-light: 300;
+  --weight-mono: 400;
+  --weight-mono-medium: 500;
+
+  /* 14. TYPOGRAPHY — MEASURE */
+  --measure-prose: 62ch;
+  --measure-lead: 46ch;
+
+  /* ------------------------------------------------------------------
+     15. SPACING — 4px base
+     ------------------------------------------------------------------ */
+  --space-0: 0;
+  --space-1: 0.25rem;   /*   4 */
+  --space-2: 0.5rem;    /*   8 */
+  --space-3: 0.75rem;   /*  12 */
+  --space-4: 1rem;      /*  16 */
+  --space-5: 1.25rem;   /*  20 */
+  --space-6: 1.5rem;    /*  24 */
+  --space-8: 2rem;      /*  32 */
+  --space-10: 2.5rem;   /*  40 */
+  --space-12: 3rem;     /*  48 */
+  --space-16: 4rem;     /*  64 */
+  --space-20: 5rem;     /*  80 */
+  --space-24: 6rem;     /*  96 */
+  --space-32: 8rem;     /* 128 */
+  --space-40: 10rem;    /* 160 */
+  --space-48: 12rem;    /* 192 */
+
+  /* Section rhythm */
+  --section-y: clamp(4rem, 2.4rem + 6.6vw, 8rem);     /*  64 → 128 */
+  --section-y-lg: clamp(5rem, 2.8rem + 9vw, 10rem);   /*  80 → 160 — dark bands */
+
+  /* ------------------------------------------------------------------
+     16. RADII
+     ------------------------------------------------------------------ */
+  --radius-none: 0;
+  --radius-xs: 2px;   /* dense meta chips, mono tag outlines */
+  --radius-sm: 4px;   /* inputs, filter chips, slot chips, small badges */
+  --radius-md: 8px;   /* BUTTONS, CARDS, PANELS, TOASTS — the default */
+  --radius-lg: 12px;  /* dialogs, cart drawer, tracker panel, plan cards */
+  --radius-xl: 16px;  /* hero image mask, full-width media */
+  --radius-pill: 999px; /* on-photo buttons, stepper, cart badge only */
+  /* THE FILLO DEVICE — seal, van marker, hero mask, testimonial avatar. Nowhere else. */
+  --radius-blob: 58% 42% 55% 45% / 48% 55% 45% 52%;
+
+  /* ------------------------------------------------------------------
+     17. BORDERS & HAIRLINES — always 1px, always from the paper scale
+     ------------------------------------------------------------------ */
+  --border-hairline: 1px solid var(--color-paper-300);
+  --border-hairline-strong: 1px solid var(--color-paper-400);
+  --border-hairline-dark: 1px solid rgba(255, 253, 232, 0.14);
+  --border-input: 1px solid var(--color-paper-400);
+  --border-input-focus: 1px solid var(--color-ink-800);
+  --border-strong: 1.5px solid var(--color-ink-800);
+
+  /* ------------------------------------------------------------------
+     18. ELEVATION — the system is flat. There is no sm/md/lg/xl ramp.
+     All shadows are navy-tinted; none uses neutral black.
+     ------------------------------------------------------------------ */
+  --shadow-none: none;
+  --shadow-contact: 0 18px 24px -18px rgba(4, 33, 47, 0.35); /* under product cutouts ONLY */
+  --shadow-lift: 0 2px 4px -2px rgba(4, 33, 47, 0.06),
+                 0 12px 28px -12px rgba(4, 33, 47, 0.16);     /* card hover / focus only */
+  --shadow-overlay: 0 24px 60px -20px rgba(4, 33, 47, 0.3);   /* drawer, dialog, toast */
+  --shadow-sticky: 0 1px 0 0 var(--color-paper-300);          /* scrolled header hairline */
+
+  /* ------------------------------------------------------------------
+     19. GRID & LAYOUT
+     ------------------------------------------------------------------ */
+  --max-content: 1320px;
+  --max-narrow: 880px;
+  --max-prose: 68ch;
+  --gutter: 20px;
+  --grid-gap: var(--space-4);
+  --product-grid-gap: var(--space-4);
+
+  /* Breakpoints (documentation values; media queries need literals) */
+  --bp-sm: 480px;
+  --bp-md: 768px;
+  --bp-lg: 1024px;
+  --bp-xl: 1280px;
+  --bp-2xl: 1536px;
+
+  /* ------------------------------------------------------------------
+     20. MOTION
+     ------------------------------------------------------------------ */
+  --dur-instant: 0ms;
+  --dur-fast: 140ms;    /* hover, focus, chip select, icon swap */
+  --dur-base: 220ms;    /* buttons, stepper, accordion, toast in */
+  --dur-slow: 380ms;    /* drawer, dialog, filter re-layout */
+  --dur-slower: 640ms;  /* scroll reveal, hero entrance */
+  --dur-marquee: 32s;   /* ticker loop */
+  --dur-seal: 22s;      /* seal ring rotation */
+  --stagger: 60ms;
+
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-linear: linear;
+
+  /* ------------------------------------------------------------------
+     21. FOCUS — universal, :focus-visible only
+     ------------------------------------------------------------------ */
+  --focus-ring-color: var(--color-kiln);
+  --focus-ring-color-on-dark: var(--color-crumb);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  /* 22. Z-INDEX */
+  --z-base: 0;
+  --z-sticky: 50;
+  --z-tracker: 60;
+  --z-drawer: 70;
+  --z-dialog: 80;
+  --z-toast: 90;
+
+  /* 23. COMPONENT CONSTANTS */
+  --header-h: 72px;
+  --header-h-scrolled: 60px;
+  --header-h-mobile: 60px;
+  --announcement-h: 36px;
+  --hit-min: 44px;
+  --control-h-sm: 36px;
+  --control-h-md: 44px;
+  --control-h-lg: 52px;
+  --input-h: 48px;
+  --icon-inline: 16px;
+  --icon-ui: 20px;
+  --icon-nav: 24px;
+  --icon-stroke: 1.5;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --gutter: 32px;
+    --grid-gap: var(--space-6);
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --gutter: 40px;
+    /* tight gutters so the product grid reads as a contact sheet (mb-1) */
+    --product-grid-gap: var(--space-3);
+  }
+}
+
+/* ==========================================================================
+   BASE — the minimum the tokens imply. Extend in your own base layer.
+   ========================================================================== */
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-paper-50);
+  color: var(--color-ink-600);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  font-weight: var(--weight-regular);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Paper grain (mb-7). Invisible as an effect, felt as texture.
+   Paper backgrounds only — never inside cards, on dark bands, or over photos. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-base);
+  pointer-events: none;
+  opacity: 0.02;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+:where(h1, h2, h3) {
+  font-family: var(--font-display);
+  font-weight: var(--weight-display);
+  color: var(--color-ink-800);
+  text-wrap: balance;
+  margin: 0;
+}
+
+:where(p) {
+  text-wrap: pretty;
+  hyphens: none;
+  margin: 0;
+}
+
+/* Prices, counts, times, coin balances, stats */
+:where(.tabular, [data-tabular]) {
+  font-variant-numeric: tabular-nums;
+}
+
+:where(:focus-visible) {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+:where([data-surface="dark"] :focus-visible) {
+  outline-color: var(--focus-ring-color-on-dark);
+}
+
+/* Kana — §12.26 */
+:where([lang="ja"], .kana) {
+  font-family: var(--font-kana);
+  font-size: var(--text-caption);
+  line-height: 1.4;
+  letter-spacing: var(--tracking-kana);
+  color: var(--color-ink-500);
+}
+
+/* Micro-caps — the letterspaced label layer that structures every page */
+:where(.micro, .nano) {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+}
+:where(.micro) {
+  font-size: var(--text-micro);
+  line-height: var(--leading-micro);
+  letter-spacing: var(--tracking-micro);
+  font-weight: var(--weight-mono);
+}
+:where(.nano) {
+  font-size: var(--text-nano);
+  line-height: var(--leading-nano);
+  letter-spacing: var(--tracking-nano);
+  font-weight: var(--weight-mono-medium);
+}
+
+/* Dark surfaces — apply data-surface="dark" to any ink-900 band */
+:where([data-surface="dark"]) {
+  background-color: var(--color-ink-900);
+  color: var(--color-ink-400);
+}
+:where([data-surface="dark"]) :where(h1, h2, h3) {
+  color: var(--color-paper-0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 140ms; /* opacity fades survive */
+    --dur-base: 140ms;
+    --dur-slow: 140ms;
+    --dur-slower: 140ms;
+    --stagger: 0ms;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 140ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* Marquee, seal rotation and the van pulse render statically. */
+  [data-motion="marquee"],
+  [data-motion="seal"],
+  [data-motion="pulse"] {
+    animation: none !important;
+    transform: none !important;
+  }
+}

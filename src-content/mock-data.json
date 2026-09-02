@@ -1,0 +1,1672 @@
+{
+  "$schema": "internal://fillobakes/mock-data/v1",
+  "meta": {
+    "purpose": "Sample data shapes for the mocked front end. Every product slug and price here matches products.json. Every string matches the copy in site-content.md. This is fixture data, not production data.",
+    "generated": "2026-09-03",
+    "timezone": "Asia/Kolkata",
+    "currency": "INR",
+    "asOf": "2026-10-03T16:05:00+05:30",
+    "conventions": [
+      "All money is in whole rupees, as integers. No paise anywhere in this business.",
+      "Order ids are FB-DDMM-NNNN.",
+      "Time bands are stored as 24h start/end and rendered as '4:00-6:00 PM'.",
+      "Every timestamp on the bake strip is a real event time. Nulls mean 'has not happened yet' and must render as an unticked step, never as a guess.",
+      "Placeholder values the founders must set are marked with a TBC string or a null plus a tbc note, so they cannot be shipped by accident."
+    ],
+    "tbc": {
+      "deliveryFee": "49 assumed per DECISIONS v2, TBC",
+      "freeDeliveryThreshold": "499 assumed per DECISIONS v2, TBC",
+      "orderCutoffTime": "20:00 the evening before a run, TBC",
+      "codSurcharge": "30 assumed, TBC",
+      "subscriptionPrices": "Est. from retail, TBC",
+      "ovenCapacityPerBake": "TBC - do not publish a cap the kitchen cannot honour",
+      "vanWaitAtStopMinutes": "10 assumed, TBC",
+      "runDays": "TBC - route run days are fixtures. Founders must supply the real week.",
+      "boxPrices": "Est. from retail, TBC",
+      "waitlistThreshold": "40 assumed, TBC",
+      "giftCardExpiry": "TBC - confirm whether gift cards expire"
+    },
+    "routeMapVersion": "Aligned to research/DECISIONS.md v2 FINAL ROUTE MAP (2026-09-03).",
+    "namingRule": "The subscription is 'The Standing Order' and is never called a box. 'Box' refers only to the curated products in `boxes`. Fillo+ is FREE and phone-based; no ₹1 anywhere except the foundingMember grandfather flag.",
+    "scenario": "Saturday 3 October, 16:05. The Indiranagar run is live. Neha's saved stop is Indiranagar 12th Main, which is 2 stops ahead of the van. Her order FB-2609-0142 is on board. Every other fixture is dated around this moment."
+  },
+  "customer": {
+    "id": "cus_8f21",
+    "name": "Neha",
+    "phone": "+918618906902",
+    "phoneVerified": true,
+    "email": null,
+    "emailNote": "Optional. Only used for receipts.",
+    "createdAt": "2026-03-12T09:14:00+05:30",
+    "filloPlus": {
+      "isMember": true,
+      "fee": 0,
+      "feeNote": "Fillo+ is free. The ₹1 join fee is removed.",
+      "joinedAt": "2026-03-12T09:16:00+05:30",
+      "memberSince": "12 March 2026",
+      "foundingMember": true,
+      "foundingMemberReason": "Paid the ₹1 before the fee was removed. Grandfathered.",
+      "badgeLabel": "Founding member since 12 March 2026",
+      "badgeCopy": "You joined when Fillo+ cost ₹1. That badge stays, and you get first access to every new bake.",
+      "identity": "phone",
+      "legacyEmailOnly": false
+    },
+    "defaultAddressId": "addr_home",
+    "areaSet": "Indiranagar",
+    "pincode": "560038",
+    "areaSlug": "indiranagar",
+    "lane": "catch_the_van",
+    "orderCount": 3,
+    "orderCountNote": "orderCount >= 2 is what unlocks the Standing Order pitch on the order confirmation and the /account block. A first-time customer must never see it."
+  },
+  "addresses": [
+    {
+      "id": "addr_home",
+      "label": "Home",
+      "isDefault": true,
+      "society": "Sundarban Apartments",
+      "blockAndFlat": "B Block, 402",
+      "landmark": "Opposite the Ramamurthy Nagar bus stand",
+      "area": "Banaswadi",
+      "pincode": "560043",
+      "leaveItWith": "Security, if nobody answers",
+      "serviceable": true,
+      "routeId": "route_banaswadi",
+      "availableWindows": [
+        "12:00-14:00",
+        "14:00-16:00",
+        "16:00-18:00",
+        "18:00-20:00"
+      ],
+      "serviceabilityBadge": "Van comes here Mondays, Wednesdays and Fridays"
+    },
+    {
+      "id": "addr_amma",
+      "label": "Amma's",
+      "isDefault": false,
+      "society": "Prestige Ferns Residency",
+      "blockAndFlat": "Tower 3, 1104",
+      "landmark": "Behind the Harlur Road water tank",
+      "area": "HSR Layout",
+      "pincode": "560102",
+      "leaveItWith": null,
+      "serviceable": true,
+      "routeId": "route_hsr",
+      "availableWindows": [
+        "12:00-14:00",
+        "14:00-16:00"
+      ],
+      "serviceabilityBadge": "Catch the van — daily"
+    }
+  ],
+  "orders": [
+    {
+      "id": "FB-2609-0142",
+      "placedAt": "2026-10-01T21:04:00+05:30",
+      "status": "out",
+      "statusLabel": "Out on the route",
+      "statusSentence": "2 stops away. Around 4:40 to 4:50.",
+      "fulfilment": {
+        "lane": "catch_the_van",
+        "laneLabel": "Catch the van",
+        "addressId": null,
+        "date": "2026-10-03",
+        "dateLabel": "Saturday 3 October",
+        "window": "16:40-17:10",
+        "windowLabel": "4:40–5:10 PM",
+        "area": "Indiranagar",
+        "routeId": "route_indiranagar",
+        "stopId": "stop_ind_1",
+        "stopLabel": "Indiranagar, 12th Main"
+      },
+      "items": [
+        {
+          "slug": "milk-shokupan",
+          "name": "Milk Shokupan",
+          "variant": "Sliced",
+          "qty": 1,
+          "unitPrice": 200,
+          "lineTotal": 200
+        },
+        {
+          "slug": "custard-an-pan",
+          "name": "Custard An Pan",
+          "variant": null,
+          "qty": 2,
+          "unitPrice": 159,
+          "lineTotal": 318
+        }
+      ],
+      "money": {
+        "subtotal": 518,
+        "discount": {
+          "code": null,
+          "amount": 0
+        },
+        "delivery": 0,
+        "tax": 26,
+        "taxRateLabel": "5%",
+        "filloPlusJoinFee": 0,
+        "total": 544,
+        "deliveryLabel": "Free — you're catching the van"
+      },
+      "payment": {
+        "method": "upi",
+        "methodLabel": "UPI",
+        "processor": "Razorpay",
+        "reference": "pay_R9xQ2mK4",
+        "paidAt": "2026-09-25T21:05:12+05:30"
+      },
+      "bakeStrip": [
+        {
+          "step": "confirmed",
+          "label": "Confirmed",
+          "done": true,
+          "at": "2026-10-01T21:04:00+05:30",
+          "sentence": "We have it. Baking starts Friday night."
+        },
+        {
+          "step": "baking",
+          "label": "Baking",
+          "done": true,
+          "at": "2026-10-03T04:10:00+05:30",
+          "sentence": "Your bread is in. Mixed at 4:10, in the oven at 5:40."
+        },
+        {
+          "step": "loaded",
+          "label": "Loaded on the van",
+          "done": true,
+          "at": "2026-10-03T14:50:00+05:30",
+          "sentence": "Out of the oven and on board."
+        },
+        {
+          "step": "out",
+          "label": "Out on the route",
+          "done": true,
+          "at": "2026-10-03T15:20:00+05:30",
+          "sentence": "2 stops away. Around 4:40 to 4:50."
+        },
+        {
+          "step": "collected",
+          "label": "Collected",
+          "done": false,
+          "at": null,
+          "sentence": null
+        }
+      ],
+      "coinsEarned": 10,
+      "coinsPostedAt": null,
+      "canChange": false,
+      "changeClosedAt": "2026-10-02T20:00:00+05:30",
+      "changeClosedCopy": "Too late to change this one — the dough's in. Message us and we'll do what we can."
+    },
+    {
+      "id": "FB-1909-0117",
+      "placedAt": "2026-09-18T18:22:00+05:30",
+      "status": "delivered",
+      "statusLabel": "Delivered",
+      "statusSentence": "Delivered at 4:47. Tear it, don't slice it.",
+      "fulfilment": {
+        "lane": "catch_the_van",
+        "laneLabel": "Catch the van",
+        "addressId": null,
+        "date": "2026-09-19",
+        "dateLabel": "Saturday 19 September",
+        "window": "16:00-18:00",
+        "windowLabel": "4:00-6:00 PM",
+        "area": "Banaswadi",
+        "stopId": "stop_ban_2",
+        "stopLabel": "Banaswadi - Kammanahalli Main Road",
+        "routeId": "route_banaswadi"
+      },
+      "items": [
+        {
+          "slug": "bangalore-bloom",
+          "name": "Bangalore Bloom",
+          "variant": null,
+          "qty": 2,
+          "unitPrice": 99,
+          "lineTotal": 198
+        },
+        {
+          "slug": "seoul-spice",
+          "name": "Seoul Spice",
+          "variant": null,
+          "qty": 1,
+          "unitPrice": 159,
+          "lineTotal": 159
+        },
+        {
+          "slug": "orchard-melt",
+          "name": "Orchard Melt",
+          "variant": null,
+          "qty": 1,
+          "unitPrice": 129,
+          "lineTotal": 129
+        }
+      ],
+      "money": {
+        "subtotal": 486,
+        "discount": {
+          "code": null,
+          "amount": 0
+        },
+        "delivery": 0,
+        "deliveryLabel": "Free - collected from the van",
+        "tax": 24,
+        "taxRateLabel": "5%",
+        "filloPlusJoinFee": 0,
+        "total": 510
+      },
+      "payment": {
+        "method": "upi",
+        "methodLabel": "UPI",
+        "processor": "Razorpay",
+        "reference": "pay_R7bL9nP1",
+        "paidAt": "2026-09-18T18:22:40+05:30"
+      },
+      "bakeStrip": [
+        {
+          "step": "placed",
+          "label": "Placed",
+          "done": true,
+          "at": "2026-09-18T18:22:00+05:30",
+          "sentence": "We have it. Baking starts Friday night."
+        },
+        {
+          "step": "baking",
+          "label": "Baking",
+          "done": true,
+          "at": "2026-09-19T04:15:00+05:30",
+          "sentence": "Your bread is in. Mixed at 4:15, in the oven at 5:35."
+        },
+        {
+          "step": "loading",
+          "label": "Loading",
+          "done": true,
+          "at": "2026-09-19T15:00:00+05:30",
+          "sentence": "Out of the oven and going onto the van."
+        },
+        {
+          "step": "on_the_van",
+          "label": "On the van",
+          "done": true,
+          "at": "2026-09-19T15:38:00+05:30",
+          "sentence": "On the way to Kammanahalli Main Road."
+        },
+        {
+          "step": "delivered",
+          "label": "Delivered",
+          "done": true,
+          "at": "2026-09-19T16:47:00+05:30",
+          "sentence": "Delivered at 4:47. Tear it, don't slice it."
+        }
+      ],
+      "coinsEarned": 10,
+      "coinsPostedAt": "2026-09-19T16:47:00+05:30",
+      "canChange": false,
+      "canReorder": true,
+      "reportWindowOpen": false,
+      "reportWindowCopy": "The 24-hour window for reporting a problem has passed, but message us anyway - we'd rather know."
+    },
+    {
+      "id": "FB-0509-0088",
+      "placedAt": "2026-09-04T11:47:00+05:30",
+      "status": "cancelled",
+      "statusLabel": "Cancelled",
+      "statusSentence": "Cancelled on 4 September. Refund is with Razorpay - 7 to 10 working days.",
+      "cancelledAt": "2026-09-04T14:03:00+05:30",
+      "cancelledBy": "customer",
+      "fulfilment": {
+        "lane": "home_delivery",
+        "laneLabel": "Home delivery",
+        "addressId": "addr_amma",
+        "date": "2026-09-06",
+        "dateLabel": "Sunday 6 September",
+        "window": "12:00-14:00",
+        "windowLabel": "12:00-2:00 PM",
+        "area": "HSR Layout",
+        "stopId": null,
+        "routeId": "route_hsr"
+      },
+      "items": [
+        {
+          "slug": "strawberry-cream-fruit-sando",
+          "name": "Strawberry Cream Fruit Sando",
+          "variant": null,
+          "qty": 2,
+          "unitPrice": 280,
+          "lineTotal": 560
+        }
+      ],
+      "money": {
+        "subtotal": 560,
+        "discount": {
+          "code": "FILLO10",
+          "amount": 56,
+          "label": "FILLO10 - 10% off over ₹500"
+        },
+        "delivery": null,
+        "deliveryTbc": "TBC",
+        "tax": 25,
+        "taxRateLabel": "5%",
+        "filloPlusJoinFee": 0,
+        "total": 529,
+        "refunded": 529,
+        "refundReference": "rfnd_R5cM8kT2",
+        "refundInitiatedAt": "2026-09-04T14:05:00+05:30"
+      },
+      "payment": {
+        "method": "upi",
+        "methodLabel": "UPI",
+        "processor": "Razorpay",
+        "reference": "pay_R5cM8kT2",
+        "paidAt": "2026-09-04T11:48:10+05:30"
+      },
+      "bakeStrip": [
+        {
+          "step": "placed",
+          "label": "Placed",
+          "done": true,
+          "at": "2026-09-04T11:47:00+05:30",
+          "sentence": "We have it. Baking starts Saturday night."
+        },
+        {
+          "step": "baking",
+          "label": "Baking",
+          "done": false,
+          "at": null,
+          "sentence": null
+        },
+        {
+          "step": "loading",
+          "label": "Loading",
+          "done": false,
+          "at": null,
+          "sentence": null
+        },
+        {
+          "step": "on_the_van",
+          "label": "On the van",
+          "done": false,
+          "at": null,
+          "sentence": null
+        },
+        {
+          "step": "delivered",
+          "label": "Delivered",
+          "done": false,
+          "at": null,
+          "sentence": null
+        }
+      ],
+      "coinsEarned": 0,
+      "coinsReversed": 0,
+      "canChange": false,
+      "canReorder": true
+    }
+  ],
+  "subscription": {
+    "id": "sub_4a19",
+    "customerId": "cus_8f21",
+    "plan": {
+      "id": "standing_loaf",
+      "name": "1 Milk Shokupan",
+      "items": [
+        {
+          "slug": "milk-shokupan",
+          "qty": 1
+        }
+      ],
+      "listPrice": 200,
+      "weeklyPrice": 180,
+      "savingPerWeek": 20,
+      "savingLabel": "₹20 a week",
+      "priceConfidence": "Est. - derived from retail, not founder-set"
+    },
+    "status": "active",
+    "statusLabel": "Active",
+    "startedAt": "2026-06-13",
+    "addressId": "addr_home",
+    "routeDay": "saturday",
+    "window": "16:00-18:00",
+    "windowLabel": "4:00-6:00 PM",
+    "area": "Banaswadi",
+    "cutoff": {
+      "rule": "20:00 the evening before the run",
+      "label": "Closes Thursday 8pm",
+      "nextCutoffAt": "2026-10-01T20:00:00+05:30",
+      "tbc": true
+    },
+    "nextDelivery": {
+      "date": "2026-10-03",
+      "dateLabel": "Sat 3 October",
+      "windowLabel": "4:00–6:00 PM",
+      "stopLabel": "Indiranagar, 12th Main",
+      "items": [
+        {
+          "slug": "milk-shokupan",
+          "name": "Milk Shokupan",
+          "qty": 1
+        }
+      ],
+      "price": 180,
+      "canSkip": true,
+      "canChange": true,
+      "closesLabel": "Closes Thursday 8pm"
+    },
+    "upcoming": [
+      {
+        "date": "2026-10-03",
+        "dateLabel": "Sat 3 Oct",
+        "status": "scheduled",
+        "items": [
+          "1 Milk Shokupan"
+        ],
+        "price": 180,
+        "canSkip": true
+      },
+      {
+        "date": "2026-10-10",
+        "dateLabel": "Sat 10 Oct",
+        "status": "scheduled",
+        "items": [
+          "1 Milk Shokupan"
+        ],
+        "price": 180,
+        "canSkip": true
+      },
+      {
+        "date": "2026-10-17",
+        "dateLabel": "Sat 17 Oct",
+        "status": "skipped",
+        "skippedAt": "2026-09-24T10:12:00+05:30",
+        "statusCopy": "Skipped — you won't be charged",
+        "canUnskip": true
+      },
+      {
+        "date": "2026-10-24",
+        "dateLabel": "Sat 24 Oct",
+        "status": "scheduled",
+        "items": [
+          "1 Milk Shokupan"
+        ],
+        "price": 180,
+        "canSkip": true
+      }
+    ],
+    "history": {
+      "deliveredCount": 6,
+      "skippedCount": 1,
+      "pausedWeeks": 0,
+      "since": "2026-07-12",
+      "label": "6 deliveries · 1 skipped · since 12 Jul"
+    },
+    "actions": {
+      "canSkipNext": true,
+      "canPause": true,
+      "maxPauseWeeks": 8,
+      "canChangeBox": true,
+      "changeBoxEffectiveFrom": "2026-10-10",
+      "changeBoxCopy": "Takes effect from Saturday 10 October",
+      "canChangeRouteDay": true,
+      "availableRouteDays": [
+        "saturday"
+      ],
+      "availableRouteDaysNote": "Only Saturday is served at addr_home. Other days render greyed with 'Not on this route'.",
+      "canCancel": true,
+      "cancelCopy": "You'll get Saturday's delivery - it's already in the plan - and nothing after that. You keep your coins.",
+      "skipCopy": "Skipping Saturday 17 Oct. You won't be charged. Back the week after.",
+      "pastCutoffSkip": "Too late to skip this one — it's already being baked. The next one is open.",
+      "cancelOffersPauseOnce": true
+    },
+    "payment": {
+      "method": "upi_autopay",
+      "methodLabel": "UPI AutoPay",
+      "processor": "Razorpay",
+      "lastChargeAt": "2026-09-25T06:00:00+05:30",
+      "lastChargeAmount": 310,
+      "nextChargeAt": "2026-10-02T06:00:00+05:30",
+      "healthy": true
+    },
+    "productName": "The Standing Order",
+    "namingNote": "Never called a box. 'Box' refers only to the curated products in `boxes`.",
+    "frequency": "weekly",
+    "frequencyOptions": [
+      "weekly",
+      "fortnightly"
+    ],
+    "routeId": "route_indiranagar",
+    "stopId": "stop_ind_1",
+    "stopLabel": "Indiranagar, 12th Main",
+    "lane": "catch_the_van",
+    "weeklyMessages": [
+      {
+        "when": "Wednesday 8pm",
+        "template": "Saturday's standing order: 1 Milk Shokupan, ₹180, Indiranagar 4–6pm.",
+        "buttons": [
+          "Skip this week",
+          "Change"
+        ]
+      },
+      {
+        "when": "Thursday 8pm",
+        "template": null,
+        "note": "Cutoff. The order locks and the charge is attempted. No message."
+      },
+      {
+        "when": "Friday 8pm",
+        "template": "You're on tomorrow's list. Indiranagar, 4 to 6."
+      },
+      {
+        "when": "Saturday",
+        "template": null,
+        "note": "Bake strip live, van live, delivered, then one-tap rating and reorder."
+      }
+    ],
+    "alternateStates": {
+      "paused": {
+        "status": "paused",
+        "statusLabel": "Paused",
+        "resumeOn": "2026-11-03",
+        "resumeLabel": "Paused till 3 November",
+        "copy": "Paused till 3 November. We'll message you the day before.",
+        "cta": "Resume now"
+      },
+      "payment_failed": {
+        "status": "payment_failed",
+        "statusLabel": "Payment failed",
+        "failedAt": "2026-10-02T06:00:00+05:30",
+        "banner": "We couldn't take this week's payment, so Saturday is on hold. Nothing else has changed.",
+        "cta": "Retry payment",
+        "fallback": "If it isn't resolved by Thursday 8pm we skip that week. We never silently cancel."
+      },
+      "route_changed": {
+        "status": "active",
+        "noticeSentAt": "2026-10-14T10:00:00+05:30",
+        "banner": "We've moved the Indiranagar stop to 5–7pm from Saturday the 20th.",
+        "note": "Always sent before the cutoff, never after."
+      },
+      "route_retired": {
+        "status": "paused",
+        "banner": "We've stopped running Indiranagar. Your standing order is paused and you haven't been charged. Sorry — we'd rather say so than quietly stop.",
+        "cta": "Change address"
+      },
+      "out_of_stock": {
+        "status": "active",
+        "banner": "We couldn't bake the Blue Pea this week. Swap for Milk Shokupan, or skip — you won't be charged either way.",
+        "options": [
+          "Swap",
+          "Skip"
+        ]
+      },
+      "cancelled": {
+        "status": "cancelled",
+        "statusLabel": "Cancelled",
+        "lastDelivery": "2026-10-03",
+        "copy": "Cancelled. Your last delivery was Sat 3 October. Come back whenever."
+      }
+    }
+  },
+  "loyaltyLedger": {
+    "customerId": "cus_8f21",
+    "balance": 18,
+    "redeemThreshold": 25,
+    "coinsToNextRedemption": 7,
+    "redemptionValue": 25,
+    "earnRate": {
+      "coins": 2,
+      "perRupees": 100
+    },
+    "progressCopy": "7 more and you can take ₹25 off.",
+    "nudgeCopy": "₹25 off unlocks at 25 coins. A ₹350 order gets you there.",
+    "entries": [
+      {
+        "id": "led_8",
+        "at": "2026-09-19T16:47:00+05:30",
+        "dateLabel": "19 Sep",
+        "type": "earn",
+        "description": "Order FB-1909-0117",
+        "orderId": "FB-1909-0117",
+        "coins": 10,
+        "balanceAfter": 18
+      },
+      {
+        "id": "led_7",
+        "at": "2026-09-12T17:22:00+05:30",
+        "dateLabel": "12 Sep",
+        "type": "earn",
+        "description": "Standing order, 12 Sep",
+        "orderId": "FB-1209-0101",
+        "coins": 6,
+        "balanceAfter": 8
+      },
+      {
+        "id": "led_6",
+        "at": "2026-08-29T18:31:00+05:30",
+        "dateLabel": "29 Aug",
+        "type": "redeem",
+        "description": "Redeemed ₹25 off",
+        "orderId": "FB-2908-0074",
+        "coins": -25,
+        "balanceAfter": 2
+      },
+      {
+        "id": "led_5",
+        "at": "2026-08-29T18:30:00+05:30",
+        "dateLabel": "29 Aug",
+        "type": "earn",
+        "description": "Order FB-2908-0074",
+        "orderId": "FB-2908-0074",
+        "coins": 6,
+        "balanceAfter": 27
+      },
+      {
+        "id": "led_4",
+        "at": "2026-08-22T17:15:00+05:30",
+        "dateLabel": "22 Aug",
+        "type": "earn",
+        "description": "Standing order, 22 Aug",
+        "orderId": "FB-2208-0066",
+        "coins": 6,
+        "balanceAfter": 21
+      },
+      {
+        "id": "led_3",
+        "at": "2026-08-15T16:58:00+05:30",
+        "dateLabel": "15 Aug",
+        "type": "earn",
+        "description": "Order FB-1508-0059",
+        "orderId": "FB-1508-0059",
+        "coins": 9,
+        "balanceAfter": 15
+      },
+      {
+        "id": "led_2",
+        "at": "2026-08-08T17:40:00+05:30",
+        "dateLabel": "8 Aug",
+        "type": "earn",
+        "description": "Standing order, 8 Aug",
+        "orderId": "FB-0808-0048",
+        "coins": 6,
+        "balanceAfter": 6
+      },
+      {
+        "id": "led_1",
+        "at": "2026-03-12T09:16:00+05:30",
+        "dateLabel": "12 Mar",
+        "type": "join",
+        "description": "Joined Fillo+",
+        "orderId": null,
+        "coins": 0,
+        "balanceAfter": 0
+      }
+    ],
+    "ledgerNote": "Entries are newest first. balanceAfter is a running total read bottom-up: 0, 6, 15, 21, 27, 2, 8, 18. A redemption can only fire at a balance of 25 or more, so the mock must never render a negative balance.",
+    "emptyCopy": "No coins yet. They land the moment an order is delivered, not when you pay."
+  },
+  "vanState": {
+    "asOf": "2026-10-03T16:05:00+05:30",
+    "status": "live",
+    "statusLabel": "LIVE",
+    "lastPingSecondsAgo": 9,
+    "lastPingLabel": "updated 9s ago",
+    "refreshIntervalSeconds": 15,
+    "interpolationNote": "Position is tweened across the full 15s interval. A raw hop looks fake and destroys the credibility the page exists to earn.",
+    "routeId": "route_indiranagar",
+    "routeName": "The Indiranagar run",
+    "routeSlug": "indiranagar",
+    "currentWard": "K.S. Nissar Ahmed Ward",
+    "position": {
+      "lat": 12.9612,
+      "lng": 77.6387,
+      "snappedToRoute": true,
+      "precisionMetres": 50
+    },
+    "positionNote": "Snapped to route, rounded to ~50m, served only between route_start and route_end. No historical trail is ever exposed.",
+    "stopsAwayFromCustomer": 2,
+    "headline": "2 stops away.",
+    "etaBand": {
+      "start": "16:40",
+      "end": "16:50",
+      "label": "Around 4:40 to 4:50"
+    },
+    "etaNote": "Always a band, never a minute count. It widens in traffic and caps at 'Around 20+ min'.",
+    "waitAtStopMinutes": null,
+    "waitAtStopTbc": "10 assumed, TBC",
+    "stops": [
+      {
+        "id": "stop_oar_1",
+        "name": "Old Airport Road",
+        "state": "done",
+        "stateLabel": "done",
+        "at": "2026-10-03T15:32:00+05:30",
+        "atLabel": "3:32",
+        "row": "Old Airport Road · 3:32"
+      },
+      {
+        "id": "stop_dom_1",
+        "name": "Domlur, 1st Stage",
+        "state": "current",
+        "stateLabel": "here now",
+        "at": "2026-10-03T15:58:00+05:30",
+        "row": "Domlur, 1st Stage · here now, till about 4:15"
+      },
+      {
+        "id": "stop_ind_2",
+        "name": "Indiranagar, CMH Road",
+        "state": "upcoming",
+        "stateLabel": "next",
+        "at": null,
+        "etaBandLabel": "around 4:20–4:35",
+        "row": "Indiranagar, CMH Road · around 4:20–4:35"
+      },
+      {
+        "id": "stop_ind_1",
+        "name": "Indiranagar, 12th Main",
+        "state": "upcoming",
+        "stateLabel": "",
+        "at": null,
+        "etaBandLabel": "around 4:40–5:10",
+        "row": "Indiranagar, 12th Main · around 4:40–5:10"
+      }
+    ],
+    "stopStatesReference": [
+      "done",
+      "current",
+      "upcoming",
+      "sold_out"
+    ],
+    "soldOutStopExample": {
+      "id": "stop_ban_2",
+      "name": "Banaswadi, Kammanahalli Main Road",
+      "state": "sold_out",
+      "row": "Banaswadi, Kammanahalli Main Road · sold out 5:52",
+      "note": "Struck through and muted. Shown as honesty, never hidden."
+    },
+    "bakeStrip": [
+      {
+        "step": "mixed",
+        "label": "Mixed",
+        "done": true,
+        "at": "2026-10-03T04:10:00+05:30",
+        "atLabel": "4:10"
+      },
+      {
+        "step": "proofed",
+        "label": "Proofed",
+        "done": true,
+        "at": "2026-10-03T08:30:00+05:30",
+        "atLabel": "8:30"
+      },
+      {
+        "step": "baked",
+        "label": "Baked",
+        "done": true,
+        "at": "2026-10-03T05:40:00+05:30",
+        "atLabel": "5:40"
+      },
+      {
+        "step": "loading",
+        "label": "Loading",
+        "done": true,
+        "at": "2026-10-03T14:50:00+05:30",
+        "atLabel": "2:50"
+      }
+    ],
+    "bakeStripNote": "Real kitchen timestamps only. A fabricated bake strip is worse than no bake strip. Hidden entirely in the off-air state.",
+    "activityFeed": [
+      {
+        "at": "2026-10-03T15:58:00+05:30",
+        "atLabel": "3:58",
+        "text": "Arrived at Domlur, 1st Stage"
+      },
+      {
+        "at": "2026-10-03T15:32:00+05:30",
+        "atLabel": "3:32",
+        "text": "Left Old Airport Road"
+      },
+      {
+        "at": "2026-10-03T15:20:00+05:30",
+        "atLabel": "3:20",
+        "text": "Arrived at Old Airport Road"
+      },
+      {
+        "at": "2026-10-03T14:50:00+05:30",
+        "atLabel": "2:50",
+        "text": "Loaded and rolling"
+      },
+      {
+        "at": "2026-10-03T05:40:00+05:30",
+        "atLabel": "5:40",
+        "text": "Out of the oven"
+      }
+    ],
+    "activityFeedNote": "Auto-generated from route events. Never hand-typed.",
+    "onBoard": [
+      {
+        "slug": "milk-shokupan",
+        "name": "Milk Shokupan",
+        "left": 12,
+        "state": "in_stock",
+        "label": "12 left"
+      },
+      {
+        "slug": "custard-an-pan",
+        "name": "Custard An Pan",
+        "left": 8,
+        "state": "in_stock",
+        "label": "8 left"
+      },
+      {
+        "slug": "bangalore-bloom",
+        "name": "Bangalore Bloom",
+        "left": 3,
+        "state": "low_stock",
+        "label": "3 left"
+      },
+      {
+        "slug": "seoul-spice",
+        "name": "Seoul Spice",
+        "left": 0,
+        "state": "sold_out",
+        "label": "Gone for this week"
+      }
+    ],
+    "ovenCapacity": null,
+    "ovenCapacityTbc": "TBC - do not publish a cap the kitchen cannot honour",
+    "stampCard": {
+      "slots": 6,
+      "earned": 0,
+      "enabled": false,
+      "note": "Build the layout, ship it empty or flagged off. No leaderboard, ever."
+    },
+    "alternateStates": {
+      "off_air": {
+        "status": "off_air",
+        "statusLabel": "OFF AIR · back Saturday",
+        "headline": "The ovens are cold. The plan isn't.",
+        "arrivalLine": "Rolls out Saturday, 4:30pm",
+        "bakeStripHidden": true,
+        "week": [
+          {
+            "day": "Saturday",
+            "route": "The Indiranagar run",
+            "from": "3:20pm"
+          },
+          {
+            "day": "Sunday",
+            "route": "The HSR run",
+            "from": "12:00pm"
+          }
+        ],
+        "cta": "Tell me when the van's out"
+      },
+      "stale": {
+        "status": "stale",
+        "statusLabel": "LAST SEEN 4:32",
+        "thresholdSeconds": 90,
+        "headline": "2 stops away.",
+        "arrivalLine": "Last seen 2 min ago",
+        "markerOpacity": 0.6,
+        "note": "Over 90 seconds without a fix. The band is replaced, the marker fades, the schedule stays fully readable."
+      },
+      "off_route": {
+        "status": "off_route",
+        "headline": "Between stops",
+        "positionSuppressed": true,
+        "note": "Deviation from the route suppresses the published position entirely."
+      },
+      "go_dark": {
+        "status": "go_dark",
+        "statusLabel": "OFF THE MAP",
+        "headline": "Van's off the map for a bit — back shortly.",
+        "note": "Driver-controlled kill switch in the cab. The schedule and the on-board list stay visible."
+      },
+      "map_failed": {
+        "status": "live",
+        "mapFailed": true,
+        "note": "Lite mode renders automatically. Every number must be readable with the map layer completely failed."
+      },
+      "no_run_today": {
+        "status": "off_air",
+        "headline": "No run today. Saturday as normal."
+      },
+      "route_cancelled": {
+        "status": "off_air",
+        "headline": "No run today — the van's in the garage. Saturday as normal."
+      },
+      "off_hours": {
+        "status": "off_hours",
+        "statusLabel": "RESTING",
+        "headline": "The van rests between 7pm and 10am.",
+        "sub": "Next run: Saturday."
+      }
+    },
+    "strip": {
+      "live_near_you": "The van is 2 stops from Indiranagar · around 4:40–4:50",
+      "live_elsewhere": "The van is out — Koramangala today",
+      "off_air": "Next run: Saturday, Indiranagar, from 3:20pm"
+    },
+    "notifyMe": {
+      "triggers": [
+        "leaves_the_kitchen",
+        "two_stops_away",
+        "arrives"
+      ],
+      "default": "two_stops_away",
+      "copy": {
+        "heading": "Tell me when the van is near.",
+        "cta": "Get the nudge on WhatsApp",
+        "altCta": "Or get a browser alert",
+        "altCtaHiddenOn": "iOS Safari tabs",
+        "footnote": "No app, no location permission. We watch the van, not you. At most one message a day.",
+        "success": "Done. We'll ping you Saturday.",
+        "already": "You're set for Indiranagar. Change it",
+        "error": "Couldn't save that. Try again, or WhatsApp us."
+      },
+      "note": "Never fires an OS permission prompt on tap. Appears on a second visit or ~20s dwell, not first paint. Geofences run server-side against the van."
+    }
+  },
+  "routes": [
+    {
+      "id": "route_indiranagar",
+      "name": "The Indiranagar run",
+      "slug": "indiranagar",
+      "areas": [
+        "Domlur",
+        "Indiranagar"
+      ],
+      "runDays": [
+        "saturday"
+      ],
+      "runDaysLabel": "Saturdays",
+      "cadenceLabel": "Once a week",
+      "firstStopAt": "15:20",
+      "cutoffLabel": "Order by Thursday 8pm for Saturday's run",
+      "stops": [
+        {
+          "id": "stop_oar_1",
+          "name": "Old Airport Road",
+          "descriptor": "by the Diamond District gate",
+          "area": "Domlur",
+          "pincode": "560017",
+          "band": "15:20-15:40",
+          "bandLabel": "3:20–3:40 PM"
+        },
+        {
+          "id": "stop_dom_1",
+          "name": "Domlur, 1st Stage",
+          "descriptor": "by the park gate",
+          "area": "Domlur",
+          "pincode": "560071",
+          "band": "15:55-16:15",
+          "bandLabel": "3:55–4:15 PM"
+        },
+        {
+          "id": "stop_ind_2",
+          "name": "Indiranagar, CMH Road",
+          "descriptor": "outside the old post office",
+          "area": "Indiranagar",
+          "pincode": "560038",
+          "band": "16:20-16:35",
+          "bandLabel": "4:20–4:35 PM"
+        },
+        {
+          "id": "stop_ind_1",
+          "name": "Indiranagar, 12th Main",
+          "descriptor": "opposite the Nandini booth",
+          "area": "Indiranagar",
+          "pincode": "560038",
+          "band": "16:40-17:10",
+          "bandLabel": "4:40–5:10 PM"
+        }
+      ]
+    },
+    {
+      "id": "route_koramangala",
+      "name": "The Koramangala run",
+      "slug": "koramangala",
+      "areas": [
+        "Koramangala",
+        "Ejipura"
+      ],
+      "runDays": [
+        "thursday",
+        "saturday"
+      ],
+      "runDaysLabel": "Thursdays and Saturdays",
+      "cadenceLabel": "Twice a week",
+      "firstStopAt": "16:00",
+      "cutoffLabel": "Order by 8pm the evening before",
+      "stops": [
+        {
+          "id": "stop_kor_1",
+          "name": "Koramangala, 5th Block",
+          "descriptor": "next to the Jyoti Nivas gate",
+          "area": "Koramangala",
+          "pincode": "560095",
+          "band": "16:00-16:30",
+          "bandLabel": "4:00–4:30 PM"
+        },
+        {
+          "id": "stop_kor_2",
+          "name": "Koramangala, 6th Block",
+          "descriptor": "opposite the water tank",
+          "area": "Koramangala",
+          "pincode": "560095",
+          "band": "16:45-17:15",
+          "bandLabel": "4:45–5:15 PM"
+        },
+        {
+          "id": "stop_eji_1",
+          "name": "Ejipura Main Road",
+          "descriptor": "beside the bus shelter",
+          "area": "Ejipura",
+          "pincode": "560047",
+          "band": "17:30-18:00",
+          "bandLabel": "5:30–6:00 PM"
+        }
+      ]
+    },
+    {
+      "id": "route_banaswadi",
+      "name": "The Banaswadi round",
+      "slug": "banaswadi",
+      "areas": [
+        "Banaswadi",
+        "Kalyan Nagar",
+        "Ramamurthy Nagar"
+      ],
+      "runDays": [
+        "monday",
+        "wednesday",
+        "friday"
+      ],
+      "runDaysLabel": "Mondays, Wednesdays and Fridays",
+      "cadenceLabel": "Three times a week",
+      "firstStopAt": "16:40",
+      "cutoffLabel": "Order by 8pm the evening before",
+      "stops": [
+        {
+          "id": "stop_ban_1",
+          "name": "Banaswadi, Ramamurthy Nagar",
+          "descriptor": "at the Nandini booth corner",
+          "area": "Ramamurthy Nagar",
+          "pincode": "560043",
+          "band": "16:40-17:10",
+          "bandLabel": "4:40–5:10 PM"
+        },
+        {
+          "id": "stop_ban_2",
+          "name": "Banaswadi, Kammanahalli Main Road",
+          "descriptor": "outside the pharmacy",
+          "area": "Banaswadi",
+          "pincode": "560043",
+          "band": "17:20-17:50",
+          "bandLabel": "5:20–5:50 PM"
+        },
+        {
+          "id": "stop_kal_1",
+          "name": "Kalyan Nagar, HRBR Layout",
+          "descriptor": "by the second-block park",
+          "area": "Kalyan Nagar",
+          "pincode": "560043",
+          "band": "18:00-18:30",
+          "bandLabel": "6:00–6:30 PM"
+        }
+      ]
+    },
+    {
+      "id": "route_hsr",
+      "name": "The HSR run",
+      "slug": "hsr-layout",
+      "areas": [
+        "HSR Layout",
+        "BTM Layout"
+      ],
+      "runDays": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday"
+      ],
+      "runDaysLabel": "Every day",
+      "cadenceLabel": "Daily",
+      "firstStopAt": "12:00",
+      "cutoffLabel": "Order by 8pm for tomorrow's run",
+      "stops": [
+        {
+          "id": "stop_hsr_1",
+          "name": "HSR Layout, Sector 2",
+          "descriptor": "opposite the BDA complex",
+          "area": "HSR Layout",
+          "pincode": "560102",
+          "band": "12:00-12:30",
+          "bandLabel": "12:00–12:30 PM"
+        },
+        {
+          "id": "stop_hsr_2",
+          "name": "HSR Layout, 27th Main",
+          "descriptor": "beside the corner bakery",
+          "area": "HSR Layout",
+          "pincode": "560102",
+          "band": "12:45-13:15",
+          "bandLabel": "12:45–1:15 PM"
+        },
+        {
+          "id": "stop_btm_1",
+          "name": "BTM Layout, 2nd Stage",
+          "descriptor": "at the lake gate",
+          "area": "BTM Layout",
+          "pincode": "560076",
+          "band": "13:30-14:00",
+          "bandLabel": "1:30–2:00 PM"
+        }
+      ]
+    }
+  ],
+  "routesNote": "FIXTURES. Route names, run days, stops and descriptors are invented for the mock. The only route string that exists anywhere in the real site is 'K.S. Nissar Ahmed Ward', from the tracker modal. Founders must supply the real week before any of this is published. One route is deliberately daily and one three-times-weekly, so the mock exercises per-route cadence rather than assuming a single weekly drop.",
+  "areas": [
+    {
+      "slug": "banaswadi",
+      "name": "Banaswadi",
+      "pincode": "560043",
+      "serviceability": "served",
+      "routeId": "route_banaswadi",
+      "runDaysLabel": "Mondays, Wednesdays and Fridays",
+      "lanes": [
+        "catch_the_van",
+        "home_delivery"
+      ],
+      "deliveryFee": 49,
+      "freeOver": 499,
+      "windows": [
+        "12:00-14:00",
+        "14:00-16:00",
+        "16:00-18:00",
+        "18:00-20:00"
+      ],
+      "nextRun": "2026-09-28",
+      "nextRunLabel": "Monday 28 September",
+      "chipLabel": "Banaswadi · Mon 4–6pm · ₹49",
+      "answer": "Yes. The van runs Banaswadi on Mondays, Wednesdays and Fridays."
+    },
+    {
+      "slug": "indiranagar",
+      "name": "Indiranagar",
+      "pincode": "560038",
+      "serviceability": "served",
+      "routeId": "route_indiranagar",
+      "runDaysLabel": "Saturdays",
+      "lanes": [
+        "catch_the_van",
+        "home_delivery"
+      ],
+      "deliveryFee": 49,
+      "freeOver": 499,
+      "windows": [
+        "16:00-18:00",
+        "18:00-20:00"
+      ],
+      "nextRun": "2026-10-03",
+      "nextRunLabel": "Saturday 3 October",
+      "chipLabel": "Indiranagar · Sat 4–6pm · catch the van",
+      "answer": "Yes. The van runs Indiranagar on Saturdays."
+    },
+    {
+      "slug": "koramangala",
+      "name": "Koramangala",
+      "pincode": "560095",
+      "serviceability": "served",
+      "routeId": "route_koramangala",
+      "runDaysLabel": "Thursdays and Saturdays",
+      "lanes": [
+        "catch_the_van",
+        "home_delivery"
+      ],
+      "deliveryFee": 49,
+      "freeOver": 499,
+      "windows": [
+        "16:00-18:00",
+        "18:00-20:00"
+      ],
+      "nextRun": "2026-10-01",
+      "nextRunLabel": "Thursday 1 October",
+      "chipLabel": "Koramangala · Thu 4–6pm · ₹49",
+      "answer": "Yes. The van runs Koramangala on Thursdays and Saturdays."
+    },
+    {
+      "slug": "hsr-layout",
+      "name": "HSR Layout",
+      "pincode": "560102",
+      "serviceability": "catch_van_only",
+      "routeId": "route_hsr",
+      "runDaysLabel": "Every day",
+      "lanes": [
+        "catch_the_van"
+      ],
+      "deliveryFee": null,
+      "freeOver": null,
+      "windows": [],
+      "nextRun": "2026-09-27",
+      "nextRunLabel": "Sunday 27 September",
+      "chipLabel": "HSR Layout · daily · catch the van",
+      "answer": "The van stops in HSR Layout every day, but we don't deliver to doors here yet.",
+      "laneNote": "Catch-the-van only. The delivery lane card renders disabled with: 'Home delivery doesn't reach HSR Layout yet. Catch the van instead — it's free.'"
+    },
+    {
+      "slug": "whitefield",
+      "name": "Whitefield",
+      "pincode": "560066",
+      "serviceability": "not_yet",
+      "routeId": null,
+      "runDaysLabel": null,
+      "lanes": [],
+      "deliveryFee": null,
+      "freeOver": null,
+      "windows": [],
+      "nextRun": null,
+      "chipLabel": "Whitefield · not yet",
+      "answer": "The van hasn't reached Whitefield yet.",
+      "waitlist": {
+        "requests": 23,
+        "position": 23,
+        "threshold": null,
+        "thresholdTbc": "40 assumed, TBC",
+        "copy": "You're #23 in Whitefield. At [TBC] requests we add the route."
+      }
+    },
+    {
+      "slug": "jayanagar",
+      "name": "Jayanagar",
+      "pincode": "560041",
+      "serviceability": "not_yet",
+      "routeId": null,
+      "runDaysLabel": null,
+      "lanes": [],
+      "deliveryFee": null,
+      "freeOver": null,
+      "windows": [],
+      "nextRun": null,
+      "chipLabel": "Jayanagar · not yet",
+      "answer": "The van hasn't reached Jayanagar yet.",
+      "waitlist": {
+        "requests": 17,
+        "position": 17,
+        "threshold": null,
+        "thresholdTbc": "40 assumed, TBC",
+        "copy": "You're #17 in Jayanagar. At [TBC] requests we add the route."
+      }
+    }
+  ],
+  "areasNote": "Six areas covering the four serviceability states the UI must render: served with both lanes, served with a limited window set, catch-van-only, and not-yet with a waitlist counter. A fifth state, 'served but no run this week', is expressed by setting nextRun beyond the current week on a served area.",
+  "boxes": [
+    {
+      "id": "box_sunday_table",
+      "slug": "the-sunday-table",
+      "name": "The Sunday Table",
+      "type": "curated",
+      "contents": [
+        {
+          "slug": "milk-shokupan",
+          "qty": 1
+        },
+        {
+          "slug": "custard-an-pan",
+          "qty": 1
+        },
+        {
+          "slug": "bangalore-bloom",
+          "qty": 1
+        },
+        {
+          "slug": "orchard-melt",
+          "qty": 1
+        }
+      ],
+      "listValue": 587,
+      "price": 499,
+      "priceConfidence": "Est. - derived from retail, not founder-set",
+      "savingLabel": "You save ₹88",
+      "line": "A loaf and three bakes, chosen for you. Feeds a table of four at breakfast.",
+      "image": null,
+      "imageNote": "Does not exist. Needs a flat-lay of real contents."
+    },
+    {
+      "id": "box_sweet_half_dozen",
+      "slug": "the-sweet-half-dozen",
+      "name": "The Sweet Half Dozen",
+      "type": "curated",
+      "contents": [
+        {
+          "slug": "custard-an-pan",
+          "qty": 1
+        },
+        {
+          "slug": "choco-an-pan",
+          "qty": 1
+        },
+        {
+          "slug": "pistachio-an-pan",
+          "qty": 1
+        },
+        {
+          "slug": "strawberry-an-pan",
+          "qty": 1
+        },
+        {
+          "slug": "tiramisu-an-pan",
+          "qty": 1
+        },
+        {
+          "slug": "cookie-n-cream-an-pan",
+          "qty": 1
+        }
+      ],
+      "listValue": 1044,
+      "price": 949,
+      "priceConfidence": "Est.",
+      "savingLabel": "You save ₹95",
+      "line": "Six filled buns, no two the same. The one people send as a gift.",
+      "allergenFlag": "Contains tree nuts (pistachio).",
+      "image": null
+    },
+    {
+      "id": "box_savoury_run",
+      "slug": "the-savoury-run",
+      "name": "The Savoury Run",
+      "type": "curated",
+      "contents": [
+        {
+          "slug": "seoul-spice",
+          "qty": 1
+        },
+        {
+          "slug": "tex-mex-zest",
+          "qty": 1
+        },
+        {
+          "slug": "kyoto-curry",
+          "qty": 1
+        },
+        {
+          "slug": "calcutta-blaze",
+          "qty": 1
+        },
+        {
+          "slug": "umami-melt",
+          "qty": 1
+        },
+        {
+          "slug": "korean-whisper",
+          "qty": 1
+        }
+      ],
+      "listValue": 834,
+      "price": 749,
+      "priceConfidence": "Est.",
+      "savingLabel": "You save ₹85",
+      "line": "Six savoury bakes across the menu. Lunchboxes for the week.",
+      "image": null
+    },
+    {
+      "id": "box_build_your_own",
+      "slug": "build-your-own",
+      "name": "Build your own",
+      "type": "builder",
+      "slots": 6,
+      "pricing": "sum_of_items_minus_10_percent",
+      "pricingNote": "Est. - the 10% builder discount is our design, TBC",
+      "line": "Pick six. Mix anything.",
+      "states": {
+        "empty": "Nothing picked yet. Tap a slot.",
+        "partial": "4 of 6 · ₹636 so far",
+        "twoLeft": "Two more and the box is done.",
+        "complete": "6 of 6 · ₹949 · you saved ₹85",
+        "itemOffRoute": "The Blue Pea isn't on Saturday's run. Pick another, or switch to Sunday.",
+        "itemSoldOut": "Gone for this week."
+      }
+    }
+  ],
+  "giftCards": {
+    "denominations": [
+      500,
+      1000,
+      2000
+    ],
+    "customAllowed": true,
+    "expiry": null,
+    "expiryTbc": "TBC - confirm whether cards expire. If they do, say so on the page, not in the terms.",
+    "deliveryChannel": "whatsapp",
+    "bought": [
+      {
+        "code": "FILLO-7K2M-9QX4",
+        "amount": 1000,
+        "balance": 1000,
+        "recipientName": "Anjali",
+        "recipientPhone": "+919845012345",
+        "deliverOn": "2026-10-10",
+        "status": "scheduled",
+        "statusLabel": "Scheduled",
+        "message": "Happy birthday. Eat the loaf warm.",
+        "purchasedAt": "2026-09-20T11:02:00+05:30"
+      },
+      {
+        "code": "FILLO-3B8T-1LM7",
+        "amount": 500,
+        "balance": 0,
+        "recipientName": "Rahul",
+        "recipientPhone": "+919845067890",
+        "deliverOn": "2026-08-14",
+        "status": "fully_used",
+        "statusLabel": "Fully used",
+        "message": "Thanks for the help with the move.",
+        "purchasedAt": "2026-08-12T09:30:00+05:30"
+      }
+    ],
+    "received": [
+      {
+        "code": "FILLO-5N1P-6RJ2",
+        "amount": 500,
+        "balance": 150,
+        "fromName": "Sneha",
+        "status": "partly_used",
+        "statusLabel": "Partly used",
+        "balanceLabel": "₹150 left of ₹500",
+        "receivedAt": "2026-07-02T10:15:00+05:30"
+      }
+    ],
+    "states": {
+      "emptyBought": "You haven't sent any yet.",
+      "emptyReceived": "Nothing here. If someone sends you one, it lands on this page.",
+      "added": "Added. ₹500 sits on your account and comes off your next order automatically.",
+      "invalid": "That code doesn't match anything. Check it and try again.",
+      "spent": "That card's been spent. Nothing left on it.",
+      "soldOutCrossSell": "Gone for this week. Send a gift card instead?"
+    }
+  },
+  "cutoffClock": {
+    "rule": "20:00 the evening before a run",
+    "ruleTbc": true,
+    "pattern": "Order by [day] 8pm for [day]'s [route] run",
+    "copy": {
+      "open": "Order by Thursday 8pm for Saturday's Indiranagar run",
+      "openNoArea": "Order by 8pm the evening before for the next run",
+      "soon": "Orders close in 6 hours for Saturday's run",
+      "veryClose": "Orders close in 2h 14m for Saturday's run",
+      "closedToday": "Today is closed. Orders shut at 8pm the evening before a run.",
+      "betweenRuns": "Next bake: Saturday. Orders open Sunday 9am.",
+      "passedMidFlow": "Saturday's run just closed. Move to Sunday?",
+      "outOfArea": "We're not on your street yet — tell us where you are"
+    },
+    "note": "This countdown is allowed because it renders a published fact — the 8pm cutoff — not invented urgency. No other countdown may appear anywhere on the site."
+  },
+  "cartReservation": {
+    "holdMinutes": 10,
+    "holdMinutesTbc": "10 assumed, TBC - must match the real inventory hold",
+    "copy": {
+      "running": "Held for 6:42",
+      "expiringSoon": "Your hold expires in 40 seconds.",
+      "expired": "Your hold ran out and someone else took the last one. It's back in the shop if it's still there.",
+      "notHeld": "Nothing is held until you check out.",
+      "itemSoldOutInCart": "We sold the last one while you were deciding. Remove it, or swap for the Custard An Pan.",
+      "itemOffRoute": "The Blue Pea isn't on Saturday's run. Switch to Sunday, or take it off."
+    },
+    "note": "An honest timer, wired to a real inventory hold. If the build does not actually reserve stock, this timer must not render."
+  },
+  "areaChip": {
+    "current": {
+      "state": "van_lane_set",
+      "label": "Indiranagar · Sat 4–6pm · catch the van"
+    },
+    "states": [
+      {
+        "state": "unset",
+        "label": "Set your area",
+        "tone": "amber-outline"
+      },
+      {
+        "state": "van_lane_set",
+        "label": "Indiranagar · Sat 4–6pm · catch the van",
+        "tone": "default"
+      },
+      {
+        "state": "delivery_lane_set",
+        "label": "Banaswadi · Sat 4–6pm · ₹49",
+        "tone": "default"
+      },
+      {
+        "state": "no_run_this_week",
+        "label": "Banaswadi · no run this week",
+        "tone": "muted"
+      },
+      {
+        "state": "out_of_area",
+        "label": "Whitefield · not yet",
+        "tone": "amber"
+      }
+    ],
+    "note": "The chip holds three facts: place, mode, next slot. It is the single source of truth for every location-dependent answer on the site."
+  },
+  "lanes": [
+    {
+      "id": "catch_the_van",
+      "label": "Catch the van",
+      "price": 0,
+      "priceLabel": "Free",
+      "line": "Meet the van at a stop near you. We hold your order on board.",
+      "skipsAddressBlock": true
+    },
+    {
+      "id": "home_delivery",
+      "label": "Home delivery",
+      "price": 49,
+      "priceLabel": "₹49",
+      "freeOver": 499,
+      "freeOverLabel": "Free over ₹499",
+      "priceTbc": "₹49 and ₹499 both TBC per DECISIONS v2",
+      "line": "To your door, in a two-hour window you choose.",
+      "skipsAddressBlock": false
+    }
+  ],
+  "alertPreferences": {
+    "customerId": "cus_8f21",
+    "channel": "whatsapp",
+    "number": "+918618906902",
+    "toggles": [
+      {
+        "key": "order_updates",
+        "label": "Order updates",
+        "helper": "Placed, baking, on the van, delivered. Four messages per order.",
+        "value": true,
+        "locked": true,
+        "lockedCopy": "We have to be able to tell you where your bread is."
+      },
+      {
+        "key": "van_near_me",
+        "label": "Van alerts",
+        "helper": "One nudge when we turn into your area. At most one a day.",
+        "value": true,
+        "locked": false
+      },
+      {
+        "key": "weekly_message",
+        "label": "The Sunday message",
+        "helper": "What we're baking, where the van will be, and a photo of whatever didn't rise properly.",
+        "value": false,
+        "locked": false
+      },
+      {
+        "key": "standing_order_preview",
+        "label": "Standing order preview",
+        "helper": "What's coming Saturday, sent Wednesday, with a skip button.",
+        "value": true,
+        "locked": false
+      },
+      {
+        "key": "back_in_stock",
+        "label": "When something's back",
+        "helper": "Only for the items you asked about. Nothing else.",
+        "value": false,
+        "locked": false
+      }
+    ],
+    "watchedForRestock": [
+      "seoul-spice"
+    ],
+    "channelOptions": [
+      "whatsapp",
+      "browser_push",
+      "email"
+    ],
+    "cap": "At most one van alert a day. Three messages a week, total.",
+    "vanAlerts": {
+      "stopId": "stop_ind_1",
+      "stopLabel": "Indiranagar, 12th Main",
+      "trigger": "two_stops_away",
+      "triggerOptions": [
+        "leaves_the_kitchen",
+        "two_stops_away",
+        "arrives"
+      ],
+      "triggerLabel": "when it's 2 stops away"
+    },
+    "pauseAll": {
+      "available": true,
+      "durationWeeks": 2,
+      "label": "Pause all alerts for 2 weeks"
+    }
+  },
+  "orderStatusReference": [
+    "confirmed",
+    "baking",
+    "loaded",
+    "out",
+    "delivered",
+    "collected",
+    "missed",
+    "cancelled",
+    "refunded",
+    "payment_pending",
+    "failed"
+  ],
+  "orderStates": {
+    "missed": {
+      "statusLabel": "Missed at the stop",
+      "copy": "We waited at Indiranagar till 6:10. Message us and we'll sort it."
+    },
+    "payment_pending": {
+      "statusLabel": "Payment pending",
+      "copy": "We're waiting on your bank. Nothing is confirmed yet."
+    },
+    "failed": {
+      "statusLabel": "Payment failed",
+      "copy": "Nothing was charged and your order wasn't booked.",
+      "cta": "Try again"
+    }
+  }
+}

@@ -1,0 +1,1094 @@
+<title>Fillo Bakes Rebuild Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Hanken+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+<style>
+  /* ============ TOKENS: light (from design/tokens.css, the project's system) ============ */
+  :root {
+    color-scheme: light;
+    --paper-0:   #FFFDF7;
+    --paper-50:  #FBF7EF;
+    --paper-100: #F4EEE3;
+    --paper-200: #EBE3D5;
+    --rule:      #DED4C2;
+    --rule-soft: #EBE3D5;
+    --ink-900:   #04212F;
+    --ink-800:   #023D5D;
+    --ink-700:   #0F4E70;
+    --ink-600:   #2E5F79;
+    --ink-500:   #4A7085;
+    --kiln:      #9E3B26;
+    --kiln-tint: #F2DED6;
+    --crumb-ink: #8A6210;
+    --ok:        #1F6B4A;
+    --warn:      #8F5A0B;
+    --bad:       #9E2A20;
+    --ok-tint:   #E1EFE7;
+    --warn-tint: #F6EAD5;
+    --bad-tint:  #F5E0DC;
+    --band-bg:   #04212F;
+    --band-fg:   #EFE7D4;
+    --band-dim:  #8AA5B4;
+    --band-accent:#E4A11B;
+    --shadow:    0 1px 2px rgba(4,33,47,.05);
+
+    --font-display: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+    --font-sans: "Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-mono: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+    --measure: 74ch;
+    --pad: clamp(1.15rem, 4vw, 3.5rem);
+  }
+
+  /* ============ TOKENS: dark ============ */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper-0:   #0B2B3A;
+      --paper-50:  #06222F;
+      --paper-100: #0D3143;
+      --paper-200: #123A4D;
+      --rule:      #1E4A60;
+      --rule-soft: #143648;
+      --ink-900:   #FBF3DE;
+      --ink-800:   #F1E7CE;
+      --ink-700:   #CFE0E9;
+      --ink-600:   #B7CCD8;
+      --ink-500:   #8FAABA;
+      --kiln:      #E08064;
+      --kiln-tint: #3A1D16;
+      --crumb-ink: #E4A11B;
+      --ok:        #6FC69B;
+      --warn:      #E0AC4A;
+      --bad:       #EC8C7E;
+      --ok-tint:   #10312A;
+      --warn-tint: #33270F;
+      --bad-tint:  #37201C;
+      --band-bg:   #0D3143;
+      --band-fg:   #FBF3DE;
+      --band-dim:  #8FAABA;
+      --band-accent:#E4A11B;
+      --shadow:    0 1px 2px rgba(0,0,0,.3);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper-0:   #0B2B3A;
+    --paper-50:  #06222F;
+    --paper-100: #0D3143;
+    --paper-200: #123A4D;
+    --rule:      #1E4A60;
+    --rule-soft: #143648;
+    --ink-900:   #FBF3DE;
+    --ink-800:   #F1E7CE;
+    --ink-700:   #CFE0E9;
+    --ink-600:   #B7CCD8;
+    --ink-500:   #8FAABA;
+    --kiln:      #E08064;
+    --kiln-tint: #3A1D16;
+    --crumb-ink: #E4A11B;
+    --ok:        #6FC69B;
+    --warn:      #E0AC4A;
+    --bad:       #EC8C7E;
+    --ok-tint:   #10312A;
+    --warn-tint: #33270F;
+    --bad-tint:  #37201C;
+    --band-bg:   #0D3143;
+    --band-fg:   #FBF3DE;
+    --band-dim:  #8FAABA;
+    --band-accent:#E4A11B;
+    --shadow:    0 1px 2px rgba(0,0,0,.3);
+  }
+
+  /* ============ BASE ============ */
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper-50);
+    color: var(--ink-600);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.62;
+    overflow-x: hidden;
+    font-synthesis-weight: none;
+  }
+  ::selection { background: var(--kiln); color: var(--paper-0); }
+  a { color: var(--ink-700); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+  a:focus-visible, [tabindex]:focus-visible {
+    outline: 2px solid var(--kiln); outline-offset: 3px; border-radius: 2px;
+  }
+  h1, h2, h3, h4 { color: var(--ink-800); text-wrap: balance; }
+
+  /* ============ SHELL ============ */
+  .shell {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 0 var(--pad) 6rem;
+  }
+  @media (min-width: 1060px) {
+    .shell { grid-template-columns: 200px minmax(0, 1fr); column-gap: clamp(2rem, 5vw, 5rem); }
+  }
+
+  /* ============ INDEX RAIL ============ */
+  .rail { display: none; }
+  @media (min-width: 1060px) {
+    .rail {
+      display: block;
+      grid-column: 1;
+      position: sticky;
+      top: 0;
+      align-self: start;
+      padding-top: 3.2rem;
+      max-height: 100vh;
+      overflow-y: auto;
+    }
+    .rail ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+    .rail li { border-top: 1px solid var(--rule-soft); }
+    .rail li:last-child { border-bottom: 1px solid var(--rule-soft); }
+    .rail a {
+      display: grid; grid-template-columns: 1.6rem 1fr; gap: .4rem;
+      padding: .5rem 0; text-decoration: none;
+      font-size: 12.5px; line-height: 1.3; color: var(--ink-500);
+    }
+    .rail a:hover { color: var(--kiln); }
+    .rail a span:first-child { font-family: var(--font-mono); font-size: 10.5px; padding-top: .12rem; }
+    .rail .rail-title {
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--ink-500); margin: 0 0 .7rem;
+    }
+  }
+
+  main { grid-column: 1; min-width: 0; }
+  @media (min-width: 1060px) { main { grid-column: 2; } }
+
+  /* ============ MASTHEAD ============ */
+  .masthead { padding: clamp(2.5rem, 6vw, 5rem) 0 0; }
+  .eyebrow {
+    font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--kiln); margin: 0 0 1.1rem;
+  }
+  .masthead h1 {
+    font-family: var(--font-display); font-weight: 400;
+    font-size: clamp(2.6rem, 1.4rem + 5.2vw, 5.4rem);
+    line-height: .96; letter-spacing: -.017em;
+    margin: 0 0 1.2rem; max-width: 16ch;
+  }
+  .standfirst {
+    font-size: clamp(1.05rem, 1rem + .25vw, 1.22rem);
+    line-height: 1.55; max-width: 56ch; color: var(--ink-600); margin: 0 0 2rem;
+  }
+  .meta-rail {
+    display: flex; flex-wrap: wrap; gap: 0 2.2rem;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+    padding: .85rem 0; margin-bottom: 3.5rem;
+  }
+  .meta-rail div { display: flex; flex-direction: column; gap: .1rem; padding: .35rem 0; }
+  .meta-rail dt, .meta-rail .k {
+    font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .13em;
+    text-transform: uppercase; color: var(--ink-500);
+  }
+  .meta-rail .v { font-size: 14px; color: var(--ink-800); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+  /* ============ SECTIONS ============ */
+  section { padding-top: clamp(2.8rem, 5vw, 4.5rem); scroll-margin-top: 1.5rem; }
+  .sec-head {
+    display: grid; grid-template-columns: 2.4rem 1fr; align-items: start;
+    gap: .6rem; border-top: 1px solid var(--ink-800); padding-top: .8rem; margin-bottom: 1.6rem;
+  }
+  .sec-num {
+    font-family: var(--font-mono); font-size: 11px; color: var(--kiln);
+    padding-top: .55rem; letter-spacing: .04em;
+  }
+  .sec-head h2 {
+    font-family: var(--font-display); font-weight: 400;
+    font-size: clamp(1.75rem, 1.35rem + 1.7vw, 2.85rem);
+    line-height: 1.06; letter-spacing: -.012em; margin: 0; max-width: 20ch;
+  }
+  .sec-head p.dek {
+    grid-column: 2; margin: .55rem 0 0; font-size: 15px; color: var(--ink-500); max-width: 62ch;
+  }
+  h3 {
+    font-family: var(--font-sans); font-weight: 600; font-size: 1.02rem;
+    letter-spacing: -.005em; margin: 2.4rem 0 .7rem;
+  }
+  h3.kicker {
+    font-family: var(--font-mono); font-weight: 500; font-size: 10.5px;
+    letter-spacing: .14em; text-transform: uppercase; color: var(--ink-500);
+    border-bottom: 1px solid var(--rule-soft); padding-bottom: .5rem; margin: 2.6rem 0 1.1rem;
+  }
+  p { max-width: var(--measure); margin: 0 0 1.05em; }
+  .lede { font-size: 1.06rem; color: var(--ink-700); }
+  strong { color: var(--ink-800); font-weight: 600; }
+  em.note { color: var(--ink-500); font-style: italic; }
+
+  ul, ol { max-width: var(--measure); padding-left: 1.15rem; margin: 0 0 1.2em; }
+  li { margin-bottom: .45em; }
+  li::marker { color: var(--ink-500); }
+
+  /* ============ TABLES ============ */
+  .tw {
+    overflow-x: auto; margin: 1.2rem 0 1.8rem;
+    border-top: 1px solid var(--ink-800); border-bottom: 1px solid var(--rule);
+    -webkit-overflow-scrolling: touch;
+  }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; line-height: 1.45; }
+  .tw--wide table { min-width: 1040px; }
+  .tw--mid table { min-width: 720px; }
+  th {
+    text-align: left; vertical-align: bottom; padding: .7rem .85rem .55rem 0;
+    font-family: var(--font-mono); font-weight: 500; font-size: 9.5px;
+    letter-spacing: .11em; text-transform: uppercase; color: var(--ink-500);
+    border-bottom: 1px solid var(--rule); white-space: nowrap;
+  }
+  td {
+    padding: .72rem .85rem .72rem 0; vertical-align: top;
+    border-bottom: 1px solid var(--rule-soft); color: var(--ink-600);
+  }
+  tr:last-child td { border-bottom: none; }
+  td:first-child, th:first-child { padding-left: 0; }
+  td.who { color: var(--ink-800); font-weight: 600; white-space: nowrap; }
+  td.num, th.num { font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+  .tw caption {
+    caption-side: bottom; text-align: left; font-size: 12px; color: var(--ink-500);
+    padding: .7rem 0 0; max-width: 70ch;
+  }
+  .scroll-hint {
+    font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .11em;
+    text-transform: uppercase; color: var(--ink-500); margin: -.4rem 0 .3rem;
+  }
+  @media (min-width: 1560px) { .scroll-hint { display: none; } }
+
+  /* ============ CHIPS ============ */
+  .chip {
+    display: inline-block; font-family: var(--font-mono); font-size: 9.5px;
+    letter-spacing: .1em; text-transform: uppercase; padding: .16rem .42rem;
+    border: 1px solid currentColor; border-radius: 3px; white-space: nowrap;
+    line-height: 1.4; vertical-align: 1px;
+  }
+  .chip--s { color: var(--ok); }
+  .chip--m { color: var(--warn); }
+  .chip--l { color: var(--bad); }
+  .chip--p0 { color: var(--bad); background: var(--bad-tint); border-color: transparent; font-weight: 500; }
+  .chip--p1 { color: var(--warn); background: var(--warn-tint); border-color: transparent; font-weight: 500; }
+  .chip--p2 { color: var(--ok); background: var(--ok-tint); border-color: transparent; font-weight: 500; }
+  .chip--agree { color: var(--ok); }
+  .chip--refine { color: var(--warn); }
+  .chip--dis { color: var(--bad); }
+
+  /* ============ CALLOUT ============ */
+  .callout {
+    border-left: 2px solid var(--kiln); padding: .1rem 0 .1rem 1.1rem;
+    margin: 1.6rem 0; max-width: 66ch;
+  }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout .label {
+    font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .13em;
+    text-transform: uppercase; color: var(--kiln); display: block; margin-bottom: .35rem;
+  }
+
+  /* ============ DARK BAND ============ */
+  .band {
+    background: var(--band-bg); color: var(--band-fg);
+    margin: 3.5rem calc(var(--pad) * -1) 1rem;
+    padding: clamp(2rem, 4vw, 3.2rem) var(--pad);
+    border-radius: 4px;
+  }
+  @media (min-width: 1060px) { .band { margin-left: 0; margin-right: 0; padding-left: clamp(1.6rem,3vw,2.6rem); padding-right: clamp(1.6rem,3vw,2.6rem); } }
+  .band .label {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--band-accent); margin: 0 0 1.2rem;
+  }
+  .band h2 {
+    font-family: var(--font-display); font-weight: 400; color: var(--band-fg);
+    font-size: clamp(1.7rem, 1.3rem + 1.7vw, 2.6rem); line-height: 1.05;
+    margin: 0 0 1.6rem; max-width: 20ch;
+  }
+  .band ol { counter-reset: b; list-style: none; padding: 0; max-width: 100%;
+    display: grid; gap: .1rem; grid-template-columns: 1fr; }
+  @media (min-width: 720px) { .band ol { grid-template-columns: 1fr 1fr; column-gap: 2.5rem; } }
+  .band li {
+    counter-increment: b; display: grid; grid-template-columns: 1.9rem 1fr;
+    gap: .3rem; padding: .7rem 0; border-top: 1px solid rgba(138,165,180,.28);
+    color: var(--band-fg); font-size: 14.5px; line-height: 1.45; margin: 0;
+  }
+  .band li::before {
+    content: counter(b, decimal-leading-zero);
+    font-family: var(--font-mono); font-size: 10.5px; color: var(--band-accent);
+    padding-top: .28rem;
+  }
+
+  /* ============ DIAGRAM ============ */
+  .figure { margin: 1.8rem 0 2.2rem; }
+  .figure-scroll { overflow-x: auto; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper-0); }
+  .figure svg { display: block; min-width: 760px; width: 100%; height: auto; }
+  figcaption { font-size: 12.5px; color: var(--ink-500); margin-top: .7rem; max-width: 68ch; }
+  .d-lane { fill: var(--paper-100); }
+  .d-box { fill: var(--paper-0); stroke: var(--rule); stroke-width: 1; }
+  .d-box-key { fill: var(--kiln-tint); stroke: var(--kiln); stroke-width: 1; }
+  .d-t { font-family: var(--font-sans); font-size: 11.5px; font-weight: 500; fill: var(--ink-800); }
+  .d-s { font-family: var(--font-mono); font-size: 8.5px; letter-spacing: .09em; fill: var(--ink-500); text-transform: uppercase; }
+  .d-lane-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: .14em; fill: var(--kiln); }
+  .d-arrow { stroke: var(--ink-500); stroke-width: 1; fill: none; }
+  .d-num { font-family: var(--font-mono); font-size: 8.5px; fill: var(--kiln); }
+
+  /* ============ ROUTE MAP ============ */
+  .routes { display: grid; gap: 1.6rem; grid-template-columns: 1fr; margin: 1.4rem 0 1rem; }
+  @media (min-width: 620px) { .routes { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 1000px) { .routes { grid-template-columns: repeat(3, 1fr); } }
+  .routes section, .rgroup { padding: 0; }
+  .rgroup h4 {
+    font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .13em;
+    text-transform: uppercase; color: var(--kiln); margin: 0 0 .6rem;
+    border-bottom: 1px solid var(--rule); padding-bottom: .4rem;
+  }
+  .rgroup ul { list-style: none; padding: 0; margin: 0; }
+  .rgroup li {
+    font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-600);
+    padding: .22rem 0; margin: 0; line-height: 1.4; word-break: break-word;
+  }
+  .rgroup li b { color: var(--ink-800); font-weight: 500; }
+  .rgroup li i { font-style: normal; color: var(--ink-500); font-family: var(--font-sans); font-size: 11.5px; }
+
+  /* ============ FOOTER ============ */
+  footer {
+    margin-top: 4rem; border-top: 1px solid var(--ink-800); padding-top: 1.1rem;
+    font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .07em;
+    color: var(--ink-500); display: flex; flex-wrap: wrap; gap: .4rem 2rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  }
+  html { scroll-behavior: smooth; }
+</style>
+
+<div class="shell">
+
+  <nav class="rail" aria-label="Contents">
+    <p class="rail-title">Contents</p>
+    <ol>
+      <li><a href="#s1"><span>01</span><span>Where the site is losing money</span></a></li>
+      <li><a href="#s2"><span>02</span><span>Competitor landscape</span></a></li>
+      <li><a href="#s3"><span>03</span><span>What to add, in order</span></a></li>
+      <li><a href="#s4"><span>04</span><span>The recommended journey</span></a></li>
+      <li><a href="#s5"><span>05</span><span>The van tracker</span></a></li>
+      <li><a href="#s6"><span>06</span><span>Fillo+ and The Standing Order</span></a></li>
+      <li><a href="#s7"><span>07</span><span>Decisions against prior research</span></a></li>
+      <li><a href="#s8"><span>08</span><span>Open questions for you</span></a></li>
+      <li><a href="#s9"><span>09</span><span>Page map and what is mocked</span></a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <header class="masthead">
+      <p class="eyebrow">Fillo Bakes &middot; rebuild research &middot; 3 September 2026</p>
+      <h1>The van is the product. The website is not built for it.</h1>
+      <p class="standfirst">What we found across eighteen competitor and benchmark sites, what is broken on fillobakes.com today, and the single flow we recommend building. This is the brief the front end is being mocked against.</p>
+      <div class="meta-rail">
+        <div><span class="k">Sites walked</span><span class="v">18</span></div>
+        <div><span class="k">Catalogue</span><span class="v">23 SKUs</span></div>
+        <div><span class="k">Routes in the new map</span><span class="v">53</span></div>
+        <div><span class="k">Screens to mock</span><span class="v">68</span></div>
+        <div><span class="k">Launch blockers</span><span class="v">8 questions</span></div>
+      </div>
+    </header>
+
+    <!-- ============ 01 ============ -->
+    <section id="s1">
+      <div class="sec-head">
+        <span class="sec-num">01</span>
+        <h2>Where the site is losing money today</h2>
+        <p class="dek">Six problems. Two of them are broken promises rather than missing features, and no amount of new design fixes them.</p>
+      </div>
+
+      <h3>The price changes at the door</h3>
+      <p>The site promises <strong>&#8377;420</strong> and Shopify then asks for <strong>&#8377;470</strong>, because delivery is added after the customer has already committed. An unexpected cost at the end is the single best documented cause of cart abandonment. Hotplate shows subtotal, taxes and total at checkout step one, before an address exists; Zepto puts zero-fee promises in its hero. Fillo has to compute delivery on its own checkout, from the first render.</p>
+
+      <h3>The site never asks where you are</h3>
+      <p>A customer can build a cart, pick a date, choose a slot, fill in their contact details and reach Shopify before discovering the van does not come to their street. For a business whose entire proposition is a fixed route, <em class="note">where are you</em> is the first question the site should ask and it is currently the only one it never asks. Worse, an out-of-area lookup is not a lost customer for a van, it is route-planning data, and the site throws that signal away.</p>
+
+      <h3>Two checkouts, two domains, one funnel</h3>
+      <p>The purchase starts on fillobakes.com and finishes on myshopify.com. Levain and Theobroma both split their funnels the same way and both are worse for it, and neither of them changes domain mid-purchase the way Fillo does.</p>
+
+      <h3>Numbers that are not true</h3>
+      <p><strong>100+ Items</strong> against a menu of 23. <strong>500+ Lovers</strong> on the home page against <strong>thousands of loyal customers</strong> on the franchise page, two invented figures contradicting each other. A dummy phone number, +91 98765 43210, has been publicly live on the franchise page. Separately, Google currently appears to show a buyer the website price of &#8377;200 and a Swiggy price of &#8377;249 for the same loaf on the same screen. That needs verifying, and if it holds it is the most damaging integrity problem on the list.</p>
+
+      <h3>Dead content, indexed</h3>
+      <p>Eight of the twelve product URLs in the sitemap render <em class="note">Product Not Found</em> at HTTP 200, so Google has indexed soft 404s. All 23 blog posts are duplicates of the shop descriptions and every Read More link points at an undefined route. No core page has a title tag, meta description, canonical or structured data. The shipping policy describes couriers, weight-based charges and one to two business days of processing, which is a warehouse, not a van.</p>
+
+      <h3>The one thing nobody else has is hidden in a corner</h3>
+      <p>Fillo runs a live GPS feed of a moving bakery, updating every fifteen seconds. <strong>Nobody else in this study has anything like it</strong>, and it is the only capability here a competitor cannot buy off a Shopify app store. Today it is a floating pill that opens a modal.</p>
+
+      <div class="callout">
+        <span class="label">What we are building</span>
+        <p>One checkout on one domain where the total never moves. Area and lane decided before the cart and carried in the header from then on. A computed cutoff sentence in three places. The van promoted from a pill to a bookmarkable page whose off-air state is as finished as its live state. Fillo+ made free and phone-based, with a real weekly bread subscription sold at order two.</p>
+      </div>
+    </section>
+
+    <!-- ============ 02 ============ -->
+    <section id="s2">
+      <div class="sec-head">
+        <span class="sec-num">02</span>
+        <h2>The competitor landscape</h2>
+        <p class="dek">Eighteen sites walked live in Chrome on 3 September 2026, home to menu to product to cart to checkout as far as each one allowed. No form was submitted and nothing was paid anywhere.</p>
+      </div>
+
+      <p class="scroll-hint">Scroll the table sideways &#8594;</p>
+      <div class="tw tw--wide">
+        <table>
+          <thead>
+            <tr>
+              <th>Who</th><th>Positioning</th><th>Ordering model</th><th>Subscription</th><th>Loyalty</th><th>Tracking</th><th>What to steal</th><th>What to avoid</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="who">Hotplate<br><span style="font-weight:400;color:var(--ink-500)">US platform</span></td>
+              <td>The food drop platform. The closest analogue to Fillo that exists.</td>
+              <td>Timed pre-order drops, pickup at named neighbourhood stops on fixed weekdays.</td>
+              <td>None. The rhythm plus an SMS list does the job.</td>
+              <td>Platform level reviews and loyalty. Gift cards sold as a menu tab.</td>
+              <td>None. The schedule and the cutoff replace it.</td>
+              <td>Cart hold timer of about seven minutes. Checkout step one is a phone field and nothing else. Named stops with map links. Past Drops archive. Sold-out kept in the grid with a loud ribbon.</td>
+              <td>No SEO surface at all, and the brand lives inside someone else's chrome.</td>
+            </tr>
+            <tr>
+              <td class="who">GAIL's<br><span style="font-weight:400;color:var(--ink-500)">UK</span></td>
+              <td>Craft community bakery. Order and Visit Us given equal weight in the hero.</td>
+              <td>Nationwide delivery plus collection, postcode check inside the product page.</td>
+              <td>None.</td>
+              <td>Nine stamps on a free app for a drink or a loaf.</td>
+              <td>None.</td>
+              <td>The best sentence in the study: <strong>Order by 11am tomorrow for delivery on Saturday</strong>, run in the announcement bar and again in red directly above the buy button.</td>
+              <td>263 SKUs means sold-out becomes wallpaper. Loyalty is app-only and invisible to a web buyer.</td>
+            </tr>
+            <tr>
+              <td class="who">Blue Tokai<br><span style="font-weight:400;color:var(--ink-500)">India</span></td>
+              <td>Specialty coffee. The India subscription benchmark.</td>
+              <td>Standard cart, with a PIN-code check sitting on the product page.</td>
+              <td>Prepaid ladder: 3 / 6 / 12 / 24 deliveries at 10 to 20 percent off.</td>
+              <td>None as such.</td>
+              <td>Order tracking page.</td>
+              <td>The three-group Manage Subscription FAQ, which is really the whole subscription contract written in the open: pause, resume, cancel, change per delivery, what happens when your item is out of stock.</td>
+              <td>Very heavy nav. Prepaid ladders suit a nine-month shelf life, not a loaf.</td>
+            </tr>
+            <tr>
+              <td class="who">Wildgrain<br><span style="font-weight:400;color:var(--ink-500)">US</span></td>
+              <td>Subscription-first. There is no shop at all.</td>
+              <td>Plan funnel only. Nothing is purchasable a la carte.</td>
+              <td>The entire business. Four-step How It Works.</td>
+              <td>Free croissants for life as the joining incentive, not a percentage off.</td>
+              <td>Reminder four days before each order, by email and SMS.</td>
+              <td>The anxiety copy, verbatim: <strong>easy to manage, skip, or cancel anytime</strong>. And the trick of justifying a format constraint as a virtue, which is exactly what Fillo has to do with a van on a route.</td>
+              <td>No price transparency until deep in the funnel. Nothing buyable outside a plan.</td>
+            </tr>
+            <tr>
+              <td class="who">Theobroma<br><span style="font-weight:400;color:var(--ink-500)">India</span></td>
+              <td>National patisserie brand with 317 stores.</td>
+              <td>Two storefronts. The local one's Order Now link does not open a menu, it opens a store locator.</td>
+              <td>None.</td>
+              <td>None.</td>
+              <td>Order tracking.</td>
+              <td>The locator as the entry to ordering, with Use my location, city, locality, Open Now, and per-store delivery and pickup badges. The closest thing in Indian e-commerce to picking a route before seeing a menu.</td>
+              <td>Nine stacked coupon codes in the promo strip. The two-domain split is a real seam.</td>
+            </tr>
+            <tr>
+              <td class="who">Bombay Sweet Shop<br><span style="font-weight:400;color:var(--ink-500)">India</span></td>
+              <td>Modern mithai, playful and premium.</td>
+              <td>Fulfilment is the navigation: Shop Mumbai and Shop All-India are the first two tiles on the page.</td>
+              <td>None.</td>
+              <td>None.</td>
+              <td>Order tracking.</td>
+              <td>The <strong>Mumbai only</strong> badge on the card in the grid, so a Delhi buyer learns the constraint before falling in love with the item. Also a designed 404 that still sells.</td>
+              <td>Three stacked discounts in the bar and discount chips on every card undercut a craft position.</td>
+            </tr>
+            <tr>
+              <td class="who">Lily Pond Bakery<br><span style="font-weight:400;color:var(--ink-500)">Bengaluru</span></td>
+              <td>Premium artisan bread, three cities.</td>
+              <td>Hard city modal on first paint, and the fulfilment mode is attached to the city choice.</td>
+              <td>None.</td>
+              <td>None.</td>
+              <td>None.</td>
+              <td>The insight that a location chip must carry the <strong>mode</strong>, not just the place. You do not pick a city and then discover how you get bread. The city is how you get bread.</td>
+              <td>A hard modal on first paint from an Instagram click is a real bounce risk. It blocks browsing.</td>
+            </tr>
+            <tr>
+              <td class="who">Sour House<br><span style="font-weight:400;color:var(--ink-500)">Bengaluru</span></td>
+              <td>Sourdough bakery, Koramangala.</td>
+              <td>A white-label ordering template. The browser tab literally reads Template 1.</td>
+              <td>None self-serve. If it exists it is sold by conversation.</td>
+              <td>None.</td>
+              <td>None.</td>
+              <td>Nothing. Read it as good news: the local bar for bread D2C is very low, and a competently built ordering experience is itself the advantage here.</td>
+              <td>A 24-hour lead time disclosed as <strong>Minimum Delivery Time: 1440 mins</strong>. Opening hours given as 00:00 to 23:59.</td>
+            </tr>
+            <tr>
+              <td class="who">Levain<br><span style="font-weight:400;color:var(--ink-500)">US</span></td>
+              <td>Famous cookie bakery, thirty years old.</td>
+              <td>Order menu splits into Nationwide Shipping and Same Day Pickup or Delivery.</td>
+              <td>None.</td>
+              <td>Cookie Club.</td>
+              <td>Order tracking.</td>
+              <td>Fulfilment mode promoted to a top-level nav item, and a four-item trust ticker under the hero.</td>
+              <td>Its local lane leaves the domain for a third-party platform. It commits the exact sin we are removing from Fillo. Copy the idea, never the implementation.</td>
+            </tr>
+            <tr>
+              <td class="who">Bread Ahead<br><span style="font-weight:400;color:var(--ink-500)">UK</span></td>
+              <td>Bakery school. Craft monetised as education.</td>
+              <td>There is no bread shop in the primary navigation at all.</td>
+              <td>An Unlimited Membership plus video masterclasses.</td>
+              <td>Paid membership area gating content.</td>
+              <td>None.</td>
+              <td>Proof that a craft bakery can carry a paid membership about access and learning rather than discount. This is the right eventual shape for Fillo+, in phase three.</td>
+              <td>Not a phase-one model. It needs a teaching product that does not exist yet.</td>
+            </tr>
+            <tr>
+              <td class="who">The Baker's Dozen<br><span style="font-weight:400;color:var(--ink-500)">India</span></td>
+              <td>Zero Maida as an ownable claim. Genuinely good product copy.</td>
+              <td>Partners is the buy button. Demand is handed to marketplaces.</td>
+              <td>None.</td>
+              <td>None.</td>
+              <td>None.</td>
+              <td>The single ownable ingredient claim, and the phrase discipline around it.</td>
+              <td>No first-party checkout means no customer record, no list and no repeat mechanic. Also, the near-miss domain is now a completely different business, so Fillo should defend its variants now while it is cheap.</td>
+            </tr>
+            <tr>
+              <td class="who">Country Delight<br><span style="font-weight:400;color:var(--ink-500)">India</span></td>
+              <td>Daily fresh milk and groceries, next-morning.</td>
+              <td>City-first: a permanent Deliver In selector explaining that it drives accurate prices and products.</td>
+              <td>Daily, alternate-day, weekly, monthly, with <strong>vacation mode</strong>.</td>
+              <td>Free membership on signup.</td>
+              <td>Cutoff stated in the header rather than a map.</td>
+              <td>Vacation mode as a name. It is better than pause because it removes the implication that you are quitting. Also the cutoff written as prose with a real arrival window.</td>
+              <td>Almost every product tile says Download App Now instead of Add. The web experience dead-ends into an app install.</td>
+            </tr>
+            <tr>
+              <td class="who">Milkbasket<br><span style="font-weight:400;color:var(--ink-500)">India</span></td>
+              <td>Subscription micro-delivery before 7am.</td>
+              <td>Login-gated app shell.</td>
+              <td>The core model.</td>
+              <td>Prepaid wallet.</td>
+              <td>None public.</td>
+              <td>The header is the cutoff: <strong>Order by Midnight, Delivery by 7 AM</strong>. And a wallet as a first-class tab, which is how a high-frequency low-value business removes payment friction from every delivery.</td>
+              <td>Nothing usable without logging in.</td>
+            </tr>
+            <tr>
+              <td class="who">Blinkit<br><span style="font-weight:400;color:var(--ink-500)">India</span></td>
+              <td>Ten-minute quick commerce.</td>
+              <td>Location modal on first paint, but the catalogue still renders behind it.</td>
+              <td>None.</td>
+              <td>None public.</td>
+              <td>Order-scoped map, not observable without a live order.</td>
+              <td>A soft gate, not a wall. And the header slot reading Currently unavailable until you set a location, which is where Indian buyers now expect delivery status to live.</td>
+              <td>Nothing relevant.</td>
+            </tr>
+            <tr>
+              <td class="who">Zepto<br><span style="font-weight:400;color:var(--ink-500)">India</span></td>
+              <td>Quick commerce, fee transparency as the pitch.</td>
+              <td>No gate at all. The header reserves a slot for the location and ETA pill.</td>
+              <td>None.</td>
+              <td>None public.</td>
+              <td>Order-scoped.</td>
+              <td>The hero: zero handling fee, zero delivery fee, zero rain and surge fee, with the asterisk honoured immediately underneath. Direct support for price integrity from the most familiar app in the target buyer's phone.</td>
+              <td>Nothing relevant.</td>
+            </tr>
+            <tr>
+              <td class="who">Swiggy<br><span style="font-weight:400;color:var(--ink-500)">India</span></td>
+              <td>Marketplace storefronts.</td>
+              <td>Out-of-area and closed states render inline with the catalogue still visible.</td>
+              <td>None.</td>
+              <td>None public.</td>
+              <td>Order-scoped.</td>
+              <td>The Indian convention for unavailability is <strong>show and disable</strong>, never hide. That settles a live disagreement in the prior research.</td>
+              <td>Marketplace pricing is where the cross-channel price divergence appears to originate.</td>
+            </tr>
+            <tr>
+              <td class="who">Tempt Bakehouse<br><span style="font-weight:400;color:var(--ink-500)">Koramangala</span></td>
+              <td>Small-batch Japanese shokupan. Fillo's nearest direct rival.</td>
+              <td>Local, Instagram-led.</td>
+              <td>None found.</td>
+              <td>None found.</td>
+              <td>None.</td>
+              <td>Nothing structural. The lesson is the review count: 104 against Fillo's 14.</td>
+              <td>None</td>
+            </tr>
+            <tr>
+              <td class="who">Bunco<br><span style="font-weight:400;color:var(--ink-500)">Mahadevapura</span></td>
+              <td>Japanese milk bread, marketplace-led.</td>
+              <td>Zomato.</td>
+              <td>None.</td>
+              <td>None.</td>
+              <td>None.</td>
+              <td>1,897 Zomato reviews. Marketplace review volume is the moat here, and it is the gap Fillo actually has to close.</td>
+              <td>No first-party relationship with any of those customers.</td>
+            </tr>
+          </tbody>
+        </table>
+        <caption>Fillo wins exactly one column outright, live vehicle tracking, and today it is a floating pill. Fillo currently has none of: serviceability check, fulfilment mode in nav, computed cutoff, sold-out shown rather than hidden, cart hold timer, one checkout on one domain, phone-first identity, subscription, free loyalty, notify-me capture, published schedule, gift cards, per-SKU reviews, search, or an order tracking page.</caption>
+      </div>
+
+      <h3 class="kicker">What we could not observe, and why</h3>
+      <p>Most consumer order trackers are order-scoped and unreachable without a live paid order. We could not observe the Domino's tracker (its URL 404s), Swiggy, Zomato, Zepto and Blinkit live order maps, Amazon's stops-away counter, or Uber and Ola ETA screens. Street Food Finder sits behind a bot-verification wall we did not attempt to bypass. Supr Daily's domain has lapsed. Everything in the tracking section is therefore split into observed and inherited, and the inherited half is labelled as such rather than dressed up as measurement.</p>
+    </section>
+
+    <!-- ============ 03 ============ -->
+    <section id="s3">
+      <div class="sec-head">
+        <span class="sec-num">03</span>
+        <h2>What to add, in priority order</h2>
+        <p class="dek">Effort is S (days), M (a week or two), L (a multi-week build). The P0 group are not features. They are broken promises, and nothing below them matters until they are fixed.</p>
+      </div>
+
+      <div class="tw tw--mid">
+        <table>
+          <thead><tr><th>&nbsp;</th><th>Change</th><th>Why, and where we saw it</th><th class="num">Effort</th></tr></thead>
+          <tbody>
+            <tr><td><span class="chip chip--p0">P0</span></td><td class="who">One total, including delivery, from the first screen it appears</td><td>Hotplate shows subtotal, taxes and total before an address exists. Zepto puts zero-fee promises in the hero. Nothing else on this list matters if the price moves.</td><td class="num"><span class="chip chip--m">M</span></td></tr>
+            <tr><td><span class="chip chip--p0">P0</span></td><td class="who">One checkout on one domain</td><td>Levain and Theobroma both split their funnels and both are worse for it. Fillo's split is worse still because the domain changes mid-purchase.</td><td class="num"><span class="chip chip--l">L</span></td></tr>
+            <tr><td><span class="chip chip--p0">P0</span></td><td class="who">Serviceability check before payment</td><td>Every India benchmark has one: Blue Tokai's PIN check on the product page, Bombay Sweet Shop's Mumbai only badge, Lily Pond's city modal, Theobroma's locator. Fillo has none, so any Indian address currently passes.</td><td class="num"><span class="chip chip--m">M</span></td></tr>
+            <tr><td><span class="chip chip--p0">P0</span></td><td class="who">Kill the inflated numbers and the dummy phone</td><td>100+ Items against 23 SKUs. 500+ Lovers. A live dummy number on the franchise page.</td><td class="num"><span class="chip chip--s">S</span></td></tr>
+            <tr><td><span class="chip chip--p0">P0</span></td><td class="who">Fix the dead sitemap entries and blog links</td><td>Eight soft 404s indexed at HTTP 200, and every blog link pointing at an undefined route.</td><td class="num"><span class="chip chip--s">S</span></td></tr>
+            <tr><td><span class="chip chip--p0">P0</span></td><td class="who">Reconcile prices across web, Swiggy and Google</td><td>Google is showing a buyer two different prices for the same loaf. Verify first, then fix at source.</td><td class="num"><span class="chip chip--s">S</span></td></tr>
+            <tr><td><span class="chip chip--p0">P0</span></td><td class="who">Rewrite the shipping policy to describe the van</td><td>It currently describes couriers and weight-based charges. It argues against the proposition on the brand's own domain.</td><td class="num"><span class="chip chip--s">S</span></td></tr>
+
+            <tr><td><span class="chip chip--p1">P1</span></td><td class="who">The computed cutoff sentence, in three places</td><td>Announcement bar, above every buy button, and beside the greyed date at checkout. GAIL's runs it in the bar and again in red on the product page. Milkbasket and Country Delight run it in the header.</td><td class="num"><span class="chip chip--s">S</span></td></tr>
+            <tr><td><span class="chip chip--p1">P1</span></td><td class="who">Replace the 30-day calendar with two or three named run cards</td><td>No route-based operator we walked uses a calendar. Hotplate shows named drops with a date and the stops on it. A 30-day picker implies a bakery that freezes.</td><td class="num"><span class="chip chip--m">M</span></td></tr>
+            <tr><td><span class="chip chip--p1">P1</span></td><td class="who">Fulfilment lane chosen at entry, confirmed at checkout</td><td>Bombay Sweet Shop makes it the first two tiles, Levain a nav item, Theobroma the entry itself. The lane changes which days, stops and items are available, so deciding it at checkout means the cart can be unfulfillable.</td><td class="num"><span class="chip chip--m">M</span></td></tr>
+            <tr><td><span class="chip chip--p1">P1</span></td><td class="who">Phone-first identity with OTP, email optional</td><td>Hotplate's entire checkout step one is a phone field, with the reason given in the same breath: we need this to send you updates about your order.</td><td class="num"><span class="chip chip--m">M</span></td></tr>
+            <tr><td><span class="chip chip--p1">P1</span></td><td class="who">Sold-out items stay in the grid, muted, with a loud ribbon and a Notify me</td><td>Hotplate and Blue Tokai both do exactly this. Hiding the item hides the evidence of demand.</td><td class="num"><span class="chip chip--s">S</span></td></tr>
+            <tr><td><span class="chip chip--p1">P1</span></td><td class="who">Notify-me list capture as a primary call to action, WhatsApp-first</td><td>Never miss a drop is the single most prominent control on the Hotplate storefront.</td><td class="num"><span class="chip chip--m">M</span></td></tr>
+            <tr><td><span class="chip chip--p1">P1</span></td><td class="who">Promote the van tracker to a schedule-first page</td><td>Fillo's one unreplicable asset is currently a corner widget.</td><td class="num"><span class="chip chip--l">L</span></td></tr>
+            <tr><td><span class="chip chip--p1">P1</span></td><td class="who">Cart hold timer during a live run</td><td>Hotplate's roughly seven-minute reservation. It is honest because the inventory really is held, and it is what stops ten people buying the last four loaves.</td><td class="num"><span class="chip chip--m">M</span></td></tr>
+            <tr><td><span class="chip chip--p1">P1</span></td><td class="who">Reviews per product, with photos</td><td>One Hotplate storefront carries 99 photo reviews. Fillo has eight unattributable site-wide quotes and a rating widget that goes nowhere.</td><td class="num"><span class="chip chip--m">M</span></td></tr>
+
+            <tr><td><span class="chip chip--p2">P2</span></td><td class="who">The Standing Order, with self-serve skip, pause, change day and cancel</td><td>Blue Tokai's manage-subscription FAQ, Wildgrain's skip or cancel anytime, Country Delight's vacation mode.</td><td class="num"><span class="chip chip--l">L</span></td></tr>
+            <tr><td><span class="chip chip--p2">P2</span></td><td class="who">A reminder before every recurring charge</td><td>Wildgrain sends one four days before each order, by email and SMS. The skip button inside that reminder is the whole retention mechanic.</td><td class="num"><span class="chip chip--m">M</span></td></tr>
+            <tr><td><span class="chip chip--p2">P2</span></td><td class="who">Make Fillo+ free and phone-based</td><td>Nobody in the study charges to join. Country Delight gives free membership on signup, GAIL's a free stamp card, Levain the Cookie Club, Wildgrain croissants for life.</td><td class="num"><span class="chip chip--s">S</span></td></tr>
+            <tr><td><span class="chip chip--p2">P2</span></td><td class="who">A real account area</td><td>Orders, addresses, subscription, rewards, alerts. Blue Tokai and Wildgrain both push all subscription control into a member account.</td><td class="num"><span class="chip chip--l">L</span></td></tr>
+            <tr><td><span class="chip chip--p2">P2</span></td><td class="who">Gift cards as a menu category</td><td>Hotplate sells them as a menu tab. A zero-inventory item that still converts on a sold-out day.</td><td class="num"><span class="chip chip--s">S</span></td></tr>
+            <tr><td><span class="chip chip--p2">P2</span></td><td class="who">Area and route landing pages</td><td>Theobroma's locator and GAIL's find-your-nearest. This is also the only realistic local search lane Fillo has.</td><td class="num"><span class="chip chip--m">M</span></td></tr>
+            <tr><td><span class="chip chip--p2">P2</span></td><td class="who">A search field</td><td>Blinkit, Zepto, Country Delight, Milkbasket, Bombay Sweet Shop, GAIL's, Blue Tokai and Levain all lead with one. Indian shoppers are trained to search, and it is the fastest path for someone arriving from Google looking for shokupan.</td><td class="num"><span class="chip chip--s">S</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><strong>Later, not now.</strong> A gifting flow with a note card and hidden prices, a corporate and bulk lane, a class or teaching membership on the Bread Ahead model, and the stamp-card game layer. For the stamp card we recommend building the empty slot in the van page layout so the design accommodates it, and not building the feature until the weekly ritual itself is proven.</p>
+    </section>
+
+    <!-- ============ 04 ============ -->
+    <section id="s4">
+      <div class="sec-head">
+        <span class="sec-num">04</span>
+        <h2>The recommended journey</h2>
+        <p class="dek">Three ways in, one spine. This is a recommendation, not a menu of options.</p>
+      </div>
+
+      <figure class="figure">
+        <div class="figure-scroll">
+          <svg viewBox="0 0 940 430" role="img" aria-labelledby="flowtitle flowdesc">
+            <title id="flowtitle">Three entry paths into one ordering spine</title>
+            <desc id="flowdesc">A first-order path, a repeat path that becomes The Standing Order at order two, and a street or van path that runs through WhatsApp. All three converge on the same one-page checkout and the same weekly loop.</desc>
+
+            <!-- lane A -->
+            <rect x="0" y="14" width="940" height="122" rx="4" class="d-lane"/>
+            <text x="16" y="36" class="d-lane-label">A &#183; FIRST ORDER</text>
+            <g>
+              <rect x="16" y="48" width="112" height="52" rx="3" class="d-box"/>
+              <text x="28" y="70" class="d-t">Arrive</text>
+              <text x="28" y="86" class="d-s">IG / GOOGLE / QR</text>
+
+              <rect x="152" y="48" width="132" height="52" rx="3" class="d-box-key"/>
+              <text x="164" y="70" class="d-t">Set area + lane</text>
+              <text x="164" y="86" class="d-s">HEADER CHIP</text>
+
+              <rect x="308" y="48" width="118" height="52" rx="3" class="d-box"/>
+              <text x="320" y="70" class="d-t">This week's bake</text>
+              <text x="320" y="86" class="d-s">6-8 ITEMS</text>
+
+              <rect x="450" y="48" width="118" height="52" rx="3" class="d-box"/>
+              <text x="462" y="70" class="d-t">Product page</text>
+              <text x="462" y="86" class="d-s">CUTOFF ABOVE CTA</text>
+
+              <rect x="592" y="48" width="106" height="52" rx="3" class="d-box"/>
+              <text x="604" y="70" class="d-t">Cart drawer</text>
+              <text x="604" y="86" class="d-s">TOTAL IS FINAL</text>
+
+              <rect x="722" y="48" width="106" height="52" rx="3" class="d-box-key"/>
+              <text x="734" y="70" class="d-t">Checkout</text>
+              <text x="734" y="86" class="d-s">ONE PAGE</text>
+
+              <rect x="852" y="48" width="76" height="52" rx="3" class="d-box"/>
+              <text x="864" y="70" class="d-t">Confirm</text>
+              <text x="864" y="86" class="d-s">+ FILLO+</text>
+
+              <path class="d-arrow" d="M128 74 H148 M284 74 H304 M426 74 H446 M568 74 H588 M698 74 H718 M828 74 H848"/>
+              <path class="d-arrow" d="M144 70 l6 4 -6 4 M300 70 l6 4 -6 4 M442 70 l6 4 -6 4 M584 70 l6 4 -6 4 M714 70 l6 4 -6 4 M844 70 l6 4 -6 4"/>
+              <text x="28" y="118" class="d-num">STEP 1</text><text x="164" y="118" class="d-num">2</text>
+              <text x="320" y="118" class="d-num">3</text><text x="462" y="118" class="d-num">4</text>
+              <text x="604" y="118" class="d-num">5</text><text x="734" y="118" class="d-num">6</text><text x="864" y="118" class="d-num">7</text>
+            </g>
+
+            <!-- lane B -->
+            <rect x="0" y="150" width="940" height="122" rx="4" class="d-lane"/>
+            <text x="16" y="172" class="d-lane-label">B &#183; REPEAT ORDER</text>
+            <g>
+              <rect x="16" y="184" width="112" height="52" rx="3" class="d-box"/>
+              <text x="28" y="206" class="d-t">Order again</text>
+              <text x="28" y="222" class="d-s">HOME ROW</text>
+
+              <rect x="152" y="184" width="132" height="52" rx="3" class="d-box"/>
+              <text x="164" y="206" class="d-t">Order #2 confirmed</text>
+              <text x="164" y="222" class="d-s">THE PITCH MOMENT</text>
+
+              <rect x="308" y="184" width="118" height="52" rx="3" class="d-box-key"/>
+              <text x="320" y="206" class="d-t">Standing Order</text>
+              <text x="320" y="222" class="d-s">4-STEP BUILDER</text>
+
+              <rect x="450" y="184" width="118" height="52" rx="3" class="d-box"/>
+              <text x="462" y="206" class="d-t">Wed reminder</text>
+              <text x="462" y="222" class="d-s">SKIP IN ONE TAP</text>
+
+              <rect x="592" y="184" width="106" height="52" rx="3" class="d-box"/>
+              <text x="604" y="206" class="d-t">Thu 8pm cutoff</text>
+              <text x="604" y="222" class="d-s">LOCK + CHARGE</text>
+
+              <rect x="722" y="184" width="206" height="52" rx="3" class="d-box"/>
+              <text x="734" y="206" class="d-t">Run day: bake strip, van, delivered</text>
+              <text x="734" y="222" class="d-s">RATE + REORDER</text>
+
+              <path class="d-arrow" d="M128 210 H148 M284 210 H304 M426 210 H446 M568 210 H588 M698 210 H718"/>
+              <path class="d-arrow" d="M144 206 l6 4 -6 4 M300 206 l6 4 -6 4 M442 206 l6 4 -6 4 M584 206 l6 4 -6 4 M714 206 l6 4 -6 4"/>
+              <path class="d-arrow" d="M880 236 V252 H470 V240" stroke-dasharray="3 3"/>
+              <path class="d-arrow" d="M466 244 l4 -6 4 6"/>
+              <text x="700" y="266" class="d-s">WEEKLY LOOP REPEATS</text>
+            </g>
+
+            <!-- lane C -->
+            <rect x="0" y="286" width="940" height="122" rx="4" class="d-lane"/>
+            <text x="16" y="308" class="d-lane-label">C &#183; STREET AND VAN</text>
+            <g>
+              <rect x="16" y="320" width="112" height="52" rx="3" class="d-box"/>
+              <text x="28" y="342" class="d-t">Sees the van</text>
+              <text x="28" y="358" class="d-s">QR ON THE CASE</text>
+
+              <rect x="152" y="320" width="132" height="52" rx="3" class="d-box-key"/>
+              <text x="164" y="342" class="d-t">/van, no login</text>
+              <text x="164" y="358" class="d-s">LIVE OR OFF-AIR</text>
+
+              <rect x="308" y="320" width="118" height="52" rx="3" class="d-box"/>
+              <text x="320" y="342" class="d-t">Notify me</text>
+              <text x="320" y="358" class="d-s">PICK A STOP</text>
+
+              <rect x="450" y="320" width="118" height="52" rx="3" class="d-box"/>
+              <text x="462" y="342" class="d-t">WhatsApp opt-in</text>
+              <text x="462" y="358" class="d-s">ONE PHONE FIELD</text>
+
+              <rect x="592" y="320" width="106" height="52" rx="3" class="d-box"/>
+              <text x="604" y="342" class="d-t">Saturday nudge</text>
+              <text x="604" y="358" class="d-s">DEEP LINK</text>
+
+              <rect x="722" y="320" width="206" height="52" rx="3" class="d-box"/>
+              <text x="734" y="342" class="d-t">Order in two taps</text>
+              <text x="734" y="358" class="d-s">PHONE IS THE ACCOUNT, NO ADDRESS</text>
+
+              <path class="d-arrow" d="M128 346 H148 M284 346 H304 M426 346 H446 M568 346 H588 M698 346 H718"/>
+              <path class="d-arrow" d="M144 342 l6 4 -6 4 M300 342 l6 4 -6 4 M442 342 l6 4 -6 4 M584 342 l6 4 -6 4 M714 342 l6 4 -6 4"/>
+            </g>
+          </svg>
+        </div>
+        <figcaption>Highlighted boxes are the four surfaces that do not exist today: the area and lane chip, the one-page checkout, the standing-order builder, and the van page. Everything else already exists in some form.</figcaption>
+      </figure>
+
+      <h3 class="kicker">Lane A &#183; first order, step by step</h3>
+      <ol>
+        <li><strong>Arrive.</strong> The announcement bar carries a real, computed deadline. The header chip is empty and amber: <em class="note">Set your area</em>.</li>
+        <li><strong>Choose the lane.</strong> Two cards above the menu with true prices. <strong>Catch the van, free, at a stop near you</strong>, or <strong>home delivery, &#8377;49, in a two-hour window, free over &#8377;499</strong>. Choosing sets the chip to place, mode and next slot. Out of area opens a waitlist with a position number. The catalogue is never blocked. Only the answer is gated.</li>
+        <li><strong>Browse.</strong> This week's bake, six to eight items, sold-out greyed in place with a Notify me. All 23 are one tap behind it. Search is present but is not the hero. The three doors module sits at the top of the shop page, never as a blocking screen.</li>
+        <li><strong>Decide.</strong> On the product page: crumb photo first, one sensory line, checkable spec chips, eggless stated as the reason rather than the headline, a fixed allergen block, reviews for that item, and the cutoff line in red directly above the button.</li>
+        <li><strong>Cart.</strong> The drawer shows subtotal, the delivery line or <em class="note">free, you are catching the van</em>, the gap to free delivery, and the total. During a live run a hold timer runs, because the stock really is held.</li>
+        <li><strong>Checkout.</strong> One page, one domain, four blocks in this order: lane and slot, pre-filled from the chip with two or three named run cards instead of a calendar. Then phone and OTP, with email optional and labelled for your invoice. Then address, home-delivery lane only, India-shaped with flat, building, area, landmark and pincode. Then pay, with the same total as the drawer, UPI first and cash last and priced.</li>
+        <li><strong>Confirm.</strong> A promise with a named next contact, not a warning. <em class="note">Saturday, 4 to 6pm, at your gate. We will message you Friday night with the exact time.</em> Plus a tracker link and a one-tap free Fillo+ join, since the phone is already verified.</li>
+      </ol>
+
+      <h3 class="kicker">Lane B &#183; the repeat order becomes a standing order</h3>
+      <p>Do not sell the subscription on a first visit, and never in the hero. Sell it on the confirmation of the <strong>second</strong> order, when the habit already exists and the pitch is a statement of fact: <em class="note">you have ordered a Milk Shokupan twice. Want it on the van every Saturday? Skip any week.</em> The builder is four steps on one screen, and the route day is derived from the saved area rather than asked for. After that the loop is four messages: Wednesday preview with a skip button, Thursday 8pm cutoff and charge, Friday night time band, Saturday bake strip through to delivered.</p>
+
+      <h3 class="kicker">Lane C &#183; the street encounter</h3>
+      <p>This is the journey the current site does not serve at all, and it is where a moving bakery's demand actually starts. Someone sees the van or is handed a card, scans the QR on the glass case, and lands on the van page with no login, no app and no location permission. If the van is out they see stops and a band. If it is not, they see this week's route and a Notify me. One phone field starts a WhatsApp opt-in, and Saturday morning brings one message with a deep link into the drop. Because the phone is the account and they picked the van lane, no address is ever asked for.</p>
+
+      <h3 class="kicker">Where each mechanism belongs</h3>
+      <div class="tw tw--mid">
+        <table>
+          <thead><tr><th>Mechanism</th><th>Where it belongs</th><th>Where it must not be</th></tr></thead>
+          <tbody>
+            <tr><td class="who">Area chip</td><td>The header, permanently, carrying place, mode and next slot. Set from the home lane cards, the product page route line, or the chip itself.</td><td>Not first asked at checkout, which is today's failure.</td></tr>
+            <tr><td class="who">Two lanes</td><td>Two cards on the home page and the primary navigation idea. Confirmed, not chosen, at checkout.</td><td>Not a checkout-time switch, because the cart the user built may not be fulfillable.</td></tr>
+            <tr><td class="who">Cutoff line</td><td>The announcement bar, above every buy button, and beside every greyed date at checkout.</td><td>Not a decorative countdown with no real constraint behind it.</td></tr>
+            <tr><td class="who">Van page</td><td>Its own page, a home page module, and a link in every order confirmation and WhatsApp message.</td><td>Not a floating corner pill. Not a modal.</td></tr>
+            <tr><td class="who">Fillo+</td><td>One tap from the order confirmation, a low home page module, and the account area.</td><td>Not a paid gate, not an interstitial, not high on the home page.</td></tr>
+            <tr><td class="who">The Standing Order</td><td>Order two confirmation, a nav item, a low home page module, the account dashboard.</td><td>Not anywhere in the first-order funnel.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ 05 ============ -->
+    <section id="s5">
+      <div class="sec-head">
+        <span class="sec-num">05</span>
+        <h2>The van tracker</h2>
+        <p class="dek">The list owns the truth. The map owns the feeling. Every number on the page must be readable with the map layer completely failed.</p>
+      </div>
+
+      <h3 class="kicker">Off-air is the default state, so it gets designed first</h3>
+      <p>If the van runs two or three days a week, a live map is right on a minority of days. The Hotplate storefront is off-air roughly ninety percent of the time and remains a page worth bookmarking, because the schedule and the next drop are the content. That is the structural model. <strong>The schedule is the page. The live element is the garnish.</strong></p>
+
+      <div class="tw tw--mid">
+        <table>
+          <thead><tr><th>Module</th><th>Live</th><th>Off air</th></tr></thead>
+          <tbody>
+            <tr><td class="who">Status pill</td><td>Live, updated 9 seconds ago</td><td>Off air, back Saturday. Never a bare offline.</td></tr>
+            <tr><td class="who">Hero line</td><td>Two stops away. Or: here now, Indiranagar 12th Main.</td><td>The ovens are cold. The plan is not.</td></tr>
+            <tr><td class="who">Arrival band</td><td>Around 4:40 to 4:50. Widens itself in traffic and caps at around 20+ min rather than printing a big number.</td><td>Rolls out Saturday, 4:30pm.</td></tr>
+            <tr><td class="who">Stop list</td><td>The load-bearing module. Four states per stop: done with an actual time, current with a pulse and a till-about time, upcoming with a band, and sold out struck through with the time it went. Each row has a landmark name, a local descriptor, a map link and a per-stop Notify me.</td><td>The same list, dated by day.</td></tr>
+            <tr><td class="who">Map</td><td>Lazy-loaded after first paint. Completed route dashed, remaining solid, van marker tweened across the full refresh interval.</td><td>Same map, van parked, greyed, no animation.</td></tr>
+            <tr><td class="who">Bake strip</td><td>Mixed, proofed, baked, loading, with real timestamps.</td><td>Hidden.</td></tr>
+            <tr><td class="who">Notify me</td><td>A sheet, never a native prompt on tap, offered on second visit or after about twenty seconds.</td><td>Same, promoted to the top of the page.</td></tr>
+            <tr><td class="who">Activity feed</td><td>Last five auto-generated timestamped events. Never hand-typed.</td><td>Last run's feed.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="kicker">Stops, not minutes. Bands, not times.</h3>
+      <p>Distance in metres is a lie on a multi-stop Bengaluru route, and a single arrival minute is a promise the traffic will break. Country Delight and Milkbasket both publish windows and never a minute. Proximity should be counted in stops. We should be honest that the specific stops-away threshold is a launch guess to be tuned, not a measured figure, because the Amazon implementation it comes from is order-scoped and neither we nor the prior research has watched it run. What survives every failure mode is the stop list.</p>
+
+      <h3 class="kicker">The privacy contract, as a hard requirement</h3>
+      <p>A public, always-on, precise position of a small vehicle carrying cash and one or two staff is a safety surface, and the driver's whole working day should not be public. So: the public endpoint returns a position snapped to the route plus a stop index, rounded to about fifty metres, and it is served only between the route's start and end times. No history trail is ever exposed. If the van leaves the published route the position is suppressed and the page shows <em class="note">between stops</em>. The driver has a <strong>Go dark</strong> switch in the cab. If a fix is more than ninety seconds stale, the marker fades and the band is replaced with a last-seen line, because a stale dot pretending to be live destroys the credibility the page exists to earn. Notify-me geofences run server-side against the van, so the customer never grants a location permission. The line under the sheet says it plainly: <em class="note">we watch the van, not you.</em></p>
+
+      <h3 class="kicker">What we could not observe here, and why it matters</h3>
+      <p>The Domino's four-stage strip and its display-latency cap, Amazon's stops-away counter and its fallback wording, Swiggy and Zomato's marker interpolation, and Mister Softee's truck tracker are all either order-scoped, app-only or unreachable. They are inherited from prior research and cited as such. What we could observe is the surrounding layer, and it turned out to be the more transferable half: Hotplate publishing a route as plain text in a bio, Theobroma running a locator where each stop carries its own status and hours, Swiggy rendering out-of-area inline instead of as an error page, Blinkit and Zepto reserving the header slot for delivery status, and Country Delight and Milkbasket writing arrival as a window. Note also that the widely quoted WhatsApp open-rate figures come from vendor marketing blogs, so we plan against the more conservative broadcast conversion range instead.</p>
+    </section>
+
+    <!-- ============ 06 ============ -->
+    <section id="s6">
+      <div class="sec-head">
+        <span class="sec-num">06</span>
+        <h2>Fillo+ and The Standing Order</h2>
+        <p class="dek">The current site puts a &#8377;1 charge, a coins scheme and a would-be subscription under one label. They are three different things and they need splitting.</p>
+      </div>
+
+      <div class="tw tw--mid">
+        <table>
+          <thead><tr><th>Layer</th><th>What it is</th><th>Price</th><th>Sold when</th></tr></thead>
+          <tbody>
+            <tr><td class="who">Fillo+</td><td>The free membership and account layer. Phone-based identity carrying your orders, addresses, saved stop, coins, alerts and early access to new bakes.</td><td class="num">Free</td><td>One tap from any order confirmation, where the phone is already verified.</td></tr>
+            <tr><td class="who">Fillo Coins</td><td>2 coins per &#8377;100 spent, 25 coins redeem as &#8377;25 off, no expiry. Unchanged mechanics, moved behind the free membership.</td><td class="num">Free</td><td>Automatic once a member.</td></tr>
+            <tr><td class="who">The Standing Order</td><td>The weekly bread subscription. A recurring pre-order against a route day, not a shipped box. Weekly by default, fortnightly optional, charged per delivery.</td><td class="num">Per delivery, at a standing price</td><td>Order #2 confirmation. Never order #1.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="kicker">Why the &#8377;1 join fee comes off</h3>
+      <p>Nobody in this study charges to join a loyalty programme. Country Delight gives free membership on signup, GAIL's runs a free nine-stamp card, Levain has the Cookie Club, Wildgrain gives croissants for life. Fillo's &#8377;1 currently requires the customer to complete an entire Shopify checkout in order to join a free-to-operate retention mechanic, which filters out most of the people it exists to capture.</p>
+      <p><strong>Existing &#8377;1 payers are grandfathered, not devalued.</strong> They keep their coins, they get a permanent named <em class="note">Founding member</em> badge, and they get first access to every new bake. Legacy email-only members get one message asking them to add a phone number so their coins carry over, and the old dashboard route redirects into the new rewards page. The change has to read as a gift, not as a refund.</p>
+
+      <h3 class="kicker">Why the subscription is a separate product</h3>
+      <p>It has its own price, its own cadence, its own management surface and its own failure modes: out of stock, payment failure, route change. Calling it Fillo+ would make <em class="note">cancel Fillo+</em> ambiguous between <em class="note">stop my bread</em> and <em class="note">leave the programme</em>, which is a genuine support problem. <strong>The Standing Order</strong> is a real bakery phrase, it says exactly what it is, and it survives being said out loud at a van window. Do not call it a box: it is not shipped, and the word imports the wrong expectations.</p>
+
+      <h3 class="kicker">Route-day awareness is the whole differentiator</h3>
+      <p>The product is not <em class="note">a box every week</em>. It is <strong>you are on Saturday's Indiranagar list</strong>. So the builder only offers days the van actually serves the saved area, the reminder names the stop, the confirmation names the stop, and if a route changes every affected subscriber is messaged before the cutoff. Every control is self-serve: skip one week, pause with a return date, change the day or route, change the contents, change frequency, change stop or address including a one-off override, and cancel in one tap with pause offered once and no retention maze. If a loaf cannot be baked, the customer is notified at cutoff, offered a named substitute, and not charged unless they accept. On a forty-loaf bake this will happen constantly, so it needs designing rather than handling by message.</p>
+
+      <div class="callout">
+        <span class="label">The line that goes above every subscribe button</span>
+        <p>Skip any week. Pause anytime. Cancel in one tap. We will message you every Wednesday with what is coming, so you are never surprised.</p>
+      </div>
+    </section>
+
+    <!-- ============ 07 ============ -->
+    <section id="s7">
+      <div class="sec-head">
+        <span class="sec-num">07</span>
+        <h2>Decisions taken against prior research</h2>
+        <p class="dek">The earlier corpus is strong and better sourced than most agency work, but it was assembled by fetching pages rather than driving them. Walking the same sites with a cart changes some conclusions.</p>
+      </div>
+
+      <div class="tw tw--mid">
+        <table>
+          <thead><tr><th>&nbsp;</th><th>Prior position</th><th>Decision, in one line</th></tr></thead>
+          <tbody>
+            <tr><td><span class="chip chip--agree">Agree</span></td><td class="who">Price integrity is severity one</td><td>Confirmed, and extended: the fee must be visible <strong>before the address</strong>, not merely before payment.</td></tr>
+            <tr><td><span class="chip chip--agree">Agree</span></td><td class="who">One domain, one checkout</td><td>Confirmed by the sharpest possible evidence: the site the corpus holds up as the model sends its own local lane off-domain.</td></tr>
+            <tr><td><span class="chip chip--agree">Agree</span></td><td class="who">Phone and OTP as identity</td><td>Confirmed, and now resting on an observed checkout rather than a vendor statistic.</td></tr>
+            <tr><td><span class="chip chip--agree">Agree</span></td><td class="who">Computed cutoff in the announcement bar</td><td>Confirmed, and it belongs in three places, not one. The product-page instance is the more valuable of the two we observed.</td></tr>
+            <tr><td><span class="chip chip--agree">Agree</span></td><td class="who">Full slots shown and disabled, not hidden</td><td>Confirmed. Show and disable is the Indian convention, and diverging from the cited global best practice was the right call.</td></tr>
+            <tr><td><span class="chip chip--agree">Agree</span></td><td class="who">Off-air designed as a first-class state</td><td>Confirmed, with a working structural model to copy.</td></tr>
+            <tr><td><span class="chip chip--refine">Refine</span></td><td class="who">Sold-out cards kept at full colour</td><td>Mute the card, keep the ribbon loud. A full-colour unbuyable card is a usability trap, and every site observed mutes it.</td></tr>
+            <tr><td><span class="chip chip--refine">Refine</span></td><td class="who">Area gating: soft chip, never a wall</td><td>The real rule is <strong>gate the answer, not the catalogue</strong>, and the chip must carry the fulfilment mode, not just the place.</td></tr>
+            <tr><td><span class="chip chip--refine">Refine</span></td><td class="who">Three doors as a first-visit interstitial</td><td>Sound psychology, unevidenced as an interface, and no site in the set does it. Demote it to the top module of the shop page.</td></tr>
+            <tr><td><span class="chip chip--refine">Refine</span></td><td class="who">Cap the date picker at seven days</td><td>Go further. No route operator uses a calendar at all. Replace it with two or three named run cards.</td></tr>
+            <tr><td><span class="chip chip--refine">Refine</span></td><td class="who">Lanes chosen on the checkout screen</td><td>Right substance, wrong place. Decide the lane at entry and confirm it at checkout, because the lane changes what is available.</td></tr>
+            <tr><td><span class="chip chip--refine">Refine</span></td><td class="who">No search field until 40+ SKUs</td><td>Ship it now. Every India benchmark leads with search and it costs almost nothing. Just do not make it the hero.</td></tr>
+            <tr><td><span class="chip chip--refine">Refine</span></td><td class="who">Publish the weeks we did not sell out</td><td>Keep the idea, move the room. On the home page a stranger reads it as weak demand. On the van page and in the Sunday message it reads as honesty.</td></tr>
+            <tr><td><span class="chip chip--dis">Disagree</span></td><td class="who">Ban all countdowns</td><td>Overruled. The rule is <strong>no clock that is not wired to a real constraint</strong>. A cutoff clock and a cart reservation both render facts. Ban only the evergreen resetting timer.</td></tr>
+            <tr><td><span class="chip chip--dis">Disagree</span></td><td class="who">Keep the &#8377;1 Fillo+ join fee</td><td>Overruled. It is the clearest unforced error on the site. Free, phone-based, one tap from the confirmation.</td></tr>
+            <tr><td><span class="chip chip--dis">Disagree</span></td><td class="who">Name customers publicly in a live ticker</td><td>Overruled. Keep the count, drop the names. Publishing first names and neighbourhoods is a privacy problem no competitor takes on, and consented reviews do the job better.</td></tr>
+            <tr><td><span class="chip chip--dis">Disagree</span></td><td class="who">Build the stamp-rally game layer now</td><td>Overruled as a build item. Its own cited source is a post-mortem of a failed gamification. Build the empty slot, not the feature.</td></tr>
+            <tr><td><span class="chip chip--dis">Disagree</span></td><td class="who">Every number on the site is true</td><td>Too narrow. The rule has to be <strong>every number on every channel agrees</strong>, because Google shows a buyer the site price and the marketplace price on one screen.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="kicker">Contradictions inside the prior corpus, now settled</h3>
+      <p>The cutoff was variously 6pm, 8pm and 9pm across three documents. It is now <strong>Thursday 8pm</strong>, computed once and rendered identically everywhere. The delivery fee was &#8377;50 in one place and &#8377;49 with free delivery over &#8377;399 in another; the fee is &#8377;49 and the threshold is pending your confirmation. Prices show the rupee symbol rather than bare numerals. The invented driver name has been removed entirely: if there is a real person on the route we would like to name them, but we will not invent one. And the van's real schedule is a business fact, not a design choice, so it has to come from you before the tracker can be finished.</p>
+    </section>
+
+    <!-- ============ 08 ============ -->
+    <section id="s8">
+      <div class="sec-head">
+        <span class="sec-num">08</span>
+        <h2>Open questions for you</h2>
+        <p class="dek">Nothing below can be answered from the site, the research or the snapshot. Each one is currently sitting on a placeholder in the content spec.</p>
+      </div>
+
+      <h3 class="kicker">These eight block launch</h3>
+      <div class="tw tw--mid">
+        <table>
+          <thead><tr><th class="num">#</th><th>Question</th><th>What it blocks</th></tr></thead>
+          <tbody>
+            <tr><td class="num">1</td><td class="who">What are the real route names, days and time windows?</td><td>The whole van schedule, the area checker's answers, and the standing-order day picker. The only route string that exists anywhere is one ward name from the tracker modal.</td></tr>
+            <tr><td class="num">2</td><td class="who">Which pincodes do you actually serve?</td><td>Every serviceability state on every page.</td></tr>
+            <tr><td class="num">3</td><td class="who">What is the delivery fee and the free-delivery threshold?</td><td>Checkout, area pages, the shipping policy, product pages and the FAQ. This is also the fix for the &#8377;420 to &#8377;470 break.</td></tr>
+            <tr><td class="num">4</td><td class="who">What is the order cutoff, and what operational fact causes it?</td><td>The cutoff line everywhere, the skip rules, and the refund policy. We have drafted 8pm the night before, because that is when the dough goes in. If the real reason differs, we want the real one.</td></tr>
+            <tr><td class="num">5</td><td class="who">Your FSSAI licence number.</td><td>The trust strip, the footer, and local business structured data.</td></tr>
+            <tr><td class="num">6</td><td class="who">The shared-kitchen allergen line.</td><td>The allergen block on all 23 product pages. This is a food safety statement and cannot be inferred.</td></tr>
+            <tr><td class="num">7</td><td class="who">How long does each format keep, in Bengaluru conditions?</td><td>The keeping block on every product page and two FAQ answers. Days at room temperature, refrigerate or not, freeze or not, how to revive.</td></tr>
+            <tr><td class="num">8</td><td class="who">Remove the dummy franchise number and settle on one email address.</td><td>The franchise page, and name-address-phone consistency for local search. The site currently publishes two different addresses.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="kicker">These block specific claims</h3>
+      <ul>
+        <li><strong>Real hydration percentage and fermentation time</strong> for the shokupan. The prior deck drafts 82 percent and 18 hours; those are placeholders and we will not ship an invented number on a site whose credibility rests on its numbers being true.</li>
+        <li><strong>Real oven capacity per bake.</strong> <em class="note">We bake 40</em> is a good honest-scarcity mechanic, but only if 40 is the number, and it has to be wired to the real order table or not shipped.</li>
+        <li><strong>Standing order pricing.</strong> We have proposed a roughly 10 to 16 percent standing price derived from live retail. Those are estimates, not your numbers.</li>
+        <li><strong>Is <em class="note">nobody in 300 tastings could tell</em> true?</strong> The 300-taster figure is yours and it is real. The claim inside the sentence has not been measured. If it is not confirmed, the line becomes <em class="note">eggless, 300 first-time tasters got us there</em>.</li>
+        <li><strong>Dates of the 300-taster testing phase.</strong></li>
+        <li><strong>Is there a real member-first window for Fillo+?</strong> If not, early access comes off the page.</li>
+        <li><strong>Are the eight home page testimonials real people?</strong> If yes we need areas, dates and permission. If not, they come down. We recommend cutting to three attributed ones and collecting the rest through the post-delivery message.</li>
+        <li><strong>Cash-on-delivery surcharge and cap.</strong> We have drafted plus &#8377;30, first order only.</li>
+        <li><strong>How long does the van wait at a stop?</strong> Drafted as ten minutes.</li>
+        <li><strong>How many waitlist requests in one area trigger a new route?</strong> The public counter is a genuinely good mechanic, but only with a real threshold behind it.</li>
+        <li><strong>Is there a ratatouille karepan?</strong> The About page names it and the live menu does not have it.</li>
+        <li><strong>Which of the three fruit sandos is which in the two photographs?</strong> Our mapping is a visual inference, not a filename.</li>
+        <li><strong>Is the trademark usage in the cookies-and-cream description cleared?</strong> It names a brand and would appear in a heading.</li>
+      </ul>
+
+      <h3 class="kicker">Worth deciding, not blocking</h3>
+      <p>Is there a person on the route we can name? A named human on the van is one of the cheapest trust assets available and the copy has a slot waiting for it. Should the empty Weekly Specials tab be filled or removed, since an empty named tab is worse than no tab? Do you want a domain email address instead of two Gmail accounts? And we recommend against Fillo+ tiers for now, because the scheme is currently one sentence a customer can hold in their head. Revisit after six months of order data.</p>
+
+      <div class="callout">
+        <span class="label">Photography we do not have</span>
+        <p>Two products have no photograph at all, and neither does the base fruit sando, which is one of only four working product pages today. One image in the library appears to be stock and does not match the styling of anything else, so we will not reuse it without provenance. The single most valuable shot that does not exist is <strong>the van, open, on a real residential street, with someone being handed a loaf</strong>.</p>
+      </div>
+    </section>
+
+    <!-- ============ 09 ============ -->
+    <section id="s9">
+      <div class="sec-head">
+        <span class="sec-num">09</span>
+        <h2>The page map, and what is mocked</h2>
+        <p class="dek">Fifty-three routes. Next.js 15 with the App Router and TypeScript, front end only, mock data, deploying to Vercel.</p>
+      </div>
+
+      <div class="routes">
+        <div class="rgroup">
+          <h4>Public &#183; commerce</h4>
+          <ul>
+            <li><b>/</b> <i>Home</i></li>
+            <li><b>/shop</b> <i>This week's bake</i></li>
+            <li><b>/shop/all</b> <i>All 23</i></li>
+            <li><b>/product/[slug]</b> <i>Product page</i></li>
+            <li><b>/boxes</b> <i>Curated and build-your-own</i></li>
+            <li><b>/cart</b> <i>Full-page fallback</i></li>
+            <li><b>/checkout</b> <i>One page</i></li>
+            <li><b>/order/[id]</b> <i>Confirmation and status</i></li>
+            <li><b>/gifting</b></li>
+            <li><b>/gift-cards</b></li>
+          </ul>
+        </div>
+        <div class="rgroup">
+          <h4>Public &#183; the van and areas</h4>
+          <ul>
+            <li><b>/van</b> <i>Tracker</i></li>
+            <li><b>/van/[route]</b> <i>4 mock routes</i></li>
+            <li><b>/areas/[area]</b> <i>6 mock areas</i></li>
+            <li><b>/standing-order</b></li>
+            <li><b>/fillo-plus</b></li>
+          </ul>
+          <h4 style="margin-top:1.2rem">Public &#183; content</h4>
+          <ul>
+            <li><b>/about</b></li>
+            <li><b>/shokupan</b> <i>Kept, it ranks</i></li>
+            <li><b>/guides/[slug]</b> <i>4 guides</i></li>
+            <li><b>/journal</b> + <b>/journal/[slug]</b></li>
+            <li><b>/faq</b> <b>/contact</b> <b>/franchise</b></li>
+            <li><b>/policies/*</b> <i>5 policies</i></li>
+          </ul>
+        </div>
+        <div class="rgroup">
+          <h4>Account &#183; phone and OTP</h4>
+          <ul>
+            <li><b>/account</b></li>
+            <li><b>/account/orders</b> + <b>/[id]</b></li>
+            <li><b>/account/subscription</b></li>
+            <li><b>/account/subscription/setup</b></li>
+            <li><b>/account/addresses</b></li>
+            <li><b>/account/rewards</b></li>
+            <li><b>/account/alerts</b></li>
+            <li><b>/account/gift-cards</b></li>
+            <li><b>/account/settings</b></li>
+            <li><b>/login</b> <b>/logout</b></li>
+          </ul>
+          <h4 style="margin-top:1.2rem">System</h4>
+          <ul>
+            <li><b>/404</b> <b>/500</b> <b>/offline</b></li>
+          </ul>
+        </div>
+      </div>
+
+      <p><strong>Retired and redirected:</strong> the blog stub route into the journal, the twelve stale product URLs, the old Fillo+ dashboard into the rewards page, the old tracker link into the van page, the sign-in and delivery paths into their new equivalents, and the weekly-box path into the standing order. Fourteen redirects in total.</p>
+
+      <h3 class="kicker">What is mocked in this front end</h3>
+      <p>Everything. There is no backend in this build. Products, prices, categories, routes, stops, run days, order history, coin balances, subscription state, van position and the activity feed all come from fixture files. That is deliberate: it lets us design every state, including the ones that are hard to produce on demand in a real system, such as a van going dark mid-route, a payment failing at cutoff, an item selling out while a customer sits on the checkout page, or a route changing under an active subscription.</p>
+      <p>The inventory is <strong>68 screens plus their states</strong>. Seven global components with their state sets, twenty-four public pages, fourteen purchase screens, twenty-three account screens, and six WhatsApp message templates. Every number that is not yet confirmed renders as a visible placeholder rather than an invented figure, so nothing untrue can accidentally ship.</p>
+
+      <div class="band">
+        <p class="label">If only seven things ship</p>
+        <h2>What must be true on day one</h2>
+        <ol>
+          <li>The total never changes between the cart and the charge.</li>
+          <li>The area and the lane are decided before the cart, and shown in the header from then on.</li>
+          <li>One checkout, on fillobakes.com.</li>
+          <li>The cutoff sentence appears in the bar, above every buy button, and beside every greyed date.</li>
+          <li>Sold-out items stay on the page, muted, with a Notify me that captures a phone number.</li>
+          <li>The van page exists, and its off-air state is as finished as its live state.</li>
+          <li>Fillo+ is free, phone-based, and one tap from the order confirmation.</li>
+        </ol>
+      </div>
+
+      <p style="margin-top:2rem">And the three sentences that carry the whole thing: <strong>Order by Thursday 8pm for Saturday's run.</strong> <strong>Catch the van, free. Home delivery, &#8377;49.</strong> <strong>Skip any week. Pause anytime. Cancel in one tap.</strong></p>
+    </section>
+
+    <footer>
+      <span>Fillo Bakes rebuild &#183; research synthesis</span>
+      <span>3 September 2026</span>
+      <span>18 sites walked &#183; 53 routes &#183; 68 screens</span>
+    </footer>
+
+  </main>
+</div>

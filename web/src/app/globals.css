@@ -1,0 +1,705 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Fillo Bakes — Design System v2 "Butter paper"
+   Implements design/DESIGN-v2.md §1, which supersedes DESIGN.md, tokens.css
+   and tailwind-theme.json. Source of truth for the look is
+   design/brand-direction-v1.html sections 03–06 (client-approved).
+
+   Cream paper, chocolate ink, one terracotta accent, one gold for seals and
+   stars. No navy outside the logo image. No gradient except a photo scrim.
+   No pure-white page ground. No monospace on any customer surface.
+
+   The v1 token NAMES survive as aliases (paper-50, ink-800, kiln, crumb …)
+   because ~40 routes still reference them; they now resolve to v2 values, so
+   an un-rebuilt page reads warm rather than navy while it waits its turn.
+   ========================================================================== */
+
+@theme {
+  /* ---------------------------------------------------------------- */
+  /* COLOUR — v2 names (DESIGN-v2 §1). Use these in new work.         */
+  /* ---------------------------------------------------------------- */
+  --color-paper: #f7f2ea; /* page ground */
+  --color-paper-2: #f1eadf; /* alternate section ground */
+  --color-peach: #f3e3d2; /* tinted section: story, standing order */
+  --color-well: #efe7db; /* image wells behind cutouts */
+  --color-card: #fffdf9; /* white-ish cards */
+  --color-ink: #2b1b12; /* headings, primary text (chocolate) */
+  --color-ink-2: #5a463a; /* body text */
+  --color-muted: #8f7b69; /* captions, labels */
+  --color-line: #e2d6c6; /* hairlines, card borders */
+  --color-accent: #b4472b; /* the ONLY button / link colour */
+  --color-accent-hover: #9e3b24;
+  --color-on-accent: #fff7f1;
+  --color-gold: #d9a441; /* seals, stars, tiny highlights only */
+  --color-choc: #2b1b12; /* dark band ground */
+  --color-choc-2: #3a2618; /* dark band card */
+  --color-on-choc: #f3eadf;
+  --color-on-choc-2: #c3ac99; /* quiet text on the dark band */
+  --color-success: #4e7a4a; /* toast only */
+  --color-danger: #b4472b; /* errors are text + icon, not red boxes */
+
+  /* Navy exists only so the logo can be described. Nothing else may use it. */
+  --color-navy: #023d5d;
+  --color-logocream: #fff7f1;
+
+  /* ---------------------------------------------------------------- */
+  /* COLOUR — v1 aliases, remapped onto the v2 palette                */
+  /* ---------------------------------------------------------------- */
+  --color-paper-0: #fffdf9; /* was near-white → card */
+  --color-paper-50: #f7f2ea; /* page ground */
+  --color-paper-100: #f1eadf;
+  --color-paper-200: #efe7db;
+  --color-paper-300: #e2d6c6;
+  --color-paper-400: #cdbca8;
+
+  --color-ink-900: #2b1b12;
+  --color-ink-800: #2b1b12;
+  --color-ink-700: #3a2618;
+  --color-ink-600: #5a463a;
+  --color-ink-500: #8f7b69;
+  --color-ink-400: #a89279; /* body text on a chocolate band */
+
+  --color-kiln: #b4472b;
+  --color-kiln-700: #9e3b24;
+  --color-kiln-100: #f3e0d7;
+
+  --color-crumb: #d9a441;
+  --color-crumb-ink: #966512;
+
+  --color-success-tint: #e4ecdf;
+  --color-warning: #966512;
+  --color-warning-tint: #f7ecd8;
+  --color-danger-tint: #f4e0d9;
+  --color-info: #5a463a;
+  --color-info-tint: #eee5d9;
+
+  /* Category hints. A 5px dot or a chip — never a fill. Warm-only now. */
+  --color-cat-breads: #c8a36f;
+  --color-cat-breads-ink: #8a6636;
+  --color-cat-anpan: #b4472b;
+  --color-cat-anpan-ink: #9e3b24;
+  --color-cat-karepan: #b4700f;
+  --color-cat-karepan-ink: #8a5609;
+  --color-cat-pies: #7a5230;
+  --color-cat-pies-ink: #7a5230;
+  --color-cat-sandos: #a8465a;
+  --color-cat-sandos-ink: #a8465a;
+  --color-cat-weekly: #5a463a;
+  --color-cat-weekly-ink: #5a463a;
+
+  /* Overlays — chocolate-tinted, never neutral black, never navy. */
+  --color-scrim: rgba(43, 27, 18, 0.52);
+  --color-veil: rgba(43, 27, 18, 0.06);
+
+  /* ---------------------------------------------------------------- */
+  /* TYPOGRAPHY — families                                            */
+  /* ---------------------------------------------------------------- */
+  --font-display: var(--font-instrument-serif), "Iowan Old Style",
+    "Palatino Linotype", Georgia, serif;
+  --font-sans: var(--font-hanken), ui-sans-serif, -apple-system, "Segoe UI",
+    Helvetica, Arial, sans-serif;
+  --font-script: var(--font-caveat), "Brush Script MT", cursive;
+  --font-kana: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic",
+    "Noto Sans JP", sans-serif;
+  /* v1 alias. There is no monospace in v2 — it resolves to the sans. */
+  --font-mono: var(--font-hanken), ui-sans-serif, -apple-system, "Segoe UI",
+    Helvetica, Arial, sans-serif;
+
+  /* ---------------------------------------------------------------- */
+  /* TYPOGRAPHY — the v2 scale (§1)                                   */
+  /* ---------------------------------------------------------------- */
+  --text-display-1: clamp(3rem, 7.5vw, 6rem);
+  --text-display-1--line-height: 0.95;
+  --text-display-1--letter-spacing: -0.015em;
+  --text-display-1--font-weight: 400;
+
+  --text-display-2: clamp(2.25rem, 4.8vw, 3.75rem);
+  --text-display-2--line-height: 1.02;
+  --text-display-2--letter-spacing: -0.012em;
+  --text-display-2--font-weight: 400;
+
+  --text-h2: clamp(1.875rem, 3.6vw, 2.75rem);
+  --text-h2--line-height: 1.05;
+  --text-h2--letter-spacing: -0.01em;
+  --text-h2--font-weight: 400;
+
+  --text-h3: 1.5rem;
+  --text-h3--line-height: 1.15;
+  --text-h3--letter-spacing: -0.005em;
+  --text-h3--font-weight: 400;
+
+  --text-script: clamp(1.375rem, 1.9vw, 1.75rem);
+  --text-script--line-height: 1.1;
+
+  /* v1 aliases, retuned to the v2 scale so old pages stop shouting. */
+  --text-display-2xl: clamp(3rem, 7.5vw, 6rem);
+  --text-display-2xl--line-height: 0.95;
+  --text-display-2xl--letter-spacing: -0.015em;
+  --text-display-2xl--font-weight: 400;
+
+  --text-display-xl: clamp(2.75rem, 6vw, 4.75rem);
+  --text-display-xl--line-height: 0.98;
+  --text-display-xl--letter-spacing: -0.014em;
+  --text-display-xl--font-weight: 400;
+
+  --text-display-lg: clamp(2.25rem, 4.8vw, 3.75rem);
+  --text-display-lg--line-height: 1.02;
+  --text-display-lg--letter-spacing: -0.012em;
+  --text-display-lg--font-weight: 400;
+
+  --text-display-md: clamp(1.875rem, 3.6vw, 2.75rem);
+  --text-display-md--line-height: 1.05;
+  --text-display-md--letter-spacing: -0.01em;
+  --text-display-md--font-weight: 400;
+
+  --text-display-sm: clamp(1.5rem, 2.2vw, 1.875rem);
+  --text-display-sm--line-height: 1.15;
+  --text-display-sm--letter-spacing: -0.005em;
+  --text-display-sm--font-weight: 400;
+
+  --text-title-lg: 1.375rem;
+  --text-title-lg--line-height: 1.2;
+  --text-title-lg--letter-spacing: -0.005em;
+  --text-title-lg--font-weight: 400;
+
+  --text-title: 1.125rem;
+  --text-title--line-height: 1.35;
+  --text-title--font-weight: 600;
+
+  --text-body-lg: 1.125rem;
+  --text-body-lg--line-height: 1.6;
+
+  --text-body: 1rem;
+  --text-body--line-height: 1.6;
+
+  --text-body-sm: 0.875rem;
+  --text-body-sm--line-height: 1.5;
+
+  --text-caption: 0.875rem;
+  --text-caption--line-height: 1.5;
+
+  /* The label layer: 12px caps, Hanken 500, .12em. Never mono, never a tag. */
+  --text-micro: 0.75rem;
+  --text-micro--line-height: 1.3;
+  --text-micro--letter-spacing: 0.12em;
+  --text-micro--font-weight: 500;
+
+  --text-nano: 0.6875rem;
+  --text-nano--line-height: 1.2;
+  --text-nano--letter-spacing: 0.14em;
+  --text-nano--font-weight: 500;
+
+  --tracking-micro: 0.12em;
+  --tracking-nano: 0.14em;
+  --tracking-kana: 0.06em;
+
+  /* ---------------------------------------------------------------- */
+  /* RADII — cards 10, buttons 8, pills for tags and seals only.       */
+  /* ---------------------------------------------------------------- */
+  --radius-none: 0;
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --radius-2xl: 20px;
+  --radius-pill: 999px;
+  /* v1 blob is retired; anything still asking for it gets a circle. */
+  --radius-blob: 50%;
+
+  /* ---------------------------------------------------------------- */
+  /* ELEVATION — cards flat at rest, one lift on hover. Nothing else.  */
+  /* ---------------------------------------------------------------- */
+  --shadow-none: none;
+  --shadow-lift: 0 10px 30px rgba(43, 27, 18, 0.08);
+  --shadow-contact: 0 14px 20px rgba(43, 27, 18, 0.14);
+  --shadow-overlay: 0 24px 60px -20px rgba(43, 27, 18, 0.28);
+  --shadow-sticky: 0 1px 0 0 var(--color-line);
+
+  /* MOTION easings */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* BREAKPOINTS */
+  --breakpoint-sm: 480px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* KEYFRAMES */
+  --animate-float: float 6s var(--ease-inout) infinite;
+  --animate-marquee: marquee var(--dur-marquee) linear infinite;
+  --animate-seal: seal-spin var(--dur-seal) linear infinite;
+  --animate-van-pulse: van-pulse 1.8s linear infinite;
+  --animate-shimmer: shimmer 1.4s linear infinite;
+  --animate-pending: pending-pulse 900ms linear infinite;
+  --animate-shake: shake var(--dur-fast) linear 2;
+
+  /* The hero cutout's gentle float: ±6px, 6s, off under reduced motion. */
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(-6px);
+    }
+    50% {
+      transform: translateY(6px);
+    }
+  }
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes seal-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes van-pulse {
+    from {
+      transform: scale(1);
+      opacity: 0.5;
+    }
+    to {
+      transform: scale(2.4);
+      opacity: 0;
+    }
+  }
+  @keyframes shimmer {
+    from {
+      background-position: -140% 0;
+    }
+    to {
+      background-position: 240% 0;
+    }
+  }
+  @keyframes pending-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+  @keyframes shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    25% {
+      transform: translateX(-4px);
+    }
+    75% {
+      transform: translateX(4px);
+    }
+  }
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes dialog-in {
+    from {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @keyframes sheet-in {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  @keyframes drawer-in {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  @keyframes toast-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes panel-in {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
+
+/* ==========================================================================
+   Tokens that are not Tailwind namespaces but are part of the contract.
+   ========================================================================== */
+:root {
+  color-scheme: light;
+
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+  --space-32: 8rem;
+  --space-40: 10rem;
+  --space-48: 12rem;
+
+  /* Section rhythm: 64px mobile → 96px desktop (§1). */
+  --section-y: clamp(4rem, 1.6rem + 4.4vw, 6rem);
+  --section-y-lg: clamp(5rem, 2.2rem + 5.2vw, 7.5rem);
+
+  --border-hairline: 1px solid var(--color-line);
+  --border-hairline-strong: 1px solid var(--color-paper-400);
+  --border-hairline-dark: 1px solid rgba(243, 234, 223, 0.14);
+  --border-input: 1px solid var(--color-line);
+  --border-input-focus: 1px solid var(--color-ink);
+  --border-strong: 1.5px solid var(--color-ink);
+  --hairline-dark-color: rgba(243, 234, 223, 0.14);
+
+  /* Container 1180px, 24px gutters (§1). */
+  --max-content: 1180px;
+  --max-narrow: 820px;
+  --max-prose: 66ch;
+  --measure-prose: 62ch;
+  --measure-lead: 48ch;
+  --gutter: 20px;
+  --product-grid-gap: var(--space-6);
+
+  /* Motion */
+  --dur-instant: 0ms;
+  --dur-fast: 140ms;
+  --dur-base: 200ms;
+  --dur-slow: 320ms;
+  --dur-slower: 400ms;
+  --dur-marquee: 32s;
+  --dur-seal: 26s;
+  --stagger: 60ms;
+
+  --focus-ring-color: var(--color-accent);
+  --focus-ring-color-on-dark: var(--color-gold);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  --z-base: 0;
+  --z-sticky: 50;
+  --z-tracker: 60;
+  --z-drawer: 70;
+  --z-dialog: 80;
+  --z-toast: 90;
+
+  --header-h: 72px;
+  --header-h-scrolled: 64px;
+  --header-h-mobile: 64px;
+  --announcement-h: 0px;
+  --hit-min: 44px;
+  --control-h-sm: 36px;
+  --control-h-md: 44px;
+  --control-h-lg: 52px;
+  --input-h: 48px;
+
+  /* The one drop shadow a floating cutout gets (§1). */
+  --cutout-shadow: drop-shadow(0 22px 26px rgba(43, 27, 18, 0.16));
+  --cutout-shadow-sm: drop-shadow(0 12px 16px rgba(43, 27, 18, 0.14));
+}
+
+@media (min-width: 768px) {
+  :root {
+    --gutter: 24px;
+  }
+}
+
+/* ==========================================================================
+   BASE LAYER
+   ========================================================================== */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-paper);
+    color: var(--color-ink-2);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: 1.6;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Paper grain. Invisible as an effect, felt as texture. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-base);
+    pointer-events: none;
+    opacity: 0.022;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  :where(h1, h2, h3) {
+    font-family: var(--font-display);
+    font-weight: 400;
+    color: var(--color-ink);
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+
+  :where(p) {
+    text-wrap: pretty;
+    hyphens: none;
+    margin: 0;
+  }
+
+  :where(:focus-visible) {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+    border-radius: 2px;
+  }
+
+  :where([data-surface="dark"] :focus-visible) {
+    outline-color: var(--focus-ring-color-on-dark);
+  }
+
+  /* The one dark surface: chocolate, never black, never navy. */
+  :where([data-surface="dark"]) {
+    background-color: var(--color-choc);
+    color: var(--color-on-choc-2);
+  }
+  :where([data-surface="dark"]) :where(h1, h2, h3) {
+    color: var(--color-on-choc);
+  }
+
+  ::selection {
+    background-color: var(--color-peach);
+    color: var(--color-ink);
+  }
+}
+
+/* ==========================================================================
+   UTILITY LAYER
+   ========================================================================== */
+@layer components {
+  .tabular,
+  [data-tabular] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* KanaLabel — the reading under a product name. Never romanised. */
+  .kana {
+    font-family: var(--font-kana);
+    font-size: 0.75rem;
+    line-height: 1.4;
+    letter-spacing: var(--tracking-kana);
+    color: var(--color-muted);
+    font-weight: 400;
+  }
+  [data-surface="well"] .kana {
+    color: var(--color-muted);
+  }
+  [data-surface="dark"] .kana {
+    color: var(--color-on-choc-2);
+  }
+
+  /* The signature script: once per page, terracotta, above a display line. */
+  .script {
+    font-family: var(--font-script);
+    font-size: var(--text-script);
+    line-height: 1.1;
+    color: var(--color-accent);
+    font-weight: 500;
+  }
+
+  /* The label layer — Hanken caps at 500. This is what replaced DM Mono. */
+  .micro,
+  .nano {
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .micro {
+    font-size: 0.75rem;
+    line-height: 1.3;
+    letter-spacing: var(--tracking-micro);
+  }
+  .nano {
+    font-size: 0.6875rem;
+    line-height: 1.2;
+    letter-spacing: var(--tracking-nano);
+  }
+
+  .container-content {
+    width: 100%;
+    max-width: calc(var(--max-content) + var(--gutter) * 2);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+  .container-narrow {
+    width: 100%;
+    max-width: calc(var(--max-narrow) + var(--gutter) * 2);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  /* A floating cutout: the drop shadow that makes it sit above the paper. */
+  .cutout {
+    filter: var(--cutout-shadow);
+  }
+  .cutout-sm {
+    filter: var(--cutout-shadow-sm);
+  }
+
+  .dot-leader {
+    flex: 1 1 auto;
+    height: 1px;
+    align-self: center;
+    background-image: repeating-linear-gradient(
+      to right,
+      var(--color-line) 0 2px,
+      transparent 2px 5px
+    );
+  }
+
+  .link-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-size: 0% 1px;
+    background-position: 0 100%;
+    transition: background-size var(--dur-fast) var(--ease-standard);
+  }
+  .link-underline:hover,
+  .link-underline:focus-visible {
+    background-size: 100% 1px;
+  }
+
+  .shimmer {
+    background-image: linear-gradient(
+      90deg,
+      var(--color-well) 0%,
+      var(--color-paper-2) 50%,
+      var(--color-well) 100%
+    );
+    background-size: 200% 100%;
+    animation: var(--animate-shimmer);
+  }
+
+  .scroll-rail {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+  .scroll-rail::-webkit-scrollbar {
+    display: none;
+  }
+  .scroll-rail > * {
+    scroll-snap-align: start;
+    flex: none;
+  }
+
+  /* The home hero stage: 92vh, capped at 720px, desktop only. */
+  @media (min-width: 1024px) {
+    .hero-stage {
+      min-height: min(92vh, 720px);
+    }
+  }
+
+  /* Slots for the line-art layer. Set --lineart-<name> to a url() once the
+     asset lands in /images/lineart; until then the element paints nothing. */
+  .lineart {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.12;
+    background-image: var(--lineart, none);
+    background-repeat: no-repeat;
+    background-position: var(--lineart-position, right -80px center);
+    background-size: var(--lineart-size, 460px auto);
+  }
+
+  /* Scroll reveal — once, on first entry. 400ms, never re-animates. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity var(--dur-slower) var(--ease-out),
+      transform var(--dur-slower) var(--ease-out);
+  }
+  .reveal[data-revealed="true"] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   REDUCED MOTION
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-base: 140ms;
+    --dur-slow: 140ms;
+    --dur-slower: 140ms;
+    --stagger: 0ms;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 140ms !important;
+    scroll-behavior: auto !important;
+  }
+  [data-motion="marquee"],
+  [data-motion="seal"],
+  [data-motion="pulse"],
+  [data-motion="float"] {
+    animation: none !important;
+    transform: none !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
