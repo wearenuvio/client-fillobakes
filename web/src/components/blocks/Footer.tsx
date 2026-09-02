@@ -21,8 +21,6 @@ const COLUMNS = [
     heading: "Shop",
     links: [
       { href: "/shop", label: "The menu" },
-      { href: "/shop/breads", label: "Breads" },
-      { href: "/shop/anpan", label: "An pan" },
       { href: "/boxes", label: "Boxes" },
       { href: "/standing-order", label: "The Standing Order" },
       { href: "/gift-cards", label: "Gift cards" },
@@ -46,7 +44,6 @@ const COLUMNS = [
       { href: "/contact", label: "Contact" },
       { href: "/policies/shipping", label: "Delivery and returns" },
       { href: "/policies/refund", label: "Refunds" },
-      { href: "/policies/payment", label: "Payment and security" },
       { href: "/policies/terms", label: "Terms" },
       { href: "/policies/privacy", label: "Privacy" },
     ],
@@ -55,7 +52,7 @@ const COLUMNS = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-line bg-paper-2 pt-16 pb-10 lg:pt-20">
+    <footer className="border-t border-line bg-paper-2 pt-14 pb-10 lg:pt-20">
       <div className="container-content">
         {/* -------- Wordmark and the newsletter field ------------------- */}
         <div className="flex flex-col gap-10 border-b border-line pb-12 lg:flex-row lg:items-end lg:justify-between">
@@ -75,7 +72,7 @@ export function Footer() {
         </div>
 
         {/* -------- Columns ------------------------------------------- */}
-        <div className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-12 grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4">
           {COLUMNS.map((column) => (
             <nav key={column.heading} aria-label={column.heading}>
               <h2 className="font-sans text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
@@ -141,7 +138,7 @@ export function Footer() {
         </div>
 
         {/* -------- The local warmth line, allowed only here ------------ */}
-        <p className="mt-14 text-body-sm text-ink-2">
+        <p className="mt-12 text-body-sm text-ink-2">
           <span lang="kn">ಧನ್ಯವಾದಗಳು.</span> Thank you for letting us park on
           your street.
         </p>

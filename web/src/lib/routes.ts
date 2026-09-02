@@ -5,6 +5,8 @@
  * (see ROUTE_ALIASES) and falls back gracefully where no entry exists.
  */
 
+import productsFile from "../data/products.json";
+
 export type RouteGroup =
   | "public"
   | "commerce"
@@ -114,12 +116,26 @@ export const ROUTE_ALIASES: Record<string, string> = {
 };
 
 /** Retired paths that must 301. Wired into next.config.ts. */
+/**
+ * Path segments under /shop that belong to the catalogue rather than to a
+ * product: the category routes. Read from the catalogue file so adding a
+ * category cannot silently re-break the redirect above.
+ */
+const SHOP_SEGMENTS: string[] = (
+  productsFile.categories as { slug: string }[]
+).map((c) => c.slug);
+
 export const RETIRED_REDIRECTS: { source: string; destination: string }[] = [
   { source: "/blogpage", destination: "/journal" },
   { source: "/fillo-plus/dashboard", destination: "/account/rewards" },
   { source: "/fillo-plus/weekly-box", destination: "/standing-order" },
-  // /shop/all is a real route, so the catch-all must not swallow it.
-  { source: "/shop/:slug((?!all$)[^/]+)", destination: "/product/:slug" },
+  // The old site put products at /shop/<slug>; v2 puts them at /product/<slug>
+  // and gives /shop/<category> to the catalogue. So the catch-all must skip
+  // /shop/all and every real category slug, or it swallows the shop itself.
+  {
+    source: `/shop/:slug((?!(?:all|${SHOP_SEGMENTS.join("|")})$)[^/]+)`,
+    destination: "/product/:slug",
+  },
   { source: "/track", destination: "/van" },
   { source: "/signin", destination: "/login" },
   { source: "/delivery", destination: "/areas" },

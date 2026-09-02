@@ -19,7 +19,7 @@ export function HomeBestsellers({
   total: number;
 }) {
   return (
-    <section className="bg-paper py-[var(--section-y)]">
+    <section data-reveal className="bg-paper py-[var(--section-y)]">
       <div className="container-content">
         <SectionHead
           eyebrow="Bestsellers"

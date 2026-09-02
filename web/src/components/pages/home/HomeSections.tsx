@@ -114,7 +114,7 @@ export function CategoryTiles() {
   );
 
   return (
-    <section className="bg-paper py-[var(--section-y)]">
+    <section data-reveal className="bg-paper py-[var(--section-y)]">
       <div className="container-content">
         <SectionHead eyebrow="Shop by kind" heading="Five ways in." />
 
@@ -174,18 +174,18 @@ export function CategoryTiles() {
 
 export function StorySplit() {
   return (
-    <section className="bg-peach py-[var(--section-y)]">
+    <section data-reveal className="bg-peach py-[var(--section-y)]">
       <div className="container-content">
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
           {/* Two photos: one tall, one small and offset. */}
           <div className="relative">
             <div className="relative aspect-[4/5] w-[82%] overflow-hidden rounded-xl">
               <Image
-                src="/images/stock/lifestyle/hands-tearing-bread-minimal.jpg"
-                alt="Hands pulling a slice of milk bread apart"
+                src="/images/stock/lifestyle/hands-holding-loaf-linen-table.jpg"
+                alt="Hands lifting a loaf off a linen-covered table"
                 fill
                 sizes="(min-width: 1024px) 40vw, 82vw"
-                className="object-cover object-[50%_72%]"
+                className="object-cover object-[50%_45%]"
               />
             </div>
             <div className="absolute right-0 bottom-[-28px] aspect-square w-[44%] overflow-hidden rounded-xl border-[6px] border-peach">
@@ -261,7 +261,7 @@ const REASONS = [
 
 export function WhyReturn() {
   return (
-    <section className="bg-paper py-[var(--section-y)]">
+    <section data-reveal className="bg-paper py-[var(--section-y)]">
       <div className="container-content">
         <SectionHead
           eyebrow="Why people return"
@@ -297,7 +297,7 @@ export function WhyReturn() {
 
 export function ComeBack() {
   return (
-    <section className="border-y border-line bg-paper-2 py-[var(--section-y)]">
+    <section data-reveal className="border-y border-line bg-paper-2 py-[var(--section-y)]">
       <div className="container-content">
         <div className="grid gap-4 md:grid-cols-2 md:gap-6">
           <ComeBackCard
@@ -378,7 +378,7 @@ export function Reviews() {
   return (
     <section className="bg-paper py-[var(--section-y)]">
       <div className="container-content">
-        <div className="grid items-center gap-8 md:grid-cols-3 md:gap-6">
+        <div className="grid items-start gap-10 md:grid-cols-3 md:gap-8">
           {REVIEWS.map((review, i) => (
             <figure
               key={review.name}
@@ -453,7 +453,7 @@ const POSTS = [
 
 export function JournalRow() {
   return (
-    <section className="bg-paper pb-[var(--section-y)]">
+    <section data-reveal className="bg-paper pb-[var(--section-y)]">
       <div className="container-content">
         <SectionHead
           eyebrow="From the journal"

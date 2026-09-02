@@ -179,7 +179,7 @@ export default async function ProductPage({ params }: Params) {
               </div>
 
               <p className="mt-5 max-w-[48ch] text-body-lg text-ink-2">
-                {product.shortDescription} {firstSentence(product.longDescription)}
+                {blurb(product.shortDescription, product.longDescription)}
               </p>
 
               <div className="mt-8">
@@ -248,9 +248,9 @@ export default async function ProductPage({ params }: Params) {
                 <p className="mt-7 max-w-[52ch] text-body-lg text-ink-2">
                   {howToEat}
                 </p>
-                {rest(product.longDescription) ? (
+                {tail(product.shortDescription, product.longDescription) ? (
                   <p className="mt-6 max-w-[52ch] text-body text-ink-2">
-                    {rest(product.longDescription)}
+                    {tail(product.shortDescription, product.longDescription)}
                   </p>
                 ) : null}
               </div>
@@ -350,13 +350,42 @@ function sentence(words: string[]): string {
   return list.charAt(0).toUpperCase() + list.slice(1);
 }
 
-/** The buy column takes two lines, so the long description gives up its first. */
 function firstSentence(text: string): string {
   const match = text.match(/^[^.]+\./);
   return match ? match[0] : "";
 }
 
-/** …and the section below takes what is left, so nothing is printed twice. */
-function rest(text: string): string {
-  return text.slice(firstSentence(text).length).trim();
+function words(text: string): string[] {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter((w) => w.length > 3);
+}
+
+/**
+ * Several SKUs open their long description by restating the short one almost
+ * word for word. Printing both puts the same sentence on screen twice, so the
+ * buy column borrows the opening sentence only when it actually adds something.
+ */
+function borrows(short: string, long: string): boolean {
+  const opener = firstSentence(long);
+  if (!opener) return false;
+  const a = new Set(words(short));
+  const b = words(opener);
+  if (b.length === 0) return false;
+  const shared = b.filter((w) => a.has(w)).length / b.length;
+  return shared < 0.5;
+}
+
+/** The two-line description under the price. */
+function blurb(short: string, long: string): string {
+  return borrows(short, long) ? `${short} ${firstSentence(long)}` : short;
+}
+
+/** Whatever the buy column did not use, for the section below it. */
+function tail(short: string, long: string): string {
+  return borrows(short, long)
+    ? long.slice(firstSentence(long).length).trim()
+    : long;
 }

@@ -78,7 +78,10 @@ export function ShopShell({
         </div>
       </section>
 
+      {/* The running total follows the thumb on a phone; this keeps the last
+          row of the grid clear of it. */}
       <StickyCartBar />
+      <div aria-hidden="true" className="h-16 md:hidden" />
     </>
   );
 }

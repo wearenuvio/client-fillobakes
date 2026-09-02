@@ -11,7 +11,7 @@ import { Price } from "@/components/ui/Price";
 import { Button } from "@/components/ui/Button";
 import { QtyStepper } from "@/components/ui/QtyStepper";
 import { LoafGlyph } from "@/components/ui/LineArt";
-import { useCartStore, qtyOf } from "@/store/cart";
+import { useCartStore, useCartHydrated, qtyOf } from "@/store/cart";
 
 /**
  * ProductCard — DESIGN-v2 §2.
@@ -64,7 +64,12 @@ export function ProductCard({
   const add = useCartStore((s) => s.add);
   const increment = useCartStore((s) => s.increment);
   const decrement = useCartStore((s) => s.decrement);
-  const qty = qtyOf(lines, product.slug);
+  // The server cannot see localStorage, so the card renders its empty state
+  // until the browser has taken over. Reading the persisted quantity straight
+  // out of the store puts a stepper in the client tree where the server put an
+  // "Add", and React reports a hydration mismatch.
+  const hydrated = useCartHydrated();
+  const qty = hydrated ? qtyOf(lines, product.slug) : 0;
 
   const soldOut = stock?.soldOut ?? false;
   const few =
@@ -190,9 +195,13 @@ export function ProductCard({
         </h3>
         <KanaLabel kana={product.kana} className="mt-0.5" />
 
-        <p className="mt-2 hidden line-clamp-1 text-body-sm text-ink-2 sm:block">
-          {product.shortDescription}
-        </p>
+        {/* The clamp needs `display: -webkit-box`, so the responsive hide
+            goes on a wrapper rather than on the paragraph itself. */}
+        <div className="mt-2 hidden sm:block">
+          <p className="line-clamp-1 text-body-sm text-ink-2">
+            {product.shortDescription}
+          </p>
+        </div>
 
         <div className="mt-auto flex flex-col items-start gap-3 pt-4 sm:flex-row sm:items-center sm:justify-between">
           <Price amount={product.price} muted={soldOut} />

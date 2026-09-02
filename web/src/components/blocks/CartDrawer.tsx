@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Coins, Plus, X } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { IconButton } from "@/components/ui/IconButton";
-import { Button, ButtonLink } from "@/components/ui/Button";
+import { ButtonLink } from "@/components/ui/Button";
 import { Price } from "@/components/ui/Price";
 import { KanaLabel } from "@/components/ui/KanaLabel";
 import { QtyStepper } from "@/components/ui/QtyStepper";
@@ -23,9 +23,13 @@ import { useSessionStore } from "@/store/session";
 /**
  * Cart drawer — DESIGN.md §12.7.
  *
- * Right-side panel, `min(440px, 100vw)`, paper-0, rounded on the left corners,
- * `--shadow-overlay`, over a navy scrim. Focus trapped, Esc closes, the
- * trigger regains focus on close.
+ * Right-side panel, `min(440px, 100vw)`, card ground, rounded on the left
+ * corners, `--shadow-overlay`, over a chocolate scrim. Focus trapped, Esc
+ * closes, the trigger regains focus on close.
+ *
+ * v2 moves the area and lane question here: it is one compact row above the
+ * checkout button ("Deliver to Indiranagar · change"), because that is the
+ * first moment it is actually load-bearing. It is not on the home page.
  *
  * The money rule (DECISIONS.md §5): the total shown here is the total charged.
  * Delivery is inside it. Free-delivery progress is a 3px paper-200 track with
@@ -76,17 +80,19 @@ export function CartDrawer({ onChangeLane }: { onChangeLane?: () => void }) {
         aria-label="Your order"
         tabIndex={-1}
         className={cn(
-          "absolute inset-y-0 right-0 flex w-[min(440px,100vw)] flex-col bg-paper-0",
-          "rounded-l-lg shadow-overlay outline-none",
+          "absolute inset-y-0 right-0 flex w-[min(440px,100vw)] flex-col bg-card",
+          "rounded-l-xl shadow-overlay outline-none",
           "motion-safe:animate-[drawer-in_var(--dur-slow)_var(--ease-out)]",
         )}
       >
         {/* -------- Header ------------------------------------------------ */}
-        <div className="flex items-start justify-between gap-4 border-b border-paper-300 p-6">
+        <div className="flex items-start justify-between gap-4 border-b border-line p-6">
           <div>
-            <h2 className="text-display-sm">Your order</h2>
-            <p className="micro mt-1 text-ink-500 tabular">
-              {totals.count} {totals.count === 1 ? "ITEM" : "ITEMS"}
+            <h2 className="font-display text-[28px] leading-none text-ink">
+              Your order
+            </h2>
+            <p className="mt-2 text-body-sm text-muted tabular">
+              {totals.count} {totals.count === 1 ? "item" : "items"}
             </p>
           </div>
           <IconButton label="Close the box" onClick={close}>
@@ -108,7 +114,7 @@ export function CartDrawer({ onChangeLane }: { onChangeLane?: () => void }) {
               }
             />
           ) : (
-            <ul className="divide-y divide-paper-300 px-6">
+            <ul className="divide-y divide-line px-6">
               {lines.map((line) => (
                 <CartLine key={line.slug} slug={line.slug} qty={line.qty} />
               ))}
@@ -119,13 +125,13 @@ export function CartDrawer({ onChangeLane }: { onChangeLane?: () => void }) {
         {!empty ? (
           <>
             {/* -------- Summary -------------------------------------------- */}
-            <div className="border-t border-paper-300 px-6 py-4">
+            <div className="border-t border-line px-6 py-4">
               <SummaryRow label="Subtotal" value={formatINR(totals.subtotal)} />
               <SummaryRow
                 label="Delivery"
                 value={totals.delivery === 0 ? "Free" : formatINR(totals.delivery)}
               />
-              <div className="mt-3 flex items-center gap-2 text-caption text-ink-500">
+              <div className="mt-3 flex items-center gap-2 text-body-sm text-muted">
                 <Coins size={16} strokeWidth={1.5} aria-hidden="true" className="text-crumb-ink" />
                 <span className="tabular">
                   Earns {totals.coinsEarned} coins
@@ -142,24 +148,28 @@ export function CartDrawer({ onChangeLane }: { onChangeLane?: () => void }) {
                   onChange={onChangeLane}
                 />
               ) : (
-                <div className="border-t border-paper-300 py-3">
-                  <p className="text-body-sm text-ink-600">
-                    Set your area to check out.
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-line py-3">
+                  <p className="text-body-sm text-ink-2">
+                    Where should this go?
                   </p>
-                  <Button variant="secondary" size="sm" className="mt-2" onClick={onChangeLane}>
+                  <button
+                    type="button"
+                    onClick={onChangeLane}
+                    className="link-underline text-body-sm font-semibold text-accent"
+                  >
                     Set your area
-                  </Button>
+                  </button>
                 </div>
               )}
             </div>
 
             {/* -------- Footer --------------------------------------------- */}
-            <div className="sticky bottom-0 border-t border-paper-300 bg-paper-50 p-6">
+            <div className="sticky bottom-0 border-t border-line bg-paper p-6">
               {!totals.freeDeliveryEarned ? (
                 <div className="mb-4">
-                  <div className="h-[3px] w-full bg-paper-200" aria-hidden="true">
+                  <div className="h-[3px] w-full rounded-pill bg-well" aria-hidden="true">
                     <div
-                      className="h-full bg-kiln"
+                      className="h-full rounded-pill bg-accent"
                       style={{
                         width: `${Math.min(
                           100,
@@ -168,8 +178,8 @@ export function CartDrawer({ onChangeLane }: { onChangeLane?: () => void }) {
                       }}
                     />
                   </div>
-                  <p className="micro mt-2 text-ink-500 tabular">
-                    {formatINR(totals.toFreeDelivery)} MORE FOR FREE DELIVERY
+                  <p className="mt-2 text-body-sm text-muted tabular">
+                    {formatINR(totals.toFreeDelivery)} more for free delivery
                   </p>
                 </div>
               ) : null}
@@ -182,7 +192,7 @@ export function CartDrawer({ onChangeLane }: { onChangeLane?: () => void }) {
                 className={cn(!lane && "pointer-events-none opacity-50")}
                 aria-disabled={!lane || undefined}
               >
-                Checkout · {formatINR(totals.total)}
+                Checkout — {formatINR(totals.total)}
               </ButtonLink>
             </div>
           </>
@@ -195,9 +205,9 @@ export function CartDrawer({ onChangeLane }: { onChangeLane?: () => void }) {
 function SummaryRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-baseline gap-3 py-1">
-      <span className="text-body-sm text-ink-600">{label}</span>
+      <span className="text-body-sm text-ink-2">{label}</span>
       <span className="dot-leader" aria-hidden="true" />
-      <span className="text-body-sm text-ink-800 tabular">{value}</span>
+      <span className="text-body-sm font-medium text-ink tabular">{value}</span>
     </div>
   );
 }
@@ -212,7 +222,7 @@ function CartLine({ slug, qty }: { slug: string; qty: number }) {
     <li className="flex gap-4 py-4">
       <span
         data-surface="well"
-        className="grid size-18 shrink-0 place-items-center bg-paper-200"
+        className="grid size-18 shrink-0 place-items-center rounded-lg bg-well"
       >
         {product.image ? (
           <Image
@@ -231,7 +241,7 @@ function CartLine({ slug, qty }: { slug: string; qty: number }) {
       <div className="min-w-0 flex-1">
         <Link
           href={product.href}
-          className="link-underline block truncate text-body font-semibold text-ink-800"
+          className="link-underline block truncate font-display text-[19px] text-ink"
         >
           {product.name}
         </Link>
@@ -261,10 +271,10 @@ export function CrossSellStrip({ slug }: { slug: string }) {
   if (!product) return null;
 
   return (
-    <div className="flex items-center gap-3 border-t border-paper-300 px-6 py-3">
+    <div className="flex items-center gap-3 border-t border-line px-6 py-3">
       <span
         data-surface="well"
-        className="grid size-14 shrink-0 place-items-center bg-paper-200"
+        className="grid size-14 shrink-0 place-items-center rounded-lg bg-well"
       >
         {product.image ? (
           <Image
@@ -280,15 +290,15 @@ export function CrossSellStrip({ slug }: { slug: string }) {
         )}
       </span>
       <div className="min-w-0 flex-1">
-        <p className="nano text-ink-500">ADD A LOAF?</p>
-        <p className="truncate text-body-sm font-semibold text-ink-800">{product.name}</p>
+        <p className="text-[11px] font-medium tracking-[0.1em] text-muted uppercase">Add a loaf?</p>
+        <p className="truncate text-body-sm font-semibold text-ink">{product.name}</p>
       </div>
       <Price amount={product.price} size="sm" />
       <button
         type="button"
         onClick={() => add(product.slug)}
         aria-label={`Add ${product.name} to the box`}
-        className="relative grid size-7 shrink-0 place-items-center rounded-pill border-[1.5px] border-ink-800 text-ink-800 after:absolute after:size-11 after:content-['']"
+        className="relative grid size-8 shrink-0 place-items-center rounded-pill border border-ink text-ink after:absolute after:size-11 after:content-[''] hover:bg-veil"
       >
         <Plus size={16} strokeWidth={1.5} aria-hidden="true" />
       </button>

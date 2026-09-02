@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { QtyStepper } from "@/components/ui/QtyStepper";
 import { LoafGlyph } from "@/components/ui/LineArt";
 import { formatINR } from "@/lib/format";
-import { useCartStore, qtyOf } from "@/store/cart";
+import { useCartStore, useCartHydrated, qtyOf } from "@/store/cart";
 import type { ProductImage } from "@/lib/images";
 
 /**
@@ -118,7 +118,10 @@ export function ProductAddBlock({
   const increment = useCartStore((s) => s.increment);
   const decrement = useCartStore((s) => s.decrement);
   const openCart = useCartStore((s) => s.open);
-  const qty = qtyOf(lines, slug);
+  // Persisted state is invisible to the server: render the empty state until
+  // the browser has hydrated, or the button label mismatches.
+  const hydrated = useCartHydrated();
+  const qty = hydrated ? qtyOf(lines, slug) : 0;
 
   if (soldOut) {
     return (

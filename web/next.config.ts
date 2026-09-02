@@ -9,6 +9,12 @@ import products from "./src/data/products.json";
  * a soft-404 and worse than a real one.
  */
 const nextConfig: NextConfig = {
+  /**
+   * The dev overlay badge sits over the bottom-left of every page, which puts
+   * it inside every design QA screenshot. The build output is unaffected.
+   */
+  devIndicators: false,
+
   async redirects() {
     const legacy = legacyProductRedirects(
       products.redirects as { from: string; to: string | null }[],

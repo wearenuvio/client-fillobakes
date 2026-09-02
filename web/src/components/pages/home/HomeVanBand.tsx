@@ -72,6 +72,7 @@ export function HomeVanBand({
   return (
     <section
       data-surface="dark"
+      data-reveal
       className="relative overflow-hidden bg-choc py-[var(--section-y-lg)]"
     >
       {/* -------- Cutouts floating off both edges -------------------- */}
@@ -83,7 +84,7 @@ export function HomeVanBand({
           height={520}
           aria-hidden="true"
           sizes="240px"
-          className="pointer-events-none absolute -left-10 bottom-10 hidden w-[190px] -rotate-12 cutout lg:block xl:-left-4 xl:w-[210px]"
+          className="pointer-events-none absolute -left-8 bottom-16 hidden w-[180px] -rotate-12 cutout lg:block xl:left-2 xl:w-[196px]"
         />
       ) : null}
       {rightCutout ? (
@@ -94,7 +95,7 @@ export function HomeVanBand({
           height={520}
           aria-hidden="true"
           sizes="240px"
-          className="pointer-events-none absolute -right-8 top-14 hidden w-[180px] rotate-12 cutout lg:block xl:-right-2 xl:w-[200px]"
+          className="pointer-events-none absolute -right-6 top-20 hidden w-[170px] rotate-12 cutout lg:block xl:right-2 xl:w-[186px]"
         />
       ) : null}
 
@@ -145,7 +146,7 @@ export function HomeVanBand({
           <p
             aria-live="polite"
             className={cn(
-              "mx-auto mt-5 min-h-6 max-w-[46ch] text-body-sm",
+              "mx-auto mt-4 min-h-5 max-w-[46ch] text-body-sm",
               result?.kind === "not-yet" ? "text-gold" : "text-on-choc",
             )}
           >
@@ -154,7 +155,7 @@ export function HomeVanBand({
 
           <Link
             href="/van"
-            className="link-underline mt-6 inline-flex items-center gap-2 text-body-sm font-semibold text-gold"
+            className="link-underline mt-5 inline-flex items-center gap-2 text-body-sm font-semibold text-gold"
           >
             Track the van
             <ArrowRight size={16} strokeWidth={1.5} aria-hidden="true" />

@@ -4,6 +4,7 @@ import * as React from "react";
 import { Header } from "@/components/blocks/Header";
 import { Footer } from "@/components/blocks/Footer";
 import { CartDrawer } from "@/components/blocks/CartDrawer";
+import { RevealOnScroll } from "@/components/blocks/RevealOnScroll";
 import { AreaLaneSheet } from "@/components/blocks/AreaLaneSheet";
 import { ToastProvider } from "@/components/ui/Toast";
 
@@ -58,6 +59,7 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
 
         <Footer />
 
+        <RevealOnScroll />
         <CartDrawer onChangeLane={openAreaSheet} />
         <AreaLaneSheet open={areaSheetOpen} onClose={closeAreaSheet} />
       </AreaSheetContext.Provider>
