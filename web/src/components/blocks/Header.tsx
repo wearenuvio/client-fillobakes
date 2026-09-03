@@ -51,8 +51,18 @@ export function Header({ onOpenAreaSheet }: { onOpenAreaSheet?: () => void }) {
   }, [menuOpen]);
 
   return (
-    <header className="sticky top-0 z-[var(--z-sticky)] border-b border-line bg-paper/95 backdrop-blur-[10px]">
-      <div className="container-content flex h-16 items-center gap-3 lg:h-[72px] lg:gap-6">
+    <>
+      <TopMarquee />
+
+      <header className="sticky top-0 z-[var(--z-sticky)] border-b border-line bg-paper/95 backdrop-blur-[10px]">
+      {/* A three-column grid from 1024 with equal `1fr` sides, so the nav is
+          centred on the header rather than on whatever space the logo and the
+          action cluster happen to leave. Those two are different widths — a
+          wordmark against four icons and a button — so a flex row with a
+          `flex-1` nav in the middle centres the nav in the gap and pushes it
+          visibly left of true centre. Below 1024 it stays a flex row: there
+          is no nav to centre. */}
+      <div className="container-content flex h-16 items-center gap-3 lg:grid lg:h-[72px] lg:grid-cols-[1fr_auto_1fr] lg:gap-6">
         {/* -------- Mobile: burger left -------------------------------- */}
         <button
           type="button"
@@ -77,18 +87,22 @@ export function Header({ onOpenAreaSheet }: { onOpenAreaSheet?: () => void }) {
           <Image
             src={BRAND.logoTransparent}
             alt=""
-            width={64}
-            height={64}
+            width={128}
+            height={128}
             priority
-            className="size-8 object-contain"
+            sizes="44px"
+            className="size-9 object-contain lg:size-11"
           />
-          <span className="font-display text-[22px] leading-none lowercase text-ink">
-            fillo bakes
+          {/* Just "fillo" beside a mark this size: the full name twice over,
+              in the logo and again in type, was the widest thing in a 72px
+              header. The footer wordmark still says it in full. */}
+          <span className="font-display text-[26px] leading-none lowercase text-ink">
+            fillo
           </span>
         </Link>
 
         {/* -------- Nav, centred at ≥1024 ------------------------------ */}
-        <nav aria-label="Main" className="hidden flex-1 justify-center lg:flex">
+        <nav aria-label="Main" className="hidden justify-center lg:flex">
           <ul className="flex items-center gap-7">
             {NAV.map((item) => {
               const active =
@@ -120,7 +134,7 @@ export function Header({ onOpenAreaSheet }: { onOpenAreaSheet?: () => void }) {
         </nav>
 
         {/* -------- Right cluster -------------------------------------- */}
-        <div className="ml-auto flex items-center gap-0.5 lg:ml-0 lg:gap-1">
+        <div className="ml-auto flex items-center gap-0.5 lg:ml-0 lg:justify-self-end lg:gap-1">
           <Link
             href="/shop"
             aria-label="Search the menu"
@@ -200,5 +214,64 @@ export function Header({ onOpenAreaSheet }: { onOpenAreaSheet?: () => void }) {
         </div>
       ) : null}
     </header>
+    </>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* The top marquee                                                            */
+/* -------------------------------------------------------------------------- */
+
+const MARQUEE = [
+  "Baked every morning",
+  "Order by 8pm, at your door tomorrow",
+  "100% eggless",
+  "Free delivery over \u20B9499",
+  "Catch the van, pay no delivery fee",
+] as const;
+
+/**
+ * The strip above the header — 28px of chocolate carrying the five things
+ * worth saying before anyone has scrolled.
+ *
+ * It scrolls away with the page; only the header is sticky, so the promises
+ * are a greeting rather than a permanent band eating 28px of every screen.
+ *
+ * The track is rendered twice and translated by exactly half its own width,
+ * which is what makes the loop seamless: at -50% the second copy sits exactly
+ * where the first one started. Hovering pauses it, so nobody has to chase a
+ * line they wanted to read. Under reduced motion `motion-safe` never applies
+ * the animation and the strip is simply a static line.
+ */
+function TopMarquee() {
+  const track = (
+    <ul
+      aria-hidden="true"
+      className="flex shrink-0 items-center gap-8 pr-8 whitespace-nowrap"
+    >
+      {MARQUEE.map((item) => (
+        <li key={item} className="flex items-center gap-8">
+          <span>{item}</span>
+          <span aria-hidden="true" className="text-on-choc/40">
+            &middot;
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+
+  return (
+    <div
+      data-surface="dark"
+      className="group flex h-7 items-center overflow-hidden bg-choc text-[12px] font-medium tracking-[0.12em] text-on-choc uppercase"
+    >
+      {/* The list is decorative repetition; one readable copy is exposed to
+          assistive technology and the visible tracks are hidden from it. */}
+      <p className="sr-only">{MARQUEE.join(". ")}.</p>
+      <div className="flex motion-safe:animate-[marquee_38s_linear_infinite] motion-safe:group-hover:[animation-play-state:paused]">
+        {track}
+        {track}
+      </div>
+    </div>
   );
 }

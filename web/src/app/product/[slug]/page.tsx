@@ -8,6 +8,7 @@ import { Price } from "@/components/ui/Price";
 import { ProductCard } from "@/components/blocks/ProductCard";
 import {
   ProductAddBlock,
+  ProductDeliveryRow,
   ProductGalleryV2,
 } from "@/components/pages/commerce/ProductStage";
 import { galleryFor } from "@/components/pages/commerce/gallery";
@@ -19,6 +20,7 @@ import {
   getProducts,
   getCategoryOf,
   getPairings,
+  type Product,
 } from "@/lib/catalog";
 import { cutoutVariants, type ProductImage } from "@/lib/images";
 
@@ -81,7 +83,7 @@ export default async function ProductPage({ params }: Params) {
   const path = `/product/${product.slug}`;
   const category = getCategoryOf(product);
   const stock = stockFor(product.slug);
-  const pairings = getPairings(product.slug, 3);
+  const pairings = rankedPairings(product);
 
   // Three frames, in the order the spec names them: the two cutout revisions
   // and one lifestyle photograph. A SKU with only one cutout gets two frames,
@@ -163,27 +165,68 @@ export default async function ProductPage({ params }: Params) {
               soldOut={stock.soldOut}
             />
 
-            <div className="lg:pt-4">
-              <p className="text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
-                {category?.label}
-              </p>
+            {/* The buy column, in the order a decision actually gets made:
+                what kind of thing it is, what it is called, what it costs and
+                what it is made of, one sentence about it, the button, when it
+                arrives. Nothing above the fold that is not one of those. */}
+            <div className="lg:pt-2">
+              {/* 1 — kind, with the one claim that applies to all 23. */}
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                <p className="text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
+                  {category?.label}
+                </p>
+                <span className="inline-flex h-6 items-center rounded-pill bg-peach px-2.5 text-[11px] font-medium tracking-[0.08em] text-ink uppercase">
+                  Eggless
+                </span>
+              </div>
 
-              <h1 className="mt-3 text-display-2 text-ink">{product.name}</h1>
+              {/* 2 — the name, kana directly under it. */}
+              <h1 className="mt-3 font-display text-[clamp(40px,4.4vw,48px)] leading-[1.02] text-ink">
+                {product.name}
+              </h1>
               <KanaLabel
                 kana={product.kana}
                 decorative={false}
                 className="mt-1.5 !text-[14px]"
               />
 
-              <div className="mt-5">
-                <Price amount={product.price} size="lg" muted={stock.soldOut} />
+              {/* 3 — price and the three facts share a line; the chips wrap
+                     under the price on a phone rather than squeezing it. */}
+              <div className="mt-5 flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+                <Price
+                  amount={product.price}
+                  muted={stock.soldOut}
+                  className="!text-[22px]"
+                />
+                <ul className="flex flex-wrap items-center gap-x-5 gap-y-2">
+                  {[
+                    { icon: EggOff, label: "Eggless" },
+                    { icon: Leaf, label: "Vegetarian" },
+                    { icon: Sunrise, label: "Baked daily" },
+                  ].map(({ icon: Icon, label }) => (
+                    <li
+                      key={label}
+                      className="flex items-center gap-1.5 text-body-sm text-ink-2"
+                    >
+                      <Icon
+                        size={16}
+                        strokeWidth={1.5}
+                        aria-hidden="true"
+                        className="text-accent"
+                      />
+                      {label}
+                    </li>
+                  ))}
+                </ul>
               </div>
 
-              <p className="mt-5 max-w-[48ch] text-body-lg text-ink-2">
+              {/* 4 — one sentence. */}
+              <p className="mt-5 max-w-[48ch] text-body text-ink-2">
                 {blurb(product.shortDescription, product.longDescription)}
               </p>
 
-              <div className="mt-8">
+              {/* 5 + 6 — the button, then the cutoff line under it. */}
+              <div className="mt-7">
                 <ProductAddBlock
                   slug={product.slug}
                   name={product.name}
@@ -192,26 +235,12 @@ export default async function ProductPage({ params }: Params) {
                 />
               </div>
 
-              <ul className="mt-8 flex flex-wrap gap-x-8 gap-y-3 border-t border-line pt-6">
-                {[
-                  { icon: EggOff, label: "Eggless" },
-                  { icon: Leaf, label: "Vegetarian" },
-                  { icon: Sunrise, label: "Baked daily" },
-                ].map(({ icon: Icon, label }) => (
-                  <li
-                    key={label}
-                    className="flex items-center gap-2 text-body-sm text-ink-2"
-                  >
-                    <Icon
-                      size={18}
-                      strokeWidth={1.5}
-                      aria-hidden="true"
-                      className="text-accent"
-                    />
-                    {label}
-                  </li>
-                ))}
-              </ul>
+              {/* 7 + 8 — hairline, then one delivery row. The lane choice
+                     itself lives in the cart drawer; this only says where we
+                     already think you are. */}
+              <div className="mt-7 border-t border-line pt-5">
+                <ProductDeliveryRow />
+              </div>
             </div>
           </div>
         </div>
@@ -340,6 +369,47 @@ function Stars() {
       ))}
     </span>
   );
+}
+
+/**
+ * "Pairs well with", ranked rather than listed.
+ *
+ * The curated `suggestedPairings` in products.json come first and keep their
+ * order — a baker who says the fruit sando goes with the shokupan is a better
+ * source than any heuristic. Everything else is scored: shared tags mean a
+ * shared palate, and a sweet bake earns points for a savoury partner and the
+ * other way round, because "pairs well" means a plate that is not the same
+ * note three times. Same-category repeats are pushed down for the same reason.
+ */
+function rankedPairings(product: Product): Product[] {
+  const curated = getPairings(product.slug, 3);
+  if (curated.length >= 3) return curated;
+
+  const taken = new Set([product.slug, ...curated.map((p) => p.slug)]);
+  const tags = new Set(product.tags);
+  const isSweet = tags.has("sweet");
+  const isSavoury = tags.has("savory");
+
+  const scored = getProducts()
+    .filter((candidate) => !taken.has(candidate.slug))
+    .map((candidate) => {
+      let score = 0;
+      for (const tag of candidate.tags) {
+        // The two flags below are scored on their own terms, not as tags.
+        if (tag === "sweet" || tag === "savory") continue;
+        if (tags.has(tag)) score += 1;
+      }
+      const candidateSweet = candidate.tags.includes("sweet");
+      const candidateSavoury = candidate.tags.includes("savory");
+      if ((isSweet && candidateSavoury) || (isSavoury && candidateSweet)) {
+        score += 3;
+      }
+      if (candidate.category === product.category) score -= 2;
+      return { candidate, score };
+    })
+    .sort((a, b) => b.score - a.score);
+
+  return [...curated, ...scored.map((s) => s.candidate)].slice(0, 3);
 }
 
 /** "wheat, dairy" → "Wheat and dairy". */

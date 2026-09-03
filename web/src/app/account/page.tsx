@@ -21,6 +21,7 @@ export default async function AccountDashboardPage({ searchParams }: Search) {
     <>
       <JsonLd path={PATH} crumbs={[{ name: "Account", path: PATH }]} />
       <AccountPage
+        art="anpan-bun"
         h1={`Hey ${customer.name}.`}
         kicker="Your account"
         chip={state === "new" ? undefined : <AreaChipStatic label={accountChipLabel()} />}

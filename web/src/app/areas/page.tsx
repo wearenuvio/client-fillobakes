@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { PageHeader } from "@/components/blocks/PageHeader";
 import { buildMetadata, JsonLd, bakeryLd } from "@/lib/seo";
 import { getAreas } from "@/lib/mock";
 
@@ -28,16 +29,13 @@ export default function AreasPage() {
         nodes={[bakeryLd(areas.map((a) => a.name))]}
       />
 
-      <section className="bg-paper pt-12 pb-10 lg:pt-16 lg:pb-14">
-        <div className="container-content">
-          <p className="script">Do we reach you?</p>
-          <h1 className="mt-2 text-display-2 text-ink">Where we go</h1>
-          <p className="mt-5 max-w-[48ch] text-body-lg text-ink-2">
-            Six neighbourhoods so far. Pick yours to see the days, the stops and
-            what a delivery costs.
-          </p>
-        </div>
-      </section>
+      <PageHeader
+        script="Do we reach you?"
+        title="Where we go"
+        lede="Six neighbourhoods so far. Pick yours to see the days, the stops and what a delivery costs."
+        art="wheat-stalk"
+        artSize="sm"
+      />
 
       <section className="bg-paper pb-[var(--section-y)]">
         <div className="container-content">

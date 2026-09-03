@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { PageHeader } from "@/components/blocks/PageHeader";
 import { buildMetadata, JsonLd } from "@/lib/seo";
 import { Badge } from "@/components/ui/Badge";
-import { InkArt } from "@/components/ui/InkArt";
 import { ButtonLink } from "@/components/ui/Button";
 import {
   ContentSection,
-  PageHead,
   SectionHead,
 } from "@/components/pages/content/PageShell";
 import { JOURNAL_BODIES } from "@/components/pages/content/journal-bodies";
@@ -34,23 +33,13 @@ export default function JournalIndexPage() {
     <>
       <JsonLd path={PATH} crumbs={[{ name: "Journal", path: PATH }]} />
 
-      <ContentSection
-        surface="paper"
-        size="none"
-        className="overflow-hidden pt-10 pb-8 lg:pt-14"
-      >
-        <InkArt
-          name="croissant"
-          width={380}
-          opacity={0.1}
-          className="top-1/2 right-[-60px] hidden -translate-y-1/2 lg:block"
-        />
-        <PageHead
-          script="From the van."
-          title="The journal"
-          lead="Notes on bread, the route, and what did not rise. One post a fortnight."
-        />
-      </ContentSection>
+      <PageHeader
+        script="From the van."
+        title="The journal"
+        lede="Notes on bread, the route, and what did not rise. One post a fortnight."
+        art="croissant"
+        artSize="lg"
+      />
 
       <ContentSection surface="paper" size="half">
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

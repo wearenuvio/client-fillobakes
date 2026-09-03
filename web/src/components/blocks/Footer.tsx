@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { AtSign, Clock, Mail, MessageCircle } from "lucide-react";
-import { InkArt } from "@/components/ui/InkArt";
 import { CONTACT, SITE } from "@/lib/config";
 
 /**
@@ -20,6 +19,12 @@ import { CONTACT, SITE } from "@/lib/config";
  * one, and two identical email inputs on one page read as a bug.
  *
  * The Kannada thank-you is allowed here and nowhere else on the site.
+ *
+ * There is no line art here any more. `wheat-stalk-v2` is a 301×1200 drawing:
+ * at any width where it reads as a stalk rather than a scratch it is taller
+ * than the compacted footer, so it could only appear either cropped by the
+ * bottom edge or lying under the link columns. Both are against the rule that
+ * a drawing is never clipped and never sits under text, so it comes out.
  */
 
 const COLUMNS = [
@@ -57,15 +62,6 @@ const COLUMNS = [
 export function Footer() {
   return (
     <footer className="relative overflow-hidden border-t border-line bg-paper-2 pt-12 pb-8 lg:pt-14">
-      {/* The mirrored stalk, low on the left. Hidden on a phone, where the
-          columns run edge to edge and it would sit under the link text. */}
-      <InkArt
-        name="wheat-stalk-v2"
-        width={130}
-        opacity={0.14}
-        className="bottom-[-40px] left-[-34px] w-[130px] -rotate-6"
-      />
-
       <div className="relative container-content">
         {/* -------- Wordmark and the three columns, side by side -------- */}
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-16">
@@ -74,7 +70,7 @@ export function Footer() {
               fillo bakes
             </p>
             <p className="mt-3 max-w-[32ch] text-body-sm text-ink-2">
-              Eggless Japanese bread, baked every morning in Bengaluru.
+              Eggless Japanese bread, baked to order.
             </p>
           </div>
 

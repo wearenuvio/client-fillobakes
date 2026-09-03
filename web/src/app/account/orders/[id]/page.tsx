@@ -49,7 +49,7 @@ export default async function AccountOrderPage({ params, searchParams }: Params)
           { name: id, path },
         ]}
       />
-      <AccountPage h1={`Order ${id}`} kicker="Your orders">
+      <AccountPage art="bakery-van" h1={`Order ${id}`} kicker="Your orders">
         <OrderDetail order={order} />
       </AccountPage>
     </>

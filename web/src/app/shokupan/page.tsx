@@ -3,6 +3,7 @@ import Link from "next/link";
 import { CalendarCheck, EggOff, Leaf } from "lucide-react";
 import { buildMetadata, JsonLd, faqLd, bakeryLd } from "@/lib/seo";
 import { Stamp } from "@/components/ui/Stamp";
+import { PageHeader } from "@/components/blocks/PageHeader";
 import { InkArt } from "@/components/ui/InkArt";
 import { Faq } from "@/components/blocks/Faq";
 import { ButtonLink } from "@/components/ui/Button";
@@ -55,19 +56,18 @@ export default function ShokupanPage() {
       />
 
       {/* ---- Hero: the line left, the cutout on a well right ---------- */}
-      <ContentSection surface="paper" size="none" className="pt-8 pb-[var(--section-y)] lg:pt-12">
+      <PageHeader
+        script="Japan&rsquo;s everyday loaf."
+        title="Shokupan, baked eggless in Bengaluru."
+        lede="A fine, even crumb, a thin crust, and slices that pull apart in soft sheets. Brought to your street by van."
+        art="shokupan-loaf"
+        artSize="lg"
+      />
+
+      <ContentSection surface="paper" size="none" className="pb-[var(--section-y)]">
         <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-7">
-            <p className="script">Japan&rsquo;s everyday loaf.</p>
-            <h1 className="mt-3 max-w-[13ch] text-display-1 text-ink">
-              Shokupan, baked eggless in Bengaluru.
-            </h1>
-            <p className="mt-6 max-w-[50ch] text-body-lg text-ink-2">
-              A fine, even crumb, a thin crust, and slices that pull apart in
-              soft sheets. Brought to your street by van.
-            </p>
-
-            <div className="mt-8 flex flex-wrap items-center gap-4">
+            <div className="flex flex-wrap items-center gap-4">
               <ButtonLink href="/shop" size="lg">
                 See the menu
               </ButtonLink>

@@ -24,6 +24,7 @@ export default async function AccountGiftCardsPage({ searchParams }: Search) {
         ]}
       />
       <AccountPage
+        art="wheat-pair-v2"
         h1="Gift cards"
         kicker="Your account"
         lead="The ones you have sent, and the ones sent to you. A balance comes off your next order on its own."

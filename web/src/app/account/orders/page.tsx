@@ -24,7 +24,7 @@ export default async function AccountOrdersPage({ searchParams }: Search) {
         ]}
       />
       <AccountPage
-        art="anpan-bun"
+        art="bakery-van"
         h1="Orders"
         kicker="Your account"
         lead="Everything you have ordered, newest first. Any of them goes back in your order in one tap."

@@ -66,14 +66,14 @@ export default async function JournalPostPage({ params }: Params) {
         ]}
       />
 
-      <ContentSection surface="paper" size="none" className="pt-10 pb-8 lg:pt-14">
-        <ArticleHeader
-          kicker="From the van"
-          title={post.h1}
-          standfirst={body.standfirst}
-          backHref="/journal"
-          backLabel="The journal"
-          meta={[
+      <ArticleHeader
+        kicker="From the van"
+        title={post.h1}
+        standfirst={body.standfirst}
+        art="croissant"
+        backHref="/journal"
+        backLabel="The journal"
+        meta={[
             body.published ? (
               <span key="date" className="tabular">
                 {formatLongDate(body.published)}
@@ -83,10 +83,9 @@ export default async function JournalPostPage({ params }: Params) {
                 Coming soon
               </Badge>
             ),
-            "Fillo Bakes, Bengaluru",
-          ]}
-        />
-      </ContentSection>
+          "Fillo Bakes, Bengaluru",
+        ]}
+      />
 
       <ContentSection surface="paper" size="half">
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-14">

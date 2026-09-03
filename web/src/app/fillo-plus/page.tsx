@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Bell, Coins, Sparkles } from "lucide-react";
+import { PageHeader } from "@/components/blocks/PageHeader";
 import { buildMetadata, JsonLd } from "@/lib/seo";
 import { FilloPlusJoin } from "@/components/pages/van/JoinFilloPlus";
-import { WheatGlyph } from "@/components/ui/LineArt";
 import { MEMBERSHIP } from "@/lib/config";
 
 const PATH = "/fillo-plus";
@@ -44,25 +44,15 @@ export default function FilloPlusPage() {
       <JsonLd path={PATH} crumbs={[{ name: MEMBERSHIP.name, path: PATH }]} />
 
       {/* -------- The whole offer, and the only thing to do about it --- */}
-      <section className="relative overflow-hidden bg-paper pt-12 pb-14 lg:pt-20 lg:pb-20">
-        <WheatGlyph
-          size={560}
-          className="pointer-events-none absolute -top-36 -right-44 text-ink opacity-[0.07]"
-        />
-        <div className="container-content relative">
-          <p className="text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
-            {MEMBERSHIP.name} · {MEMBERSHIP.priceLabel}
-          </p>
-          <h1 className="mt-3 max-w-[16ch] text-display-2 text-ink">
-            Join free. Earn on every order.
-          </h1>
-          <p className="mt-5 max-w-[42ch] text-body-lg text-ink-2">
-            Two coins for every ₹100. Twenty-five coins is ₹25 off.
-          </p>
-
-          <FilloPlusJoin className="mt-9" />
-        </div>
-      </section>
+      <PageHeader
+        eyebrow={`${MEMBERSHIP.name} · ${MEMBERSHIP.priceLabel}`}
+        title="Join free. Earn on every order."
+        lede="Two coins for every ₹100. Twenty-five coins is ₹25 off."
+        art="stamp-ring"
+        artSize="sm"
+      >
+        <FilloPlusJoin />
+      </PageHeader>
 
       {/* -------- What it is ------------------------------------------- */}
       <section

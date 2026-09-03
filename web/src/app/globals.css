@@ -925,3 +925,182 @@ html:has(.fillo-preloader[data-phase="visible"]:not(.fillo-skip)) body {
     animation: none !important;
   }
 }
+
+/* ---- Ink art parallax ---------------------------------------------------
+   Added for the line-art drift (client request, Sep 2026). Two nested layers
+   inside `.ink-art`, because a single element cannot carry two independent
+   transforms: `.ink-art-scroll` drifts on the scroll timeline and
+   `.ink-art-pointer` follows the mouse. The wrapper itself is left alone —
+   that is where each call site's own rotation and mirroring live.
+
+   The pointer offset is pure CSS. `src/components/ui/ink-pointer.ts` keeps one
+   listener and one animation frame for the whole page and publishes the
+   smoothed position as --ink-px / --ink-py on <html>; every drawing reads them
+   here, so following the mouse costs no per-element JavaScript. On a touch
+   device and under reduced motion those properties are never set and the
+   fallback of 0 leaves the art still.
+
+   The scroll drift is a CSS scroll-driven animation, so it runs off the
+   compositor with no scroll listener at all. Browsers without
+   `animation-timeline` simply get no drift, which is a fine null state for
+   decoration. */
+@layer components {
+  /* The two layers are transparent to layout: the img keeps sizing off the
+     wrapper exactly as it did when it was a direct child. */
+  .ink-art-scroll,
+  .ink-art-pointer {
+    display: block;
+    width: 100%;
+  }
+  .ink-art-pointer > img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .ink-art-contain .ink-art-scroll,
+  .ink-art-contain .ink-art-pointer {
+    height: 100%;
+  }
+  .ink-art-contain .ink-art-pointer > img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .ink-art-pointer {
+    transform: translate3d(
+      calc(var(--ink-px, 0) * 10px),
+      calc(var(--ink-py, 0) * 10px),
+      0
+    );
+  }
+
+  @keyframes ink-drift {
+    from {
+      transform: translate3d(0, 24px, 0);
+    }
+    to {
+      transform: translate3d(0, -24px, 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .ink-art-scroll {
+        animation: ink-drift linear both;
+        animation-timeline: view();
+        animation-range: cover 0% cover 100%;
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ink-art-pointer {
+      transform: none;
+    }
+  }
+}
+
+/* ---- Woodblock set: hanko, stamp badge, notched frame -------------------
+   Client-approved Sep 2026. Three shapes borrowed from Japanese print, used
+   sparingly: the seal, the small status badge, and one frame on one band. */
+@layer components {
+  /* The hanko square. 72px by design, 56px on a phone, so no call site has to
+     carry two numbers. `--hanko-size` is set inline by the component. */
+  .hanko {
+    width: var(--hanko-size, 72px);
+    height: var(--hanko-size, 72px);
+  }
+  @media (max-width: 479px) {
+    .hanko {
+      width: min(var(--hanko-size, 72px), 56px);
+      height: min(var(--hanko-size, 72px), 56px);
+    }
+  }
+
+  /* The perforated postage-stamp edge.
+
+     Four masks, one per side, each a row (or column) of holes, combined with
+     `intersect` so a pixel survives only where every mask keeps it. The
+     hairline is an inset shadow rather than a border because a border is
+     painted outside the mask's reach on the notches and comes out ragged;
+     an inset shadow is part of the box and gets bitten through with it,
+     which is exactly the perforated look. */
+  .stamp-badge {
+    --stamp-hole: 3px;
+    --stamp-step: 9px;
+    background-color: var(--color-paper);
+    box-shadow: inset 0 0 0 1px var(--color-ink);
+    -webkit-mask:
+      radial-gradient(var(--stamp-hole) at 50% 0, #0000 98%, #000) 50% 0 /
+        var(--stamp-step) 100% repeat-x,
+      radial-gradient(var(--stamp-hole) at 50% 100%, #0000 98%, #000) 50% 100% /
+        var(--stamp-step) 100% repeat-x,
+      radial-gradient(var(--stamp-hole) at 0 50%, #0000 98%, #000) 0 50% / 100%
+        var(--stamp-step) repeat-y,
+      radial-gradient(var(--stamp-hole) at 100% 50%, #0000 98%, #000) 100% 50% /
+        100% var(--stamp-step) repeat-y;
+    -webkit-mask-composite: source-in;
+    mask:
+      radial-gradient(var(--stamp-hole) at 50% 0, #0000 98%, #000) 50% 0 /
+        var(--stamp-step) 100% repeat-x,
+      radial-gradient(var(--stamp-hole) at 50% 100%, #0000 98%, #000) 50% 100% /
+        var(--stamp-step) 100% repeat-x,
+      radial-gradient(var(--stamp-hole) at 0 50%, #0000 98%, #000) 0 50% / 100%
+        var(--stamp-step) repeat-y,
+      radial-gradient(var(--stamp-hole) at 100% 50%, #0000 98%, #000) 100% 50% /
+        100% var(--stamp-step) repeat-y;
+    mask-composite: intersect;
+  }
+
+  /* The notched cartouche frame.
+
+     A 1.5px ink outline whose four corners step inward, the way a woodblock
+     cartouche is cut. It is two clipped rectangles: an ink one, and a peach
+     one inset by the stroke width, leaving the line between them. Both use
+     px-based corner offsets, so the notch is the same size at 375 and at
+     1440 rather than stretching with the box the way a `preserveAspectRatio:
+     none` SVG would.
+
+     Purely decorative: absolutely positioned, `pointer-events: none`, and the
+     panel inside carries enough padding that no content ever meets the line.
+
+     `--seigaiha` is a slot. Once the wave tile lands it can be set to a
+     `url()` and the panel gets its ground without this rule changing. */
+  .notch-frame {
+    --notch: 22px;
+    --notch-stroke: 1.5px;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-color: var(--color-ink);
+    clip-path: polygon(
+      var(--notch) 0,
+      calc(100% - var(--notch)) 0,
+      calc(100% - var(--notch)) var(--notch),
+      100% var(--notch),
+      100% calc(100% - var(--notch)),
+      calc(100% - var(--notch)) calc(100% - var(--notch)),
+      calc(100% - var(--notch)) 100%,
+      var(--notch) 100%,
+      var(--notch) calc(100% - var(--notch)),
+      0 calc(100% - var(--notch)),
+      0 var(--notch),
+      var(--notch) var(--notch)
+    );
+  }
+  .notch-frame::after {
+    content: "";
+    position: absolute;
+    inset: var(--notch-stroke);
+    background-color: var(--color-peach);
+    background-image: var(--seigaiha, none);
+    background-repeat: repeat;
+    clip-path: inherit;
+  }
+  @media (max-width: 639px) {
+    .notch-frame {
+      --notch: 14px;
+    }
+  }
+}

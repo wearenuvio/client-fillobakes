@@ -1,8 +1,8 @@
 import * as React from "react";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
-import { InkArt } from "@/components/ui/InkArt";
-import { ContentSection, PageHead, Eyebrow } from "@/components/pages/content/PageShell";
+import { PageHeader } from "@/components/blocks/PageHeader";
+import { ContentSection, Eyebrow } from "@/components/pages/content/PageShell";
 import { Prose } from "@/components/pages/content/Prose";
 
 /**
@@ -45,22 +45,15 @@ export function PolicyLayout({
 }) {
   return (
     <>
-      <ContentSection
-        surface="paper"
-        size="none"
-        className="overflow-hidden pt-10 pb-8 lg:pt-14"
+      <PageHeader
+        eyebrow="Policies"
+        title={title}
+        lede={lead}
+        art="wheat-stalk-v2"
+        artSize="sm"
+        meta={<p className="text-body-sm text-muted">Last updated {updated}</p>}
       >
-        <InkArt name="wheat-stalk-v2" width={170} className="top-4 -right-4" />
-        <PageHead
-          eyebrow="Policies"
-          title={title}
-          lead={lead}
-          meta={
-            <p className="text-body-sm text-muted">Last updated {updated}</p>
-          }
-        />
-
-        <nav aria-label="Policies" className="relative mt-8">
+        <nav aria-label="Policies" className="relative">
           <ul className="scroll-rail -mx-[var(--gutter)] gap-2 px-[var(--gutter)]">
             {POLICY_LINKS.map((policy) => {
               const active = policy.href === current;
@@ -88,7 +81,7 @@ export function PolicyLayout({
             className="pointer-events-none absolute inset-y-0 right-[calc(var(--gutter)*-1)] w-12 bg-linear-to-l from-paper to-transparent sm:hidden"
           />
         </nav>
-      </ContentSection>
+      </PageHeader>
 
       <ContentSection surface="paper" size="half">
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-14">

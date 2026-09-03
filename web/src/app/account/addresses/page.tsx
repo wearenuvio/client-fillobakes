@@ -24,6 +24,7 @@ export default async function AddressesPage({ searchParams }: Search) {
         ]}
       />
       <AccountPage
+        art="fruit-sando"
         h1="Addresses"
         kicker="Your account"
         lead="Save a place and we tell you which day the van reaches it."

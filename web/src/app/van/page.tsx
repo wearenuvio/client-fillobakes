@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
+import { PageHeader } from "@/components/blocks/PageHeader";
 import { buildMetadata, JsonLd, bakeryLd } from "@/lib/seo";
 import { ButtonLink } from "@/components/ui/Button";
 import { RouteMap } from "@/components/pages/van/RouteMap";
@@ -123,16 +124,13 @@ export default async function VanPage({
       />
 
       {/* -------- Hero ------------------------------------------------- */}
-      <section className="bg-paper pt-12 pb-10 lg:pt-16 lg:pb-14">
-        <div className="container-content">
-          <p className="script">Bread that comes to your street.</p>
-          <h1 className="mt-2 text-display-2 text-ink">The van</h1>
-          <p className="mt-5 max-w-[48ch] text-body-lg text-ink-2">
-            Every morning we bake, then drive fixed routes across Bengaluru.
-            Catch it at a stop, or track it to your door.
-          </p>
-        </div>
-      </section>
+      <PageHeader
+        script="Bread that comes to your street."
+        title="The van"
+        lede="Every morning we bake, then drive fixed routes across Bengaluru. Catch it at a stop, or track it to your door."
+        art="bakery-van"
+        artSize="lg"
+      />
 
       {/* -------- Where it is right now -------------------------------- */}
       <section className="bg-paper pb-[var(--section-y)]">

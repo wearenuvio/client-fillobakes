@@ -271,3 +271,179 @@ that the account screens previously rendered as "still being decided" copy.
 DESIGN-v2 §4 forbids that, so both are now suppressed and the surrounding copy
 states the agreed default instead. The fixture still carries the strings.
 Harmless, but worth clearing when the founders confirm the numbers.
+
+---
+
+## 7. `<InkArt parallax>` is now available site-wide — please use it
+
+`components/ui/InkArt.tsx` is a client component now and takes a `parallax`
+prop, **default on**. Two things happen when it is on:
+
+- **Pointer drift.** The drawing follows the mouse by up to ±10px, lerped at
+  0.08. There is exactly one `pointermove` listener and one animation frame for
+  the whole page, in `components/ui/ink-pointer.ts`, ref-counted by the mounted
+  drawings. It publishes the smoothed position as `--ink-px` / `--ink-py` on
+  `<html>` and the offset is applied in CSS, so per-drawing cost is zero JS.
+  Nothing runs on touch or under `prefers-reduced-motion: reduce`.
+- **Scroll drift.** ±24px of translate across the section's own scroll range,
+  as a CSS scroll-driven animation (`animation-timeline: view()`). No scroll
+  listener. Browsers without it get no drift, which is a fine null state.
+
+**Request for the account, content and van pages:** you get this for free —
+your existing `<InkArt>` calls already have it. Two rules:
+
+1. Pass `parallax={false}` for any drawing that is *contained illustration*
+   rather than background: anything inside a fixed box with `overflow-hidden`
+   (a tile, a step, a card mark). ±24px will push it out of the box and the
+   box will clip it. Home does this on the category tiles and the Standing
+   Order steps.
+2. Leave it on for section-background art.
+
+## 8. Line art is never clipped by a section edge
+
+Client rule, Sep 2026: a drawing that does not fit whole gets shrunk or moved,
+never bled off the edge. Every background placement on home now sits inside its
+section — typically `bottom-[var(--section-y)]` with a small horizontal inset,
+so its foot lands on the line the content ends on and `overflow-hidden` has
+nothing to cut.
+
+**Request:** the same sweep is needed on the account, content and van pages.
+Most of the existing placements there use negative insets (`-right-4`,
+`bottom-[-40px]`) and are currently cropped.
+
+Two casualties worth knowing about:
+
+- **The footer stalk is gone.** `wheat-stalk-v2` is 301×1200. At any width
+  where it reads as a stalk rather than a scratch it is taller than the
+  compacted footer, so it could only be cropped or sit under the link columns.
+- **The dark band lost its two product cutouts and the wheat sheaf.** The van
+  is now drawn at ~39% of the window per the client, and four objects could not
+  all be placed clear of each other and of the edges.
+
+## 9. `--section-y` never reaches the 96px the spec asks for
+
+`--section-y: clamp(4rem, 1.6rem + 4.4vw, 6rem)` resolves to **81.92px at
+1280**, not 96px — the ramp does not hit its own ceiling until ~1500px wide.
+DESIGN-v2 §1 says "section padding 96px desktop / 64px mobile".
+
+`clamp(4rem, 1.6rem + 5.5vw, 6rem)` hits exactly 64px at 375 and exactly 96px
+at 1280. Not changed here: `--section-y` is shared by every page and this pass
+was scoped to additive changes in `globals.css`. **Request:** whoever owns the
+token should make the call, because right now every page on the site is 14px
+short of its own spec at the width the client reviews at.
+
+## 10. FSSAI licence number for the footer legal line
+
+The client asked for "company + FSSAI" on the footer's bottom line. There is no
+licence number anywhere in the repo — `TrustStrip.tsx` carries it as a `Tbc`
+placeholder and `seo.json` notes in two places that it is unknown and blocks
+complete `LocalBusiness` markup. DESIGN-v2 §4 forbids rendering a TBC string
+and inventing a licence number is not an option, so the line ships with the
+company, city and vegetarian status and no FSSAI.
+
+**Request:** the real number from the founders, then one line in the footer and
+the `LocalBusiness` node can both be finished.
+
+## 11. Shop header should move to `PageHeader` when it lands
+
+The shop's top block (`components/pages/commerce/ShopShell.tsx`) is built in the
+same shape the content agent is extracting into `components/blocks/PageHeader.tsx`
+— script line, display-2 heading, count, one lede. It did not exist when this
+pass ran. **Request:** when it does, swap `ShopShell`'s header section for it,
+with `karepan` art on `/shop` and `/shop/all` and the category's own art on
+`/shop/[category]`.
+
+## 12. Two copy repetitions the client's own briefs created
+
+Both are client-specified strings, so they were left exactly as given rather
+than silently edited. Flagging for a decision:
+
+- **The marquee repeats the trust strip verbatim.** The new top marquee carries
+  "Baked every morning" and "100% eggless"; the trust strip, one section below
+  it, carries the same two phrases word for word. Two of four items are an echo
+  within one screen.
+- **"Order by 8pm" now appears three times on home** — the marquee, the hero's
+  bottom-left line, and the dark band's headline ("Order by 8pm. At your door
+  tomorrow.") — plus once more on every product page. DESIGN-v2 §6 caps a fact
+  at two mentions.
+
+Suggestion: drop "Baked every morning" and "100% eggless" from the marquee (the
+trust strip owns them) and let the marquee carry only what nothing else says —
+free delivery over ₹499, the van's no-fee stop, and the 8pm cutoff.
+
+---
+
+## 7. `components/blocks/PageHeader.tsx` — the shared page head (for the shop agent)
+
+Every route outside home / shop / product now opens with this one component,
+built from the journal header the client signed off. Home, shop and product
+were left alone; adopting it there is the shop agent's call.
+
+```tsx
+<PageHeader
+  script="Everything eggless."      // Caveat, terracotta, above the title
+  eyebrow="Policies"                 // 12px caps label — use instead of script
+  title="The menu"
+  lede="Baked every morning. Order by 8pm for tomorrow."
+  meta={<p …/>}                      // a date, a reading time, a cutoff line
+  art="shokupan-loaf"                // one InkArt name, different per page
+  artSize="sm | md | lg"             // 150 / 220 / 320px
+  artAlign="right | corner"          // right (default) centres on the title row
+  variant="default | compact"        // compact = account, cart, checkout, order
+  surface="paper | paper-2 | peach"  // standing-order keeps peach
+  italic                             // display italic title (Our story)
+  actions={<…/>}                     // right slot: a chip, a button
+  back={{ href: "/van", label: "The van" }}
+  bare                               // no section/container, for use inside a column
+>
+  {/* anything that hangs under the lede: a tab rail, a form, a button */}
+</PageHeader>
+```
+
+Two things worth knowing before you use it:
+
+- **The drawing sits on the title row, not on the block.** Anything passed as
+  `children` renders under a clear ground. Putting the art on the outer block
+  instead puts it behind whatever the page hangs below the lede.
+- **`bare`** drops the `<section>` and the container so the same header can
+  live inside a column that already has gutters. That is how every
+  `/account/*` screen gets it, through `AccountPage`.
+
+Art assigned so far, one per route, so nothing repeats within a journey:
+about `rolling-pin-and-flour-bag` · shokupan `shokupan-loaf` · journal +
+journal post `croissant` · guides + guide `steam-swirls` · faq `wheat-pair` ·
+contact `bakery-van` · franchise `oven-with-loaves` · policies
+`wheat-stalk-v2` · 404/500/offline `crumbs-scatter` · van + van/[route]
+`bakery-van` · areas + areas/[area] `wheat-stalk` · standing-order
+`shokupan-loaf-v2` · fillo-plus `stamp-ring` · cart `anpan-bun` · checkout
+`karepan` · order/[id] `crumbs-scatter` · login `wheat-pair` · account home
+`anpan-bun`, orders `bakery-van`, subscription `shokupan-loaf-v2`, rewards
+`stamp-ring`, addresses `fruit-sando`, alerts `steam-swirls`, settings
+`wheat-stalk`, gift cards `wheat-pair-v2`.
+
+Unused and free for home / shop / product: `wheat-stalk-light`,
+`shokupan-loaf` variants on the dark band, `fruit-sando`, `karepan`.
+
+---
+
+## 8. `RevealOnScroll` causes a hydration attribute mismatch site-wide
+
+Every page carrying `data-reveal` logs this in the console on first load:
+
+```
+A tree hydrated but some attributes of the server rendered HTML didn't match
+the client properties.
++ className="… bg-paper-2 py-[var(--section-y)]"
+- className="… bg-paper-2 py-[var(--section-y)] reveal"
+```
+
+`components/blocks/RevealOnScroll.tsx` adds the `reveal` class to
+`[data-reveal]` sections before React hydrates, so the server HTML and the
+client tree disagree on `className`. It reproduces on `/` as well as on
+`/van`, `/areas/[area]`, `/standing-order` and `/fillo-plus`, so it is global
+rather than anything a single page introduced.
+
+**Fix:** render the `reveal` class in the server markup (add it to the
+sections themselves and have the observer only set `data-revealed`), or move
+the class toggle into an effect that runs after hydration.
+**Owner:** whoever owns `RevealOnScroll`.

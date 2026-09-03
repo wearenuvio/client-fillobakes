@@ -2,10 +2,9 @@ import type { Metadata } from "next";
 import { MessageCircle } from "lucide-react";
 import { buildMetadata, JsonLd } from "@/lib/seo";
 import { ButtonLink } from "@/components/ui/Button";
-import { InkArt } from "@/components/ui/InkArt";
+import { PageHeader } from "@/components/blocks/PageHeader";
 import {
   ContentSection,
-  PageHead,
   SectionHead,
   Eyebrow,
 } from "@/components/pages/content/PageShell";
@@ -50,28 +49,19 @@ export default function FranchisePage() {
     <>
       <JsonLd path={PATH} crumbs={[{ name: "Franchise", path: PATH }]} />
 
-      <ContentSection
-        surface="paper"
-        size="none"
-        className="overflow-hidden pt-10 pb-8 lg:pt-14"
+      <PageHeader
+        script="Run a route."
+        title="Partner with Fillo Bakes"
+        lede="We are looking for a small number of operators who want to run a route of their own."
+        art="oven-with-loaves"
+        artSize="lg"
       >
-        <InkArt
-          name="bakery-van"
-          width={420}
-          opacity={0.1}
-          className="top-1/2 right-[-70px] hidden -translate-y-1/2 lg:block"
-        />
-        <PageHead
-          script="Run a route."
-          title="Partner with Fillo Bakes"
-          lead="We are looking for a small number of operators who want to run a route of their own."
-        />
-        <p className="mt-6 max-w-[54ch] text-body text-ink-2">
+        <p className="max-w-[54ch] text-body text-ink-2">
           Founded December 2025. One van, running neighbourhood routes in{" "}
           {SITE.city}. That is the whole company, and it is the honest place to
           start a conversation about a second one.
         </p>
-      </ContentSection>
+      </PageHeader>
 
       {/* No line art on this band: the three cards fill the container, so any
           drawing here lands under a card rather than behind clear ground. */}

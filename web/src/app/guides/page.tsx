@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { PageHeader } from "@/components/blocks/PageHeader";
 import { buildMetadata, JsonLd } from "@/lib/seo";
 import { Badge } from "@/components/ui/Badge";
-import { InkArt } from "@/components/ui/InkArt";
 import { ButtonLink } from "@/components/ui/Button";
-import { ContentSection, PageHead } from "@/components/pages/content/PageShell";
+import { ContentSection } from "@/components/pages/content/PageShell";
 import { GUIDE_BODIES } from "@/components/pages/content/guide-bodies";
 import { getGuides } from "@/lib/content";
 
@@ -32,23 +32,13 @@ export default function GuidesIndexPage() {
     <>
       <JsonLd path={PATH} crumbs={[{ name: "Guides", path: PATH }]} />
 
-      <ContentSection
-        surface="paper"
-        size="none"
-        className="overflow-hidden pt-10 pb-8 lg:pt-14"
-      >
-        <InkArt
-          name="steam-swirls"
-          width={180}
-          opacity={0.12}
-          className="top-1/2 right-2 hidden -translate-y-1/2 lg:block"
-        />
-        <PageHead
-          script="What the words mean."
-          title="Guides"
-          lead="Four pages that explain the formats we bake. Undated, kept up to date, and linked from every product they describe."
-        />
-      </ContentSection>
+      <PageHeader
+        script="What the words mean."
+        title="Guides"
+        lede="Four pages that explain the formats we bake. Undated, kept up to date, and linked from every product they describe."
+        art="steam-swirls"
+        artSize="sm"
+      />
 
       <ContentSection surface="paper" size="half">
         <ul className="grid gap-6 sm:grid-cols-2">

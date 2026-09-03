@@ -1,33 +1,45 @@
 import Image from "next/image";
 import { ButtonLink } from "@/components/ui/Button";
 import { Stamp } from "@/components/ui/Stamp";
+import { InkArt } from "@/components/ui/InkArt";
 
 /**
- * Home hero — "big word over crumb photo".
+ * Home hero — "big word over crumb photo", printed rather than photographed.
  *
- * A full-bleed photograph of the sliced shokupan with one Japanese word set
- * across it in the display serif. The word is the whole idea: *fuwa fuwa* is
- * what the bread is, and a customer who learns it on the home page has been
- * given something no bakery banner gives them. Everything else on the layer
- * is support — one script line above, one gloss below, one sentence, two
- * buttons, and the two corners.
+ * A full-bleed frame of the sliced shokupan with one Japanese word set across
+ * it. The word is the whole idea: *fuwa fuwa* is what the bread is, and a
+ * customer who learns it here has been given something no bakery banner gives
+ * them. It is set once and it stays set — the line under it does the
+ * translating, which is quieter and does not ask anyone to wait for the
+ * headline to change back before they can read it.
  *
- * Contrast: the photograph is bright, and every line of type sits in its
- * lower half, so the chocolate scrim is a bottom-anchored gradient rather
- * than a flat wash over the whole frame. A 12% wash over the full image
- * takes the top edge down just far enough for the header hairline to land on
- * it cleanly without dulling the crumb.
+ * The photograph is treated rather than presented: sepia, softened contrast,
+ * a chocolate vignette and a fine grain, so it sits on the same paper as the
+ * rest of the site instead of looking like a stock frame dropped behind type.
+ * The grain is on the photo layer only — the type stays crisp.
+ *
+ * Contrast: every line of type lands in the lower half of a bright frame, so
+ * the chocolate scrim is a gradient over the whole picture rather than a band
+ * across the foot. A scrim that stops at 45% leaves the word and the gloss
+ * sitting on near-white crust at about 2.8:1.
  *
  * LCP: this photograph is the largest paint on the page. It carries
- * `priority`, `sizes="100vw"` and a ~320-byte blur placeholder baked in
- * below, so the first frame is a warm blur rather than a hole, and the
- * section reserves its own height in `min-height` so nothing moves when the
- * full image lands.
+ * `priority`, `sizes="100vw"` and a ~320-byte blur placeholder inlined below,
+ * and the section reserves its own height in `min-height`, so the first frame
+ * is a warm blur and nothing moves when the full image lands.
  */
 
 /** 10×7 JPEG of the hero frame, inlined so the first paint is never empty. */
 const BLUR =
   "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABsSFBcUERsXFhceHBsgKEIrKCUlKFE6PTBCYFVlZF9VXVtqeJmBanGQc1tdhbWGkJ6jq62rZ4C8ybqmx5moq6T/2wBDARweHigjKE4rK06kbl1upKSkpKSkpKSkpKSkpKSkpKSkpKSkpKSkpKSkpKSkpKSkpKSkpKSkpKSkpKSkpKSkpKT/wAARCAAHAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAIF/8QAHRAAAgIBBQAAAAAAAAAAAAAAAQIABBEDBRIikf/EABQBAQAAAAAAAAAAAAAAAAAAAAP/xAAXEQEBAQEAAAAAAAAAAAAAAAABAAIR/9oADAMBAAIRAxEAPwCrG41m0mPfkBgDEyTZQkkK/sRBMjMvL//Z";
+
+/**
+ * Fine film grain: one tile of fractal noise, repeated, multiplied over the
+ * photograph. An SVG filter costs nothing to download and does not need a
+ * texture file in `public/`.
+ */
+const GRAIN =
+  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E\")";
 
 export function HomeHero() {
   return (
@@ -35,34 +47,49 @@ export function HomeHero() {
        unbounded 78vh pushes the trust strip a full screen down and the hero
        stops being a hero and becomes a wall. */
     <section className="relative isolate flex min-h-[min(78vh,660px)] flex-col overflow-hidden lg:min-h-[clamp(560px,72vh,760px)]">
-      {/* -------- The photograph ----------------------------------- */}
+      {/* -------- The photograph, and its treatment ------------------- */}
       <div className="absolute inset-0 -z-20">
-        {/* `.photo-warm` wants to be the positioned box itself, so the
-            absolute wrapper is a separate element above it. */}
-        <div className="photo-warm size-full">
-          <Image
-            src="/images/stock/hero/shokupan-loaf-sliced-warm-light.jpg"
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            placeholder="blur"
-            blurDataURL={BLUR}
-            /* Phone crops into the crumb and the cut face; desktop opens out
-               to the whole board. */
-            className="object-cover object-[62%_46%] lg:object-[50%_44%]"
-          />
-        </div>
+        <Image
+          src="/images/stock/hero/shokupan-loaf-sliced-warm-light.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          placeholder="blur"
+          blurDataURL={BLUR}
+          /* Phone crops into the crumb and the cut face; desktop opens out
+             to the whole board. Sepia and the softened contrast are the
+             vintage part; the lifted blacks come from the cream wash below,
+             because `brightness` would wash the highlights out with them. */
+          className="object-cover object-[62%_46%] lg:object-[50%_44%] [filter:sepia(0.25)_contrast(0.95)_saturate(0.9)]"
+        />
+        {/* Lifted blacks. */}
+        <span
+          aria-hidden="true"
+          className="absolute inset-0 bg-[color:var(--color-paper)] opacity-[0.07]"
+        />
+        {/* Vignette. */}
+        <span
+          aria-hidden="true"
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              "radial-gradient(ellipse at center, rgb(43 27 18 / 0) 42%, rgb(43 27 18 / 0.35) 100%)",
+          }}
+        />
+        {/* Grain. Multiplied, and only over the photograph — the type layer
+            sits above this and stays clean. */}
+        <span
+          aria-hidden="true"
+          className="absolute inset-0 opacity-[0.08] mix-blend-multiply"
+          style={{ backgroundImage: GRAIN, backgroundRepeat: "repeat" }}
+        />
       </div>
 
       {/* -------- Scrim ---------------------------------------------
           One gradient over the whole frame rather than a band across the
-          foot. The type stack is tall — script, a 200px word, a gloss, a
-          sentence and two buttons — and on a loaf this bright a scrim that
-          stops at 45% leaves the word and the gloss sitting on near-white
-          crust at about 2.8:1. The stops below hold cream at 4.5:1 or better
-          everywhere a line of type actually lands, and the bread still reads
-          warm through them. */}
+          foot. The stops below hold cream at 4.5:1 or better everywhere a
+          line of type actually lands, and the bread still reads warm. */}
       <span
         aria-hidden="true"
         className="absolute inset-0 -z-10"
@@ -70,6 +97,31 @@ export function HomeHero() {
           backgroundImage:
             "linear-gradient(to top, rgb(43 27 18 / 0.78) 0%, rgb(43 27 18 / 0.64) 45%, rgb(43 27 18 / 0.42) 78%, rgb(43 27 18 / 0.30) 100%)",
         }}
+      />
+
+      {/* -------- Corner stalks -------------------------------------
+          Two mirrored stalks in the outer corners, in the margin outside the
+          content column so they never come near a word, and inset from every
+          edge so nothing is cut. */}
+      <InkArt
+        name="wheat-stalk"
+        tone="light"
+        width={32}
+        fit="contain"
+        opacity={0.55}
+        hideOnPhone={false}
+        sizes="32px"
+        className="top-6 left-1 h-[90px] w-[21px] lg:top-8 lg:left-4 lg:h-[140px] lg:w-[32px]"
+      />
+      <InkArt
+        name="wheat-stalk"
+        tone="light"
+        width={32}
+        fit="contain"
+        opacity={0.55}
+        hideOnPhone={false}
+        sizes="32px"
+        className="right-1 bottom-6 h-[90px] w-[21px] -scale-100 lg:right-4 lg:bottom-8 lg:h-[140px] lg:w-[32px]"
       />
 
       {/* -------- The layer ----------------------------------------- */}
@@ -86,11 +138,13 @@ export function HomeHero() {
               aria-hidden="true"
               className="hidden h-px flex-1 bg-on-choc/35 lg:block"
             />
+
             <h1 className="text-center font-display text-[clamp(72px,13vw,200px)] leading-[0.86] tracking-[-0.015em] text-on-choc">
               {/* Two lines on a phone, one on everything else. */}
               <span className="block sm:inline">Fuwa</span>{" "}
               <span className="block sm:inline">fuwa</span>
             </h1>
+
             <span
               aria-hidden="true"
               className="hidden h-px flex-1 bg-on-choc/35 lg:block"
@@ -100,10 +154,7 @@ export function HomeHero() {
           {/* Cream, not the dimmed cream: this is the one line that explains
               the word above it, and it is the smallest type on the layer. */}
           <p className="mt-5 text-[15px] leading-[1.5] text-on-choc">
-            <span
-              lang="ja"
-              className="font-[family-name:var(--font-kana)]"
-            >
+            <span lang="ja" className="font-[family-name:var(--font-kana)]">
               ふわふわ
             </span>{" "}
             · the Japanese word for pillowy
@@ -139,11 +190,7 @@ export function HomeHero() {
               the line to its left. The wrapper carries the position: the
               seal's own `relative` would otherwise win over it. */}
           <span className="relative hidden shrink-0 min-[480px]:block">
-            <Stamp
-              lines={["100% eggless", "baked daily"]}
-              size={92}
-              tone="on-choc"
-            />
+            <Stamp lines={["100% eggless", "baked daily"]} size={72} tone="on-choc" />
           </span>
         </div>
       </div>

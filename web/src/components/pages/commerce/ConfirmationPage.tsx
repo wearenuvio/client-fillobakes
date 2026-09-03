@@ -4,6 +4,7 @@ import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { MessageCircle, Truck } from "lucide-react";
+import { PageHeader } from "@/components/blocks/PageHeader";
 import { ButtonLink } from "@/components/ui/Button";
 import { LoafGlyph } from "@/components/ui/LineArt";
 import { BakeStrip } from "@/components/blocks/BakeStrip";
@@ -104,17 +105,17 @@ export function ConfirmationPage({ order }: { order: OrderView }) {
 
   return (
     <div className="bg-paper">
-      <div className="container-narrow pt-12 pb-16 lg:pt-16 lg:pb-24">
-        {/* -------- The reward ---------------------------------------- */}
-        <h1 className="font-display text-display-2 text-ink">
-          Got it, {view.greetingName}.
-        </h1>
-        <p className="mt-4 max-w-[46ch] text-body-lg text-ink-2">
-          {view.promise}
-        </p>
-
+      {/* -------- The reward ------------------------------------------ */}
+      <PageHeader
+        title={`Got it, ${view.greetingName}.`}
+        lede={view.promise}
+        variant="compact"
+        art="crumbs-scatter"
+        artSize="md"
+      />
+      <div className="container-narrow pb-16 lg:pb-24">
         {/* -------- The order card ------------------------------------ */}
-        <div className="mt-10 rounded-lg border border-line bg-card p-5 sm:p-6">
+        <div className="rounded-lg border border-line bg-card p-5 sm:p-6">
           <p className="text-[12px] font-medium tracking-[0.12em] text-muted uppercase tabular">
             Order {view.id}
           </p>

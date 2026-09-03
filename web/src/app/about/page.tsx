@@ -3,6 +3,7 @@ import Image from "next/image";
 import { buildMetadata, JsonLd } from "@/lib/seo";
 import { ButtonLink } from "@/components/ui/Button";
 import { InkArt, type InkArtName } from "@/components/ui/InkArt";
+import { PageHeader } from "@/components/blocks/PageHeader";
 import {
   ContentSection,
   SectionHead,
@@ -56,18 +57,16 @@ export default function AboutPage() {
       <JsonLd path={PATH} crumbs={[{ name: "Our story", path: PATH }]} />
 
       {/* ---- Hero: photo left, the line right ------------------------- */}
-      <ContentSection
-        surface="paper"
-        size="none"
-        className="overflow-hidden pt-8 pb-[var(--section-y)] lg:pt-12"
-      >
-        <InkArt
-          name="wheat-stalk"
-          width={170}
-          opacity={0.12}
-          className="top-1/2 right-[-40px] hidden -translate-y-1/2 lg:block"
-        />
-        <div className="relative grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+      <PageHeader
+        script="Since December 2025."
+        title="Baked the Japanese way, without a single egg."
+        italic
+        art="rolling-pin-and-flour-bag"
+        artSize="lg"
+      />
+
+      <ContentSection surface="paper" size="none" className="pb-[var(--section-y)]">
+        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
           <div className="relative order-2 lg:order-1">
             <div className="relative aspect-[4/5] w-full overflow-hidden rounded-lg">
               <Image
@@ -82,11 +81,7 @@ export default function AboutPage() {
           </div>
 
           <div className="order-1 lg:order-2">
-            <p className="script">Since December 2025.</p>
-            <h1 className="mt-3 max-w-[15ch] font-display text-display-2 text-ink italic">
-              Baked the Japanese way, without a single egg.
-            </h1>
-            <p className="mt-6 max-w-[52ch] text-body-lg text-ink-2">
+            <p className="max-w-[52ch] text-body-lg text-ink-2">
               {SITE.founders[0]} and {SITE.founders[1]} started Fillo in
               Bengaluru with one loaf and one route. Most of us remember a
               neighbourhood that smelled of bread in the evening, and that

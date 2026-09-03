@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { PageHeader } from "@/components/blocks/PageHeader";
 import { buildMetadata, JsonLd, bakeryLd } from "@/lib/seo";
 import { NotifyWhatsApp } from "@/components/pages/van/NotifyWhatsApp";
 import { SetAreaButton } from "@/components/pages/van/SetAreaButton";
@@ -60,21 +61,12 @@ export default async function AreaPage({ params }: Params) {
         nodes={[bakeryLd([area.name])]}
       />
 
-      <section className="bg-paper pt-8 pb-10 lg:pt-10 lg:pb-12">
-        <div className="container-content">
-          <Link
-            href="/areas"
-            className="link-underline inline-flex min-h-11 items-center gap-2 text-body-sm font-semibold text-accent"
-          >
-            <ArrowLeft size={16} strokeWidth={1.5} aria-hidden="true" />
-            All areas
-          </Link>
-
-          <h1 className="mt-8 max-w-[16ch] text-display-2 text-ink">
-            Do we reach {area.name}?
-          </h1>
-        </div>
-      </section>
+      <PageHeader
+        title={`Do we reach ${area.name}?`}
+        art="wheat-stalk"
+        artSize="sm"
+        back={{ href: "/areas", label: "All areas" }}
+      />
 
       {/* -------- The answer, and the one thing to do about it ---------- */}
       <section className="bg-paper pb-[var(--section-y)]">

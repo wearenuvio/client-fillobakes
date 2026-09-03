@@ -2,10 +2,9 @@ import type { Metadata } from "next";
 import { AtSign, Clock, Mail, MapPin, MessageCircle } from "lucide-react";
 import { buildMetadata, JsonLd, bakeryLd } from "@/lib/seo";
 import { ButtonLink } from "@/components/ui/Button";
-import { InkArt } from "@/components/ui/InkArt";
+import { PageHeader } from "@/components/blocks/PageHeader";
 import {
   ContentSection,
-  PageHead,
   Eyebrow,
 } from "@/components/pages/content/PageShell";
 import { ContactForm } from "@/components/pages/content/ContactForm";
@@ -72,32 +71,22 @@ export default function ContactPage() {
         nodes={[bakeryLd(areas.map((a) => a.name))]}
       />
 
-      <ContentSection
-        surface="paper"
-        size="none"
-        className="overflow-hidden pt-10 pb-8 lg:pt-14"
+      <PageHeader
+        script="We read everything."
+        title="Talk to us"
+        lede="WhatsApp is fastest. Everything else reaches the same two people."
+        art="bakery-van"
+        artSize="lg"
       >
-        <InkArt
-          name="bakery-van"
-          width={420}
-          opacity={0.1}
-          className="top-1/2 right-[-70px] hidden -translate-y-1/2 lg:block"
-        />
-        <PageHead
-          script="We read everything."
-          title="Talk to us"
-          lead="WhatsApp is fastest. Everything else reaches the same two people."
-        />
         <ButtonLink
           href={whatsappHref("Hi Fillo — a question from the site.")}
           size="lg"
-          className="mt-8"
           icon={<MessageCircle size={18} strokeWidth={1.5} />}
           iconPosition="leading"
         >
           Message us on WhatsApp
         </ButtonLink>
-      </ContentSection>
+      </PageHeader>
 
       <ContentSection surface="paper" size="half">
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">

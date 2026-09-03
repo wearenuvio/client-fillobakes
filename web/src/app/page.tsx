@@ -7,9 +7,10 @@ import { HomeVanBand } from "@/components/pages/home/HomeVanBand";
 import { HomeBestsellers } from "@/components/pages/home/HomeBestsellers";
 import {
   CategoryTiles,
-  ComeBack,
+  FilloPlusStrip,
   JournalRow,
   Reviews,
+  StandingOrderBand,
   StorySplit,
   TrustStripV2,
   WhyReturn,
@@ -61,31 +62,34 @@ export default function HomePage() {
       {/* 2 — The four quiet facts. */}
       <TrustStripV2 />
 
-      {/* 3 — Choose: four cards with one-tap add. */}
+      {/* 3 — Choose: eight cards with one-tap add. */}
       <HomeBestsellers products={bestsellers} total={total} />
 
-      {/* 4 — Choose: the five kinds. */}
+      {/* 4 — Come back, early: the habit is the ask, so it goes while the
+             eight bakes are still on screen rather than after nine more
+             sections. Peach between two paper bands, so no two tinted
+             grounds ever touch. */}
+      <StandingOrderBand />
+
+      {/* 5 — Choose: the five kinds. */}
       <CategoryTiles />
 
-      {/* 5 — Believe: the founders and the method. */}
+      {/* 6 — Believe: the founders and the method. */}
       <StorySplit />
 
-      {/* 6 — Believe: the four reasons people come back. */}
+      {/* 7 — Believe: the four reasons people come back. */}
       <WhyReturn />
 
-      {/* 7 — Get it. The page's one dark band. */}
-      <HomeVanBand
-        leftCutout={getProductBySlug("custard-an-pan")?.image ?? null}
-        rightCutout={getProductBySlug("seoul-spice")?.image ?? null}
-      />
+      {/* 8 — Get it. The page's one dark band. */}
+      <HomeVanBand />
 
-      {/* 8 — Come back: the habit and the membership, side by side. */}
-      <ComeBack />
+      {/* 9 — The free membership, one line, after the delivery answer. */}
+      <FilloPlusStrip />
 
-      {/* 9 — Come back: three real reviews. */}
+      {/* 10 — Come back: three real reviews. */}
       <Reviews />
 
-      {/* 10 — Come back: two posts and the Sunday email. */}
+      {/* 11 — Come back: two posts and the Sunday email. */}
       <JournalRow />
     </>
   );

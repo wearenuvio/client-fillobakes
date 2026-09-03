@@ -6,6 +6,8 @@ import {
 } from "@/components/pages/commerce/ShopGrid";
 import { getCategories, getProducts, type Product } from "@/lib/catalog";
 import { stockFor } from "@/components/pages/commerce/run";
+import { PageHeader } from "@/components/blocks/PageHeader";
+import type { InkArtName } from "@/components/ui/InkArt";
 import { StickyCartBar } from "@/components/pages/commerce/StickyCartBar";
 import { CartBarSpacer } from "@/components/pages/commerce/CartBarSpacer";
 
@@ -41,35 +43,47 @@ export function shopItems(products: Product[]): ShopItem[] {
   });
 }
 
+/** Each shop route's drawing: its own kind, or the kare pan for the index. */
+const CATEGORY_ART: Record<string, InkArtName> = {
+  all: "karepan",
+  breads: "shokupan-loaf",
+  anpan: "anpan-bun",
+  karepan: "karepan",
+  "pies-strudels": "croissant",
+  "fruit-sandos": "fruit-sando",
+};
+
 export function ShopShell({
   heading,
   count,
   lead,
   activeTab = "all",
   products,
-  headingAs: Heading = "h1",
 }: {
   heading: string;
   count: number;
   lead: string;
   activeTab?: string;
   products: Product[];
-  headingAs?: "h1" | "h2";
 }) {
   return (
     <>
-      <section className="bg-paper pt-10 pb-8 lg:pt-14">
-        <div className="container-content">
-          <p className="script">Everything eggless.</p>
-          <div className="mt-2 flex flex-wrap items-baseline gap-x-4 gap-y-1">
-            <Heading className="text-display-2 text-ink">{heading}</Heading>
-            <span className="text-body-lg text-muted tabular">
-              {count} {count === 1 ? "bake" : "bakes"}
-            </span>
-          </div>
-          <p className="mt-4 max-w-[52ch] text-body-lg text-ink-2">{lead}</p>
-        </div>
-      </section>
+      {/* The shared page header, so the menu's top block is the same object
+          as every other page's. The count rides the title row on the right
+          rather than sitting beside the title, which is what `PageHeader`
+          gives every page that has a number to show. */}
+      <PageHeader
+        script="Everything eggless."
+        title={heading}
+        lede={lead}
+        art={CATEGORY_ART[activeTab] ?? "karepan"}
+        artSize="md"
+        actions={
+          <span className="text-body-lg text-muted tabular">
+            {count} {count === 1 ? "bake" : "bakes"}
+          </span>
+        }
+      />
 
       <ShopTabs tabs={shopTabs()} activeTab={activeTab} />
 

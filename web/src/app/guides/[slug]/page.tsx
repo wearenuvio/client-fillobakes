@@ -49,16 +49,15 @@ export default async function GuidePage({ params }: Params) {
         ]}
       />
 
-      <ContentSection surface="paper" size="none" className="pt-10 pb-8 lg:pt-14">
-        <ArticleHeader
-          kicker="Guide"
-          title={guide.h1}
-          standfirst={body.standfirst}
-          backHref="/guides"
-          backLabel="All guides"
-          meta={["Undated, kept up to date", "Fillo Bakes, Bengaluru"]}
-        />
-      </ContentSection>
+      <ArticleHeader
+        kicker="Guide"
+        title={guide.h1}
+        standfirst={body.standfirst}
+        art="steam-swirls"
+        backHref="/guides"
+        backLabel="All guides"
+        meta={["Undated, kept up to date", "Fillo Bakes, Bengaluru"]}
+      />
 
       <ContentSection surface="paper" size="half">
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-14">

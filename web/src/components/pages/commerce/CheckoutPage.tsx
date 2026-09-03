@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { MapPin, Truck } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { PageHeader } from "@/components/blocks/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { LoafGlyph } from "@/components/ui/LineArt";
 import {
@@ -213,16 +214,15 @@ export function CheckoutPage({
 
   return (
     <>
-      <div className="container-content pt-10 pb-16 lg:pt-14 lg:pb-24">
-        {/* -------- Page head ------------------------------------------ */}
-        <header>
-          <h1 className="font-display text-display-2 text-ink">Checkout</h1>
-          <p className="mt-3 max-w-[46ch] text-body-lg text-ink-2">
-            Your order, once. Delivery is already inside the total.
-          </p>
-        </header>
-
-        <div className="mt-10 grid gap-10 lg:mt-14 lg:grid-cols-[1fr_380px] lg:items-start lg:gap-14">
+      <PageHeader
+        title="Checkout"
+        lede="Your order, once. Delivery is already inside the total."
+        variant="compact"
+        art="karepan"
+        artSize="sm"
+      />
+      <div className="container-content pb-16 lg:pb-24">
+        <div className="grid gap-10 lg:grid-cols-[1fr_380px] lg:items-start lg:gap-14">
           {/* ================= LEFT: the three questions ================ */}
           <div className="order-2 min-w-0 lg:order-1">
             {/* -------- 2. Where -------------------------------------- */}

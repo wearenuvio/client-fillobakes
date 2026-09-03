@@ -24,6 +24,7 @@ export default async function AlertsPage({ searchParams }: Search) {
         ]}
       />
       <AccountPage
+        art="steam-swirls"
         h1="What we send you"
         kicker="Your account"
         lead="WhatsApp by default. There is no mailing list you did not ask for."

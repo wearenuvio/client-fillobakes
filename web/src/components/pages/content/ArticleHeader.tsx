@@ -1,59 +1,49 @@
 import * as React from "react";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
-import { cn } from "@/lib/cn";
-import { Lead } from "@/components/pages/content/Prose";
+import { PageHeader } from "@/components/blocks/PageHeader";
+import type { InkArtName } from "@/components/ui/InkArt";
 
 /**
- * The head of a guide or a journal post.
+ * The head of a guide or a journal post — the shared PageHeader, with the
+ * meta row that says which of the two it is.
  *
  * A guide is undated and maintained; a journal post is dated and never
- * updated. The meta row is where that difference becomes visible to a reader,
- * which is why it is a required prop rather than a nicety.
+ * updated. That difference only exists for a reader if the page says it, so
+ * the meta row is a required prop rather than a nicety.
  */
 export function ArticleHeader({
   kicker,
   title,
   standfirst,
   meta,
+  art,
   backHref,
   backLabel,
-  className,
 }: {
   kicker: React.ReactNode;
   title: React.ReactNode;
   standfirst?: React.ReactNode;
   meta?: React.ReactNode[];
+  art?: InkArtName;
   backHref?: string;
   backLabel?: string;
-  className?: string;
 }) {
   return (
-    <header className={cn("max-w-[var(--max-narrow)]", className)}>
-      {backHref ? (
-        <Link
-          href={backHref}
-          className="link-underline mb-7 inline-flex min-h-11 items-center gap-2 text-body-sm font-semibold text-accent"
-        >
-          <ArrowLeft size={16} strokeWidth={1.5} aria-hidden="true" />
-          {backLabel ?? "Back"}
-        </Link>
-      ) : null}
-
-      <p className="text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
-        {kicker}
-      </p>
-      <h1 className="mt-3 text-display-2 text-ink">{title}</h1>
-
-      {standfirst ? <Lead className="mt-5">{standfirst}</Lead> : null}
-
-      {meta?.length ? (
-        <ul className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-line pt-4 text-body-sm text-muted">
-          {meta.map((item, index) => (
-            <li key={index}>{item}</li>
-          ))}
-        </ul>
-      ) : null}
-    </header>
+    <PageHeader
+      eyebrow={kicker}
+      title={title}
+      lede={standfirst}
+      art={art}
+      artSize="sm"
+      back={backHref ? { href: backHref, label: backLabel ?? "Back" } : undefined}
+      meta={
+        meta?.length ? (
+          <ul className="flex max-w-[var(--max-narrow)] flex-wrap items-center gap-x-6 gap-y-2 border-t border-line pt-4 text-body-sm text-muted">
+            {meta.map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
+          </ul>
+        ) : undefined
+      }
+    />
   );
 }

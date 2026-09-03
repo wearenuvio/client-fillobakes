@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
+import { PageHeader } from "@/components/blocks/PageHeader";
 import { buildMetadata, JsonLd, faqLd } from "@/lib/seo";
 import { Faq } from "@/components/blocks/Faq";
-import { InkArt } from "@/components/ui/InkArt";
 import { ButtonLink } from "@/components/ui/Button";
 import {
   ContentSection,
-  PageHead,
   Eyebrow,
 } from "@/components/pages/content/PageShell";
 import { FAQ_GROUPS, FAQ_ITEMS } from "@/components/pages/content/faq-items";
@@ -33,26 +32,14 @@ export default function FaqPage() {
         nodes={[faqLd(FAQ_ITEMS.map(({ question, answer }) => ({ question, answer })))]}
       />
 
-      <ContentSection
-        surface="paper"
-        size="none"
-        className="overflow-hidden pt-10 pb-8 lg:pt-14"
+      <PageHeader
+        script="Ask us anything."
+        title="Questions"
+        lede="Everything people ask before their first order, and most of what they ask after it."
+        art="wheat-pair"
+        artSize="md"
       >
-        {/* Decoration only, in the dead half of the head block. Never over
-            text, never on a phone. */}
-        <InkArt
-          name="wheat-pair-v2"
-          width={340}
-          opacity={0.1}
-          className="top-1/2 right-[-50px] hidden -translate-y-1/2 lg:block"
-        />
-        <PageHead
-          script="Ask us anything."
-          title="Questions"
-          lead="Everything people ask before their first order, and most of what they ask after it."
-        />
-
-        <nav aria-label="Jump to a group" className="relative mt-8">
+        <nav aria-label="Jump to a group" className="relative">
           <ul className="scroll-rail -mx-[var(--gutter)] gap-2 px-[var(--gutter)]">
             {FAQ_GROUPS.map((group) => (
               <li key={group.id}>
@@ -71,7 +58,7 @@ export default function FaqPage() {
             className="pointer-events-none absolute inset-y-0 right-[calc(var(--gutter)*-1)] w-12 bg-linear-to-l from-paper to-transparent sm:hidden"
           />
         </nav>
-      </ContentSection>
+      </PageHeader>
 
       <ContentSection surface="paper" size="half">
         {FAQ_GROUPS.map((group, index) => (

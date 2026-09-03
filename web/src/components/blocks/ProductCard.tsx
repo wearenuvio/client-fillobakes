@@ -9,6 +9,7 @@ import { cutoutVariants } from "@/lib/images";
 import { KanaLabel } from "@/components/ui/KanaLabel";
 import { Price } from "@/components/ui/Price";
 import { Button } from "@/components/ui/Button";
+import { StampBadge } from "@/components/ui/Stamp";
 import { QtyStepper } from "@/components/ui/QtyStepper";
 import { LoafGlyph } from "@/components/ui/LineArt";
 import { useCartStore, useCartHydrated, qtyOf } from "@/store/cart";
@@ -255,17 +256,17 @@ export function ProductCard({
 
         {/* -------- One tag, top-left. Never two. ------------------------ */}
         {soldOut ? (
-          <span className="pointer-events-none absolute top-3 left-3 inline-flex h-6 items-center rounded-pill bg-paper px-2.5 text-[11px] font-medium tracking-[0.08em] text-ink uppercase">
+          <StampBadge className="absolute top-3 left-3">
             Sold out today
-          </span>
+          </StampBadge>
         ) : few ? (
-          <span className="pointer-events-none absolute top-3 left-3 inline-flex h-6 items-center rounded-pill bg-paper px-2.5 text-[11px] font-medium tracking-[0.08em] text-gold uppercase">
+          <StampBadge tone="gold" className="absolute top-3 left-3">
             Few left
-          </span>
+          </StampBadge>
         ) : stock?.isNew ? (
-          <span className="pointer-events-none absolute top-3 left-3 inline-flex h-6 items-center rounded-pill bg-accent px-2.5 text-[11px] font-medium tracking-[0.08em] text-on-accent uppercase">
+          <StampBadge tone="accent" className="absolute top-3 left-3">
             This week
-          </span>
+          </StampBadge>
         ) : null}
       </div>
 
@@ -285,7 +286,12 @@ export function ProductCard({
           <KanaLabel kana={product.kana} className="whitespace-nowrap" />
         </span>
 
-        <p className="mt-1.5 truncate text-[12px] text-muted">
+        {/* Two lines reserved below 640, one from there up. In a 2-up phone
+            grid the column is 123px of text and "Cream-filled · Sweet ·
+            Eggless" is about 174px, so a single truncated line lost the word
+            the whole line exists for. Both states reserve their height, so
+            the price row still lands on one baseline across a row. */}
+        <p className="mt-1.5 line-clamp-2 min-h-[2lh] text-[12px] text-muted sm:line-clamp-1 sm:min-h-[1lh]">
           {attributes(product)}
         </p>
 
@@ -295,12 +301,19 @@ export function ProductCard({
           <Price amount={product.price} muted={soldOut} />
 
           {soldOut ? (
+            /* "Notify me" beside a price in a 123px phone column overflows
+               the card by about 7px. The label drops a word below 640 rather
+               than the row wrapping, which would break the shared baseline;
+               the full sentence stays in the accessible name. */
             <Button
               variant="secondary"
               size="sm"
               onClick={() => onNotifyMe?.(product.slug)}
+              aria-label={`Tell me when ${product.name} is back`}
+              className="px-3 sm:px-4"
             >
-              Notify me
+              <span className="sm:hidden">Notify</span>
+              <span className="hidden sm:inline">Notify me</span>
             </Button>
           ) : qty > 0 ? (
             <QtyStepper

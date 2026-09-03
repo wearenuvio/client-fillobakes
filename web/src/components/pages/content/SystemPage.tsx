@@ -39,10 +39,14 @@ export function SystemPage({
     >
       <div className="container-content">
         <div className="relative flex flex-col items-center text-center">
+          {/* Centred rather than in a corner: this is the one page shape on
+              the site whose content is centred, so the drawing follows it. */}
           <InkArt
             name="crumbs-scatter"
             width={460}
-            opacity={0.12}
+            opacity={0.14}
+            parallax
+            hideOnPhone={false}
             className="-top-8 left-1/2 -translate-x-1/2"
           />
           <div className="relative grid size-[200px] place-items-center sm:size-[240px]">

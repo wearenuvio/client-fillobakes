@@ -1,183 +1,197 @@
-import Image from "next/image";
 import { cn } from "@/lib/cn";
 
 /**
- * Seal — DESIGN-v2 §2. The brand device, and the only circle in the system.
+ * Hanko — the brand seal. DESIGN-v2 §2, in its woodblock revision.
  *
- * The ring is now the drawn one: `stamp-ring.png`, a double hairline with four
- * wheat ears at the quarters, from the hand-drawn set. The two lines of caps
- * are set in HTML inside its empty centre — real text, so it is selectable,
- * translatable and crisp at any pixel ratio — and the whole thing is tilted −8°
- * so it reads as pressed on rather than placed.
+ * The seal used to be a drawn ring with two lines of caps set inside it. It is
+ * now a *hanko*: the square red stamp a Japanese maker presses onto their own
+ * work. Square, 8px corners, terracotta, the name in the display serif with a
+ * wheat mark beneath it, tilted −6° so it reads as pressed rather than placed.
  *
- * Sizing: the drawn ring eats roughly a quarter of the diameter, so the usable
- * chord across the middle is about 62% of the width. The type is therefore
- * scaled off `size` rather than fixed, which keeps a longer claim inside the
- * ring instead of spilling over it. That also means the seal wants a little
- * more room than the 88px the spec assumed for a plain CSS circle — 112px on
- * the hero, 96px inset into a product well.
+ * The edge is deliberately imperfect. A `feTurbulence` displacement at a very
+ * low scale roughens the outline by a pixel or so, which is the difference
+ * between a shape and a stamp: real ink does not meet the paper evenly. The
+ * inner hairline is the carved border every hanko has.
  *
- * Used once on the home hero and once on a product page. Never twice in one
- * viewport, never over the busy part of a photograph.
+ * The API is unchanged, so every existing call site still works. `lines` no
+ * longer prints — a 72px square cannot hold "100% eggless / baked daily" and
+ * stay a seal — but it is still the accessible name, so what a screen reader
+ * hears is exactly what it heard before.
  *
- * `RingSeal` keeps its name and its API for the routes that still import it,
- * but it is now the same object drawn with its text on a circular path.
+ * Sizing: 72px is the intended size and 56px is the phone size, applied in
+ * `globals.css` below 480 so a caller never has to think about it. `size` is
+ * honoured above that as a maximum.
  */
 
 export function Stamp({
   lines = ["100% eggless", "baked daily"],
-  size = 112,
+  size = 72,
   tone = "ink",
   className,
 }: {
-  /** Two short lines. The seal is not a sentence. */
+  /** Two short lines. Not printed on the seal; this is its accessible name. */
   lines?: [string, string] | string[];
-  /** 112px on a hero, 96px inset into a product well. */
+  /** 72px is the design size; the phone step down to 56 is automatic. */
   size?: number;
+  /** `on-choc` swaps the terracotta for cream, for the dark band. */
   tone?: "ink" | "on-choc";
   className?: string;
 }) {
-  const ink = tone === "on-choc" ? "text-on-choc" : "text-ink";
-  const rule = tone === "on-choc" ? "bg-on-choc/45" : "bg-ink/30";
-  const src =
-    tone === "on-choc"
-      ? "/images/lineart/stamp-ring-light.png"
-      : "/images/lineart/stamp-ring.png";
+  const onChoc = tone === "on-choc";
+  const ink = onChoc ? "var(--color-on-choc)" : "var(--color-accent)";
+  const paper = onChoc ? "var(--color-choc)" : "var(--color-on-accent)";
+  // One filter id per tone is enough: two seals of the same tone can share a
+  // filter, and the seal is never on screen twice in the same tone anyway.
+  const id = `hanko-${tone}`;
 
   return (
     <span
       role="img"
       aria-label={lines.join(", ")}
-      style={{ width: size, height: size }}
-      className={cn(
-        "relative inline-grid shrink-0 -rotate-8 place-items-center",
-        ink,
-        className,
-      )}
+      className={cn("hanko block shrink-0 -rotate-6", className)}
+      style={{ ["--hanko-size" as string]: `${size}px` }}
     >
-      <Image
-        src={src}
-        alt=""
+      <svg
+        viewBox="0 0 72 72"
+        width="100%"
+        height="100%"
         aria-hidden="true"
-        width={1187}
-        height={1189}
-        sizes={`${size}px`}
-        draggable={false}
-        className="pointer-events-none absolute inset-0 size-full select-none"
-      />
-
-      <span
-        className="relative flex flex-col items-center gap-[0.35em] text-center uppercase"
-        style={{
-          width: size * 0.62,
-          fontSize: size * 0.078,
-          lineHeight: 1.15,
-          letterSpacing: "0.05em",
-        }}
+        className="block"
       >
-        <span>{lines[0]}</span>
-        <span
-          aria-hidden="true"
-          className={cn("h-px w-[1.6em]", rule)}
-          style={{ opacity: 0.9 }}
-        />
-        <span>{lines[1]}</span>
-      </span>
+        <defs>
+          <filter id={id} x="-8%" y="-8%" width="116%" height="116%">
+            {/* A pixel of wobble on the outline. Any more and it stops
+                reading as ink and starts reading as a rendering bug. */}
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency="0.045"
+              numOctaves="2"
+              seed="7"
+              result="noise"
+            />
+            <feDisplacementMap
+              in="SourceGraphic"
+              in2="noise"
+              scale="1.7"
+              xChannelSelector="R"
+              yChannelSelector="G"
+            />
+          </filter>
+        </defs>
+
+        <g filter={`url(#${id})`}>
+          <rect x="1" y="1" width="70" height="70" rx="8" fill={ink} />
+          {/* The carved inner border. */}
+          <rect
+            x="6.5"
+            y="6.5"
+            width="59"
+            height="59"
+            rx="4.5"
+            fill="none"
+            stroke={paper}
+            strokeWidth="2"
+          />
+        </g>
+
+        {/* The type sits outside the displacement filter: a wobbling outline
+            is a stamp, wobbling letterforms are a mistake. */}
+        <text
+          x="36"
+          y="35"
+          textAnchor="middle"
+          fill={paper}
+          fontFamily="var(--font-display)"
+          fontSize="20"
+          letterSpacing="0.5"
+        >
+          fillo
+        </text>
+
+        {/* The wheat mark, the one piece of line art the seal carries. */}
+        <g
+          transform="translate(36 46)"
+          fill="none"
+          stroke={paper}
+          strokeWidth="1.4"
+          strokeLinecap="round"
+        >
+          <path d="M0 13V2" />
+          <path d="M0 2.6c0-1.5.9-2.8 2.1-3.2.3 1.6-.4 3.1-2.1 3.6" />
+          <path d="M0 2.6c0-1.5-.9-2.8-2.1-3.2-.3 1.6.4 3.1 2.1 3.6" />
+          <path d="M0 7.4c0-1.5.9-2.8 2.1-3.2.3 1.6-.4 3.1-2.1 3.6" />
+          <path d="M0 7.4c0-1.5-.9-2.8-2.1-3.2-.3 1.6.4 3.1 2.1 3.6" />
+        </g>
+      </svg>
     </span>
   );
 }
 
-/** The one piece of line art the seal carries. Stroked in currentColor. */
-function WheatMark({ size = 11 }: { size?: number }) {
+/**
+ * The postage-stamp badge — "Few left", "Sold out today", "This week".
+ *
+ * Paper fill, a hairline carried inside the edge, and the edge itself
+ * perforated: four repeating radial-gradient masks, one per side, composited
+ * with `intersect` so the holes bite through the border as well as the fill.
+ * Tilted −3°, which is less than the seal because a badge sits inside a
+ * photograph's corner and a bigger angle starts to look like a mistake.
+ *
+ * Buttons never take this shape. A perforated edge says "this is a label
+ * stuck on"; a control has to look pressable, which is the opposite job.
+ */
+export function StampBadge({
+  children,
+  tone = "ink",
+  className,
+}: {
+  children: React.ReactNode;
+  /** `gold` for "Few left"; `accent` for a weekly special. */
+  tone?: "ink" | "gold" | "accent";
+  className?: string;
+}) {
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.1"
-      strokeLinecap="round"
-      aria-hidden="true"
+    <span
+      className={cn(
+        "stamp-badge pointer-events-none inline-flex h-[26px] min-w-[72px] items-center justify-center",
+        "px-2.5 text-[11px] font-medium tracking-[0.08em] uppercase",
+        "-rotate-3 select-none",
+        tone === "gold"
+          ? "text-gold"
+          : tone === "accent"
+            ? "text-accent"
+            : "text-ink",
+        className,
+      )}
     >
-      <path d="M8 14.5V4" />
-      <path d="M8 4.5c0-1.4.9-2.6 2-3 .3 1.5-.4 2.9-2 3.4" />
-      <path d="M8 4.5c0-1.4-.9-2.6-2-3-.3 1.5.4 2.9 2 3.4" />
-      <path d="M8 8.2c0-1.3.9-2.4 2-2.8.3 1.4-.4 2.7-2 3.2" />
-      <path d="M8 8.2c0-1.3-.9-2.4-2-2.8-.3 1.4.4 2.7 2 3.2" />
-      <path d="M8 11.8c0-1.3.9-2.4 2-2.8.3 1.4-.4 2.7-2 3.2" />
-      <path d="M8 11.8c0-1.3-.9-2.4-2-2.8-.3 1.4.4 2.7 2 3.2" />
-    </svg>
+      {children}
+    </span>
   );
 }
 
 /**
- * The circular-text variant. Same palette, same hairline, text set on a path
- * so a longer claim still fits. Static: v2 has no rotating chrome.
+ * `RingSeal` is the old drawn-ring seal's name. Three routes outside this
+ * pass still import it (gift cards, the v1 hero block, the styleguide), so it
+ * stays exported and now renders the hanko — one seal in the system, and those
+ * pages pick up the new one without being touched.
  */
 export function RingSeal({
-  text = "100% eggless · baked this morning · ",
-  size = 112,
+  text = "100% eggless · baked daily",
+  size = 72,
   tone = "paper",
   className,
 }: {
   text?: string;
   size?: number;
-  /** ink hairline on paper; on-choc hairline on the dark band. */
+  /** The old names: `paper` is the light ground, `dark` the choc band. */
   tone?: "paper" | "dark";
   className?: string;
 }) {
-  const px = Math.max(88, size);
-  const id = `seal-path-${px}-${tone}`;
-  const ink = tone === "dark" ? "var(--color-on-choc)" : "var(--color-ink)";
-  const ring =
-    tone === "dark" ? "var(--hairline-dark-color)" : "var(--color-ink)";
-
   return (
-    <span
-      role="img"
-      aria-label={text.replace(/·/g, ",").trim()}
-      style={{ width: px, height: px }}
-      className={cn("relative inline-block shrink-0 -rotate-8", className)}
-    >
-      <svg
-        viewBox="0 0 132 132"
-        width={px}
-        height={px}
-        aria-hidden="true"
-        className="absolute inset-0"
-      >
-        <defs>
-          <path
-            id={id}
-            d="M 66,66 m -50,0 a 50,50 0 1,1 100,0 a 50,50 0 1,1 -100,0"
-            fill="none"
-          />
-        </defs>
-        <circle
-          cx="66"
-          cy="66"
-          r="64"
-          fill="none"
-          stroke={ring}
-          strokeWidth="1.5"
-          opacity={tone === "dark" ? 1 : 0.55}
-        />
-        <text
-          fill={ink}
-          fontFamily="var(--font-sans)"
-          fontSize="9.5"
-          fontWeight="500"
-          letterSpacing="1.5"
-        >
-          <textPath href={`#${id}`}>
-            {text.toUpperCase().repeat(3).slice(0, 74)}
-          </textPath>
-        </text>
-      </svg>
-      <span className={cn("absolute inset-0 grid place-items-center", tone === "dark" ? "text-on-choc" : "text-ink")}>
-        <WheatMark size={26} />
-      </span>
-    </span>
+    <Stamp
+      lines={text.split("·").map((part) => part.trim())}
+      size={size}
+      tone={tone === "dark" ? "on-choc" : "ink"}
+      className={className}
+    />
   );
 }

@@ -63,35 +63,43 @@ export function ShopGrid({
   const [sort, setSort] = React.useState<Sort>("popular");
   const [tags, setTags] = React.useState<TagId[]>([]);
 
-  const visible = React.useMemo(() => {
+  /**
+   * The tags and the search box are ranking conditions, not gates.
+   *
+   * A hard filter answers "show me only the sweet ones" by deleting the other
+   * nineteen bakes off the page, which is the wrong answer to a question
+   * nobody quite asked — someone tapping "Sweet" is browsing, not excluding.
+   * So every product gets a score (one point per condition it satisfies, two
+   * extra when the search words are in its actual name), the matches come
+   * first in the chosen sort order, and everything else stays on the page
+   * behind a "More bakes" rule. The category is the one hard filter, because
+   * that one is a route and the URL has already promised it.
+   */
+  const conditionCount = tags.length + (query.trim() ? 1 : 0);
+  const filtering = conditionCount > 0;
+
+  const { matched, rest } = React.useMemo(() => {
     const q = query.trim().toLowerCase();
-    let filtered = items;
 
-    if (q) {
-      filtered = filtered.filter(
-        (item) =>
-          item.product.name.toLowerCase().includes(q) ||
-          item.product.shortDescription.toLowerCase().includes(q) ||
-          item.product.tags.some((t) => t.toLowerCase().includes(q)),
-      );
-    }
-    // Every selected tag must match: "Sweet + Contains nuts" is a narrower
-    // question than "Sweet or Contains nuts", and it is the one people mean.
-    if (tags.length > 0) {
-      filtered = filtered.filter((item) =>
-        tags.every((tag) => item.product.tags.includes(tag)),
-      );
-    }
+    const byChosenSort = (a: ShopItem, b: ShopItem) => {
+      if (sort === "price-asc") return a.product.price - b.product.price;
+      if (sort === "price-desc") return b.product.price - a.product.price;
+      return rank(a) - rank(b);
+    };
 
-    if (sort === "popular") {
-      return [...filtered].sort((a, b) => rank(a) - rank(b));
-    }
-    return [...filtered].sort((a, b) =>
-      sort === "price-asc"
-        ? a.product.price - b.product.price
-        : b.product.price - a.product.price,
-    );
-  }, [items, query, sort, tags]);
+    if (!filtering) return { matched: [...items].sort(byChosenSort), rest: [] };
+
+    const scored = items.map((item) => ({ item, score: score(item, q, tags) }));
+    const hit = scored.filter((s) => s.score > 0);
+    const miss = scored.filter((s) => s.score === 0);
+
+    return {
+      matched: hit
+        .sort((a, b) => b.score - a.score || byChosenSort(a.item, b.item))
+        .map((s) => s.item),
+      rest: miss.map((s) => s.item).sort(byChosenSort),
+    };
+  }, [items, query, sort, tags, filtering]);
 
   function toggleTag(tag: TagId) {
     setTags((current) =>
@@ -100,6 +108,27 @@ export function ShopGrid({
         : [...current, tag],
     );
   }
+
+  function clearConditions() {
+    setQuery("");
+    setTags([]);
+  }
+
+  /** "6 matches · Clear", under the filters and above the grid. */
+  const matchLine = filtering ? (
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+      <p aria-live="polite" className="text-body-sm text-muted">
+        {matched.length} {matched.length === 1 ? "match" : "matches"}
+      </p>
+      <button
+        type="button"
+        onClick={clearConditions}
+        className="link-underline text-body-sm font-semibold text-accent"
+      >
+        Clear
+      </button>
+    </div>
+  ) : null;
 
   const searchField = (
     <SearchField id="shop-search" value={query} onChange={setQuery} />
@@ -187,47 +216,82 @@ export function ShopGrid({
                 );
               })}
             </div>
+            {matchLine ? <div className="mt-4">{matchLine}</div> : null}
           </div>
         </div>
       </aside>
 
       {/* -------- Grid --------------------------------------------------
-          3-up between 1024 and 1279 because the control card has taken
-          260px out of the row; 4-up from 1280 where there is room again. */}
+          2-up on a phone and a tablet, 3-up at every desktop width. The
+          control card takes 260px out of the row, and three larger wells
+          beside it read better than four cramped ones — the well is the
+          product's photograph, and shrinking it to gain a column is a bad
+          trade on a page whose whole job is showing the bakes. */}
       <div className="mt-6 lg:mt-0">
-        {visible.length === 0 ? (
-          <p className="text-body-lg text-ink-2">
-            Nothing matches that. Try a shorter word, or{" "}
-            <button
-              type="button"
-              onClick={() => {
-                setQuery("");
-                setTags([]);
-              }}
-              className="link-underline font-semibold text-accent"
-            >
-              see everything
-            </button>
-            .
-          </p>
+        {matchLine ? <div className="mb-6 lg:hidden">{matchLine}</div> : null}
+
+        {matched.length > 0 ? (
+          <Grid items={matched} />
         ) : (
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 xl:grid-cols-4">
-            {visible.map((item, i) => (
-              <ProductCard
-                key={item.product.slug}
-                product={{
-                  ...item.product,
-                  href: `/product/${item.product.slug}`,
-                }}
-                stock={{ soldOut: item.soldOut, left: item.left }}
-                priority={i < 4}
-              />
-            ))}
-          </div>
+          <p className="text-body-lg text-ink-2">
+            Nothing matches that — but everything we bake is still below.
+          </p>
         )}
+
+        {rest.length > 0 ? (
+          <>
+            {/* The rest of the menu, still on the page. Someone who filtered
+                to "Spicy" has not asked us to hide the bread. */}
+            <div className="mt-12 flex items-center gap-4">
+              <span className="text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
+                More bakes
+              </span>
+              <span aria-hidden="true" className="h-px flex-1 bg-line" />
+            </div>
+            <div className="mt-6 opacity-[0.82]">
+              <Grid items={rest} />
+            </div>
+          </>
+        ) : null}
       </div>
     </div>
   );
+}
+
+function Grid({ items }: { items: ShopItem[] }) {
+  return (
+    <div className="grid grid-cols-2 gap-4 md:gap-6 lg:grid-cols-3">
+      {items.map((item, i) => (
+        <ProductCard
+          key={item.product.slug}
+          product={{ ...item.product, href: `/product/${item.product.slug}` }}
+          stock={{ soldOut: item.soldOut, left: item.left }}
+          priority={i < 3}
+        />
+      ))}
+    </div>
+  );
+}
+
+/**
+ * One point for each condition the product satisfies, plus two more when the
+ * search words are in the name itself — "curry" typed into the box should put
+ * Kyoto Curry above a bake that merely carries the tag.
+ */
+function score(item: ShopItem, q: string, tags: readonly string[]): number {
+  const { product } = item;
+  let total = 0;
+
+  for (const tag of tags) if (product.tags.includes(tag)) total += 1;
+
+  if (q) {
+    const name = product.name.toLowerCase();
+    const haystack = `${name} ${product.shortDescription} ${product.tags.join(" ")}`.toLowerCase();
+    if (haystack.includes(q)) total += 1;
+    if (name.includes(q)) total += 2;
+  }
+
+  return total;
 }
 
 /* -------------------------------------------------------------------------- */

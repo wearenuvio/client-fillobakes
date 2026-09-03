@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { CalendarOff, PauseCircle, RefreshCw, Unlock } from "lucide-react";
+import { PageHeader } from "@/components/blocks/PageHeader";
 import { buildMetadata, JsonLd, faqLd } from "@/lib/seo";
 import { SubscriptionPlanCard } from "@/components/blocks/SubscriptionPlanCard";
 import { Faq } from "@/components/blocks/Faq";
@@ -129,19 +130,14 @@ export default function StandingOrderPage() {
       />
 
       {/* -------- Hero ------------------------------------------------- */}
-      <section className="relative overflow-hidden bg-peach pt-12 pb-14 lg:pt-16 lg:pb-20">
-        <WheatGlyph
-          size={520}
-          className="pointer-events-none absolute -top-24 -right-24 text-ink opacity-[0.07]"
-        />
-        <div className="container-content relative">
-          <p className="script">Your bread, every week.</p>
-          <h1 className="mt-2 text-display-2 text-ink">The Standing Order</h1>
-          <p className="mt-5 max-w-[46ch] text-body-lg text-ink-2">
-            Pick a plan, pick a day. Skip any week, pause any time.
-          </p>
-        </div>
-      </section>
+      <PageHeader
+        script="Your bread, every week."
+        title="The Standing Order"
+        lede="Pick a plan, pick a day. Skip any week, pause any time."
+        surface="peach"
+        art="shokupan-loaf-v2"
+        artSize="lg"
+      />
 
       {/* -------- Plans ------------------------------------------------ */}
       <section className="bg-paper py-[var(--section-y)]">

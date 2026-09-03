@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { PageHeader } from "@/components/blocks/PageHeader";
 import { buildMetadata, JsonLd, bakeryLd } from "@/lib/seo";
 import { RouteMap } from "@/components/pages/van/RouteMap";
 import { SetAreaButton } from "@/components/pages/van/SetAreaButton";
@@ -56,26 +56,15 @@ export default async function RoutePage({ params }: Params) {
         nodes={[bakeryLd(route.areas)]}
       />
 
-      <section className="bg-paper pt-8 pb-10 lg:pt-10 lg:pb-14">
-        <div className="container-content">
-          <Link
-            href="/van"
-            className="link-underline inline-flex min-h-11 items-center gap-2 text-body-sm font-semibold text-accent"
-          >
-            <ArrowLeft size={16} strokeWidth={1.5} aria-hidden="true" />
-            The van
-          </Link>
-
-          <p className="mt-8 text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
-            {route.cadenceLabel}
-          </p>
-          <h1 className="mt-3 text-display-2 text-ink">{route.name}</h1>
-          <p className="mt-5 max-w-[48ch] text-body-lg text-ink-2">
-            {route.runDaysLabel}, from {clockLabel(route.firstStopAt)}. It stays at
-            each stop until the racks are empty.
-          </p>
-
-          <p className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-body-sm text-muted">
+      <PageHeader
+        eyebrow={route.cadenceLabel}
+        title={route.name}
+        lede={`${route.runDaysLabel}, from ${clockLabel(route.firstStopAt)}. It stays at each stop until the racks are empty.`}
+        art="bakery-van"
+        artSize="lg"
+        back={{ href: "/van", label: "The van" }}
+        meta={
+          <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-body-sm text-muted">
             <span>{route.cutoffLabel}.</span>
             <span aria-hidden="true">·</span>
             <span>
@@ -103,8 +92,8 @@ export default async function RoutePage({ params }: Params) {
               })}
             </span>
           </p>
-        </div>
-      </section>
+        }
+      />
 
       <section className="bg-paper pb-[var(--section-y)]">
         <div className="container-content">

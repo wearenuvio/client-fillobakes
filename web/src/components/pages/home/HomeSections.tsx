@@ -160,6 +160,7 @@ export function CategoryTiles() {
                         fit="contain"
                         opacity={1}
                         hideOnPhone={false}
+                        parallax={false}
                         sizes="(min-width: 1024px) 220px, 40vw"
                         className={cn(
                           "inset-[14%]",
@@ -206,9 +207,9 @@ export function StorySplit() {
           photographs, at a strength you notice only once. */}
       <InkArt
         name="rolling-pin-and-flour-bag"
-        width={420}
+        width={360}
         opacity={0.12}
-        className="bottom-[-30px] left-[-70px] w-[420px]"
+        className="bottom-[var(--section-y)] left-2 w-[360px]"
       />
       <div className="relative container-content">
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
@@ -257,7 +258,9 @@ export function StorySplit() {
               variant="ghost"
               size="md"
               className="mt-7"
-              icon={<ArrowRight size={16} strokeWidth={1.5} aria-hidden="true" />}
+              icon={
+                <ArrowRight size={16} strokeWidth={1.5} aria-hidden="true" />
+              }
             >
               Read our story
             </ButtonLink>
@@ -305,9 +308,9 @@ export function WhyReturn() {
     >
       <InkArt
         name="oven-with-loaves"
-        width={480}
+        width={400}
         opacity={0.1}
-        className="right-[-80px] bottom-[-50px] w-[480px]"
+        className="right-2 bottom-[var(--section-y)] w-[400px]"
       />
       <div className="relative container-content">
         <SectionHead
@@ -359,79 +362,93 @@ const STANDING_STEPS = [
   { art: "oven-with-loaves", title: "We bake it fresh and drive" },
 ] as const satisfies readonly { art: InkArtName; title: string }[];
 
-export function ComeBack() {
+export function StandingOrderBand() {
   return (
-    <>
-      <section data-reveal className="bg-peach py-[var(--section-y)]">
-        <div className="container-content text-center">
-          <p className="script">Your bread, every week.</p>
-          <h2 className="mt-3 font-display text-display-2 text-ink">
-            The Standing Order
-          </h2>
+    <section data-reveal className="bg-peach py-[var(--section-y)]">
+      <div className="container-content">
+        {/* The one notched cartouche in the system. The frame is drawn by
+              the wrapper and the panel's padding keeps every line of type
+              clear of it; the corner notch is a fixed pixel size, so it is
+              the same shape at 375 as at 1440 rather than stretching. */}
+        <div className="relative">
+          <span aria-hidden="true" className="notch-frame" />
+          <div className="relative px-6 py-12 text-center sm:px-12 lg:px-16 lg:py-16">
+            <p className="script">Your bread, every week.</p>
+            <h2 className="mt-3 font-display text-display-2 text-ink">
+              The Standing Order
+            </h2>
 
-          {/* The drawings carry the steps. At .9 they are illustration, not
+            {/* The drawings carry the steps. At .9 they are illustration, not
               atmosphere — the only place in the system the line art is
               allowed to be the content rather than the ground. */}
-          <ol className="mx-auto mt-12 grid max-w-[62rem] gap-10 sm:grid-cols-3 sm:gap-8">
-            {STANDING_STEPS.map(({ art, title }) => (
-              <li key={title} className="flex flex-col items-center">
-                <span className="relative block h-[120px] w-[150px]">
-                  <InkArt
-                    name={art}
-                    width={150}
-                    fit="contain"
-                    opacity={0.9}
-                    hideOnPhone={false}
-                    sizes="150px"
-                    className="inset-0"
-                  />
-                </span>
-                <h3 className="mt-5 max-w-[16ch] font-display text-[16px] leading-[1.3] text-ink">
-                  {title}
-                </h3>
-              </li>
-            ))}
-          </ol>
+            <ol className="mx-auto mt-12 grid max-w-[62rem] gap-10 sm:grid-cols-3 sm:gap-8">
+              {STANDING_STEPS.map(({ art, title }) => (
+                <li key={title} className="flex flex-col items-center">
+                  <span className="relative block h-[120px] w-[150px]">
+                    <InkArt
+                      name={art}
+                      width={150}
+                      fit="contain"
+                      opacity={0.9}
+                      hideOnPhone={false}
+                      parallax={false}
+                      sizes="150px"
+                      className="inset-0"
+                    />
+                  </span>
+                  <h3 className="mt-5 max-w-[16ch] font-display text-[16px] leading-[1.3] text-ink">
+                    {title}
+                  </h3>
+                </li>
+              ))}
+            </ol>
 
-          <p className="mx-auto mt-12 max-w-[46ch] text-body-lg text-ink-2">
-            From ₹200 a week. Skip any week, pause any time.
-          </p>
+            <p className="mx-auto mt-12 max-w-[46ch] text-body-lg text-ink-2">
+              From ₹200 a week. Skip any week, pause any time.
+            </p>
 
-          <div className="mt-8 flex flex-col items-stretch gap-4 sm:flex-row sm:items-center sm:justify-center sm:gap-8">
-            <ButtonLink href="/standing-order" size="lg">
-              Start with The Loaf
-            </ButtonLink>
-            <ButtonLink
-              href="/standing-order"
-              variant="ghost"
-              size="lg"
-              icon={<ArrowRight size={16} strokeWidth={1.5} aria-hidden="true" />}
-            >
-              How it works
-            </ButtonLink>
+            <div className="mt-8 flex flex-col items-stretch gap-4 sm:flex-row sm:items-center sm:justify-center sm:gap-8">
+              <ButtonLink href="/standing-order" size="lg">
+                Start with The Loaf
+              </ButtonLink>
+              <ButtonLink
+                href="/standing-order"
+                variant="ghost"
+                size="lg"
+                icon={
+                  <ArrowRight size={16} strokeWidth={1.5} aria-hidden="true" />
+                }
+              >
+                How it works
+              </ButtonLink>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
+  );
+}
 
-      {/* Fillo+ — one line, because joining is one tap and costs nothing. */}
-      <section className="border-y border-line bg-paper-2 py-6">
-        <div className="container-content flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-          <p className="text-body text-ink-2">
-            <span className="font-semibold text-ink">Fillo+</span> — join free
-            and earn two coins on every ₹100. Twenty-five coins is ₹25 off.
-          </p>
-          <ButtonLink
-            href="/fillo-plus"
-            variant="ghost"
-            size="md"
-            className="shrink-0"
-            icon={<ArrowRight size={16} strokeWidth={1.5} aria-hidden="true" />}
-          >
-            Join free
-          </ButtonLink>
-        </div>
-      </section>
-    </>
+/** Fillo+ — one line, because joining is one tap and costs nothing. */
+export function FilloPlusStrip() {
+  return (
+    <section className="border-y border-line bg-paper-2 py-6">
+      <div className="container-content flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+        <p className="text-body text-ink-2">
+          <span className="font-semibold text-ink">Fillo+</span> — join free and
+          earn two coins on every ₹100. Twenty-five coins is ₹25 off.
+        </p>
+        <ButtonLink
+          href="/fillo-plus"
+          variant="ghost"
+          size="md"
+          className="shrink-0"
+          icon={<ArrowRight size={16} strokeWidth={1.5} aria-hidden="true" />}
+        >
+          Join free
+        </ButtonLink>
+      </div>
+    </section>
   );
 }
 
@@ -479,7 +496,12 @@ export function Reviews() {
                 i === 1 && "md:text-center",
               )}
             >
-              <Stars className={cn("justify-center md:justify-start", i === 1 && "md:justify-center")} />
+              <Stars
+                className={cn(
+                  "justify-center md:justify-start",
+                  i === 1 && "md:justify-center",
+                )}
+              />
               <blockquote
                 className={cn(
                   "mt-5 font-display text-ink italic",
@@ -588,7 +610,11 @@ export function JournalRow() {
             <p className="mt-3 text-body-sm text-ink-2">
               What we are baking, and where the van will be.
             </p>
-            <form className="mt-6" action="/journal" aria-label="The Sunday email">
+            <form
+              className="mt-6"
+              action="/journal"
+              aria-label="The Sunday email"
+            >
               <label htmlFor="home-email" className="sr-only">
                 Your email
               </label>

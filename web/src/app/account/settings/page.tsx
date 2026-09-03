@@ -18,6 +18,7 @@ export default function SettingsPage() {
         ]}
       />
       <AccountPage
+        art="wheat-stalk"
         h1="Settings"
         kicker="Your account"
         lead="Your number is your account. Everything else here is optional."

@@ -114,3 +114,20 @@ Nothing about run counts, cutoff clocks, lanes, or "[TBC]" on this page.
 - **Standing Order = full-width peach band**: script "Your bread, every week." + display-2 "The Standing Order" + three line-art steps (choose your bread · choose your day and stop · we bake it fresh and drive) + "From ₹200 a week. Skip any week, pause any time." + one large terracotta CTA "Start with The Loaf" + ghost "How it works". Nothing else in the band.
 - No new sections (ingredients strip, how-to-order, spec chips): the references were for style only.
 - Section titles one line on desktop; See-all button under bestsellers; category tiles line art only; first why-return icon changed; dark band art must not overlap cutouts; footer compacted.
+
+## 8. Client additions (3 Sep, late)
+- Marquee strip ABOVE the header (chocolate, caps 12px, 38s loop, not sticky). Header: logo mark 44px, wordmark "fillo".
+- Hero: vintage film look (warm fade, vignette, fine grain), display word alternates "Fuwa fuwa" ↔ "ふわふわ", wheat line art in two corners, never clipped.
+- Preloader: 8-cutout flipbook once per session; route loader + 2px accent bar.
+- Shop: left side card (search, sort, categories, tags) at desktop, 3 columns; filters rank matches first, non-matches after a "More bakes" divider.
+- Cards: flat darker-paper image well, name, kana, 3-word attribute line, price, round "+" → stepper. Sold out: single greyed image + tag + "Notify me".
+- PDP right column order: category + tag → name + kana → price + fact chips → one line → Add → cutoff → compact delivery row.
+- Line art everywhere with subtle mouse + scroll parallax; never clipped by a section edge; dark band van art large.
+- Bestsellers: one-line titles, "See all" under the grid. Shop by kind: line art only. Standing Order: peach 3-step band, big CTA. Footer compact.
+
+## 9. Woodblock / hanko language (client, 3 Sep night)
+- Notched-corner ink frame: Standing Order band ONLY. No section dividers, no wells.
+- Postage-stamp shape: badges only (Baked today / Few left / Sold out / New). Buttons stay rectangles.
+- Seal = square terracotta hanko ("fillo" + wheat mark, rough ink edge, -6deg) replacing the round seal on hero, PDP, confirmation.
+- Motifs: bread first; three Japanese pieces (sakura sprig, sparrow on branch, seigaiha wave tile) in the same single-line ink, sparingly: sakura on story + confirmation, sparrow on journal/guides, seigaiha at .06 behind the Standing Order panel and account header.
+- Nav centred in a 3-column header grid.

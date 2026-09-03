@@ -28,11 +28,16 @@ export function HomeBestsellers({
       data-reveal
       className="relative overflow-hidden bg-paper py-[var(--section-y)]"
     >
+      {/* Inside the section on every edge. `bottom-[var(--section-y)]` puts
+          the loaf's foot on the line the content ends on, and the right inset
+          keeps it off the window edge, so `overflow-hidden` has nothing to
+          cut. It clears the centred "See all" button horizontally and only
+          ever shows through the gutters between opaque cards. */}
       <InkArt
         name="shokupan-loaf"
-        width={520}
+        width={400}
         opacity={0.1}
-        className="right-[-60px] bottom-[-40px] w-[520px]"
+        className="right-2 bottom-[var(--section-y)] w-[400px]"
       />
       <div className="relative container-content">
         <SectionHead

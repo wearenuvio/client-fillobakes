@@ -5,7 +5,8 @@ import { MapPin } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { ButtonLink } from "@/components/ui/Button";
 import { LoafGlyph } from "@/components/ui/LineArt";
-import { InkArt, type InkArtName } from "@/components/ui/InkArt";
+import type { InkArtName } from "@/components/ui/InkArt";
+import { PageHeader } from "@/components/blocks/PageHeader";
 import { useAccountSession } from "@/components/pages/account/session";
 
 /**
@@ -40,37 +41,26 @@ export function AccountPage({
   const { hydrated, signedIn } = useAccountSession();
 
   return (
-    <div className={cn("relative min-w-0 overflow-hidden", className)}>
-      {/* The header's right third is clear on every screen that does not
-          carry the area chip, so the drawing sits there rather than bleeding
-          off an edge the account column does not have. */}
-      {art ? (
-        <InkArt
-          name={art}
-          width={210}
-          opacity={0.12}
-          className="top-0 right-0 hidden lg:block"
-        />
-      ) : null}
-      <header className="relative flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-        <div className="min-w-0">
-          {kicker ? (
-            <p className="mb-3 text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
-              {kicker}
-            </p>
-          ) : null}
-          <h1 className="text-h2 text-ink">{h1}</h1>
-          {lead ? (
-            <p className="mt-3 max-w-[48ch] text-body-lg text-ink-2">{lead}</p>
-          ) : null}
-        </div>
-        {chip || actions ? (
-          <div className="flex shrink-0 flex-wrap items-center gap-3">
-            {chip}
-            {actions}
-          </div>
-        ) : null}
-      </header>
+    <div className={cn("relative min-w-0", className)}>
+      {/* The site's header block, in its compact register and without the
+          section wrapper: the account column already has its own gutters. */}
+      <PageHeader
+        bare
+        variant="compact"
+        eyebrow={kicker}
+        title={h1}
+        lede={lead}
+        art={art}
+        artSize="sm"
+        actions={
+          chip || actions ? (
+            <>
+              {chip}
+              {actions}
+            </>
+          ) : undefined
+        }
+      />
 
       <div className="relative mt-8 lg:mt-10">
         {hydrated && !signedIn ? <SignedOut /> : children}
