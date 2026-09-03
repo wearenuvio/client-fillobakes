@@ -41,6 +41,10 @@ const ART = {
   "steam-swirls": [612, 1200],
   "crumbs-scatter": [1146, 778],
   "stamp-ring": [1187, 1189],
+  // Added 3 Sep with the second delivery of drawings.
+  "sakura-sprig": [951, 1122],
+  "sparrow-branch": [1068, 940],
+  "seigaiha-tile": [644, 426],
 } as const satisfies Record<string, readonly [number, number]>;
 
 export type InkArtName = keyof typeof ART;

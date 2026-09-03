@@ -70,7 +70,7 @@ export default async function JournalPostPage({ params }: Params) {
         kicker="From the van"
         title={post.h1}
         standfirst={body.standfirst}
-        art="croissant"
+        art="sparrow-branch"
         backHref="/journal"
         backLabel="The journal"
         meta={[

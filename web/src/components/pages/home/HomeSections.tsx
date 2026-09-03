@@ -375,12 +375,18 @@ const STANDING_STEPS = [
 
 export function StandingOrderBand() {
   return (
-    <section data-reveal className="bg-peach py-[var(--section-y)]">
-      <div className="container-content text-center">
-        <p className="script">Your bread, every week.</p>
-        <h2 className="mt-3 font-display text-display-2 text-ink">
-          The Standing Order
-        </h2>
+    <section data-reveal className="relative bg-peach py-[var(--section-y)]">
+      {/* The wave tile across the whole band, under everything (§9). */}
+      <span aria-hidden="true" className="seigaiha-wash" />
+
+      <div className="relative container-content text-center">
+        {/* Solid peach behind the words so the wave wash never runs under type. */}
+        <div className="mx-auto w-fit bg-peach px-6 py-2 sm:px-10">
+          <p className="script">Your bread, every week.</p>
+          <h2 className="mt-3 font-display text-display-2 text-ink">
+            The Standing Order
+          </h2>
+        </div>
 
         {/* The cartouche. The frame is drawn by the wrapper; the list inside
             carries the 32px padding that keeps every line clear of it. */}
@@ -412,8 +418,8 @@ export function StandingOrderBand() {
           </ol>
         </div>
 
-        <p className="mx-auto mt-10 max-w-[46ch] text-body-lg text-ink-2">
-          From ₹200 a week. Skip any week, pause any time.
+        <p className="mx-auto mt-10 w-fit max-w-[56ch] bg-peach px-6 py-2 text-body-lg text-ink-2 sm:px-8">
+          From ₹180 a week. Skip any week, pause any time.
         </p>
 
         <div className="mt-8 flex flex-col items-stretch gap-4 sm:flex-row sm:items-center sm:justify-center sm:gap-8">

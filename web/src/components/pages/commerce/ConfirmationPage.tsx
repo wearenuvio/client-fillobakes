@@ -110,7 +110,7 @@ export function ConfirmationPage({ order }: { order: OrderView }) {
         title={`Got it, ${view.greetingName}.`}
         lede={view.promise}
         variant="compact"
-        art="crumbs-scatter"
+        art="sakura-sprig"
         artSize="md"
       />
       <div className="container-narrow pb-16 lg:pb-24">

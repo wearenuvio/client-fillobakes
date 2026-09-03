@@ -30,7 +30,7 @@ const PLANS = [
     id: "loaf",
     name: "The Loaf",
     cadence: "One shokupan, every week.",
-    price: 200,
+    price: 180,
     contents: ["milk-shokupan"],
     benefits: [
       "One 400g milk shokupan, baked the morning it reaches you",
@@ -42,7 +42,7 @@ const PLANS = [
     id: "loaf-and-buns",
     name: "Loaf and buns",
     cadence: "A loaf, and something sweet.",
-    price: 499,
+    price: 449,
     contents: ["milk-shokupan", "custard-an-pan", "strawberry-an-pan"],
     benefits: [
       "One milk shokupan and two an pan of your choosing",
@@ -54,7 +54,7 @@ const PLANS = [
     id: "family",
     name: "The Family",
     cadence: "Enough for a full week.",
-    price: 899,
+    price: 809,
     contents: ["milk-shokupan", "custard-an-pan", "fruit-sando"],
     benefits: [
       "Two loaves, four buns and one fruit sando",

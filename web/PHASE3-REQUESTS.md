@@ -447,3 +447,20 @@ rather than anything a single page introduced.
 sections themselves and have the observer only set `data-revealed`), or move
 the class toggle into an effect that runs after hydration.
 **Owner:** whoever owns `RevealOnScroll`.
+
+---
+
+## 9. Three names added to `ui/InkArt`'s `ART` table
+
+The second delivery of drawings — `sakura-sprig`, `sparrow-branch` and
+`seigaiha-tile` — landed in `public/images/lineart` but not in the `ART` table
+in `components/ui/InkArt.tsx`, which is what types `InkArtName`. Without an
+entry the name is a type error, so this pass added the three rows with their
+real intrinsic sizes (951×1122, 1068×940, 644×426). No other change to that
+file. **Owner of `ui/`:** worth a glance, and worth adding the row at the same
+time as the asset in future.
+
+`seigaiha-tile` is a repeating pattern rather than a single drawing, so it is
+not used through `InkArt` at all: it is a `background-repeat` layer behind the
+account header in `AccountPage`, at 150px, opacity .06, masked to fade out
+before it reaches the screen below.

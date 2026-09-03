@@ -42,6 +42,21 @@ export function AccountPage({
 
   return (
     <div className={cn("relative min-w-0", className)}>
+      {/* Seigaiha behind the header only, at the opacity of a watermark and
+          faded out before it reaches the screen below. It is a texture, not a
+          drawing: the per-screen mark sits on top of it. */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[220px] opacity-[0.06]"
+        style={{
+          backgroundImage: "url(/images/lineart/seigaiha-tile.png)",
+          backgroundRepeat: "repeat",
+          backgroundSize: "150px auto",
+          maskImage: "linear-gradient(to bottom, #000 0%, #000 45%, transparent 100%)",
+          WebkitMaskImage:
+            "linear-gradient(to bottom, #000 0%, #000 45%, transparent 100%)",
+        }}
+      />
       {/* The site's header block, in its compact register and without the
           section wrapper: the account column already has its own gutters. */}
       <PageHeader

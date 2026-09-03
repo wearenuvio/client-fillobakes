@@ -142,7 +142,7 @@ export function HomeHero() {
             <h1 className="text-center font-display text-[clamp(72px,13vw,200px)] leading-[0.86] tracking-[-0.015em] text-on-choc">
               {/* Two lines on a phone, one on everything else. */}
               <span className="block sm:inline">Fuwa</span>{" "}
-              <span className="block sm:inline">fuwa</span>
+              <span className="block sm:inline">Fuwa</span>
             </h1>
 
             <span

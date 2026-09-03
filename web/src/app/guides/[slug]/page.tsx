@@ -53,7 +53,7 @@ export default async function GuidePage({ params }: Params) {
         kicker="Guide"
         title={guide.h1}
         standfirst={body.standfirst}
-        art="steam-swirls"
+        art="sparrow-branch"
         backHref="/guides"
         backLabel="All guides"
         meta={["Undated, kept up to date", "Fillo Bakes, Bengaluru"]}

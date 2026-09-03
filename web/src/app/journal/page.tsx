@@ -37,7 +37,7 @@ export default function JournalIndexPage() {
         script="From the van."
         title="The journal"
         lede="Notes on bread, the route, and what did not rise. One post a fortnight."
-        art="croissant"
+        art="sparrow-branch"
         artSize="lg"
       />
 

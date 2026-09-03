@@ -95,16 +95,20 @@
   /* ---------------------------------------------------------------- */
   /* TYPOGRAPHY — families                                            */
   /* ---------------------------------------------------------------- */
-  --font-display: var(--font-instrument-serif), "Iowan Old Style",
-    "Palatino Linotype", Georgia, serif;
-  --font-sans: var(--font-hanken), ui-sans-serif, -apple-system, "Segoe UI",
-    Helvetica, Arial, sans-serif;
+  --font-display:
+    var(--font-instrument-serif), "Iowan Old Style", "Palatino Linotype",
+    Georgia, serif;
+  --font-sans:
+    var(--font-hanken), ui-sans-serif, -apple-system, "Segoe UI", Helvetica,
+    Arial, sans-serif;
   --font-script: var(--font-caveat), "Brush Script MT", cursive;
-  --font-kana: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic",
-    "Noto Sans JP", sans-serif;
+  --font-kana:
+    "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", "Noto Sans JP",
+    sans-serif;
   /* v1 alias. There is no monospace in v2 — it resolves to the sans. */
-  --font-mono: var(--font-hanken), ui-sans-serif, -apple-system, "Segoe UI",
-    Helvetica, Arial, sans-serif;
+  --font-mono:
+    var(--font-hanken), ui-sans-serif, -apple-system, "Segoe UI", Helvetica,
+    Arial, sans-serif;
 
   /* ---------------------------------------------------------------- */
   /* TYPOGRAPHY — the v2 scale (§1)                                   */
@@ -1089,6 +1093,22 @@ html:has(.fillo-preloader[data-phase="visible"]:not(.fillo-skip)) body {
       var(--notch) var(--notch)
     );
   }
+  /* Seigaiha — the wave tile, at the strength §9 asks for: a texture you
+     read as paper rather than as pattern. It is a repeating background on a
+     decorative layer rather than an <img>, so it costs no layout and no alt
+     decision, and it never sits over type: the cartouche's own fill is
+     opaque, so the wash stops at the frame. */
+  .seigaiha-wash {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.04;
+    background-image: url("/images/lineart/seigaiha-tile.png");
+    background-repeat: repeat;
+    background-size: 320px auto;
+  }
+
   .notch-frame::after {
     content: "";
     position: absolute;

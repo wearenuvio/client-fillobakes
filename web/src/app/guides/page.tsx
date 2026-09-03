@@ -36,8 +36,8 @@ export default function GuidesIndexPage() {
         script="What the words mean."
         title="Guides"
         lede="Four pages that explain the formats we bake. Undated, kept up to date, and linked from every product they describe."
-        art="steam-swirls"
-        artSize="sm"
+        art="sparrow-branch"
+        artSize="lg"
       />
 
       <ContentSection surface="paper" size="half">

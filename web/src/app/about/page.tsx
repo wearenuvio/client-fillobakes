@@ -61,8 +61,8 @@ export default function AboutPage() {
         script="Since December 2025."
         title="Baked the Japanese way, without a single egg."
         italic
-        art="rolling-pin-and-flour-bag"
-        artSize="lg"
+        art="sakura-sprig"
+        artSize="md"
       />
 
       <ContentSection surface="paper" size="none" className="pb-[var(--section-y)]">
