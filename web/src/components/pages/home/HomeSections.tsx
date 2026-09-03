@@ -133,12 +133,9 @@ export function CategoryTiles() {
   return (
     <section data-reveal className="bg-paper py-[var(--section-y)]">
       <div className="container-content">
-        {/* One accent hairline frames the whole shelf, so the five kinds read
-            as one object between the peach band above and the reviews below. */}
-        <div className="rounded-lg border border-accent p-5 sm:p-8 lg:p-10">
         <SectionHead eyebrow="Shop by kind" heading="Five ways in." />
 
-        <ul className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-5">
+        <ul className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-5">
           {tiles.map((category) => {
             const mark = CATEGORY_MARK[category.slug];
             return (
@@ -150,11 +147,11 @@ export function CategoryTiles() {
                   <div
                     className={cn(
                       "relative grid aspect-[4/3] place-items-center overflow-hidden rounded-lg",
-                      // One step down the paper ramp on hover — paper, paper-2,
-                      // well, line — so the tile answers the cursor without
-                      // any shadow or lift on the tile itself.
-                      "bg-well transition-colors duration-[var(--dur-base)] ease-[var(--ease-standard)]",
-                      "group-hover:bg-line",
+                      // Accent hairline at rest; on hover the tile floods
+                      // accent and the drawing goes cream (filter below).
+                      "border border-accent bg-well",
+                      "transition-colors duration-[var(--dur-base)] ease-[var(--ease-standard)]",
+                      "group-hover:bg-accent",
                     )}
                   >
                     {mark ? (
@@ -168,8 +165,9 @@ export function CategoryTiles() {
                         sizes="(min-width: 1024px) 220px, 40vw"
                         className={cn(
                           "inset-[14%]",
-                          "transition-transform duration-[var(--dur-base)] ease-[var(--ease-standard)]",
-                          "group-hover:-translate-y-0.5 motion-reduce:transform-none",
+                          "transition-[transform,filter] duration-[var(--dur-base)] ease-[var(--ease-standard)]",
+                          // Chocolate ink → cream: black it out, then invert.
+                          "group-hover:-translate-y-0.5 group-hover:[filter:brightness(0)_invert(1)_opacity(0.95)] motion-reduce:transform-none",
                         )}
                       />
                     ) : (
@@ -192,7 +190,6 @@ export function CategoryTiles() {
             );
           })}
         </ul>
-        </div>
       </div>
     </section>
   );
@@ -201,6 +198,17 @@ export function CategoryTiles() {
 /* -------------------------------------------------------------------------- */
 /* 5 — Story split                                                            */
 /* -------------------------------------------------------------------------- */
+
+/** Around the story drawing: bread words in kana, each at its own depth. */
+const STORY_KANA = [
+  { text: "パン", x: "-14%", y: "6%", size: 26, opacity: 0.5, depth: 14, rotate: -8 },
+  { text: "食パン", x: "78%", y: "2%", size: 18, opacity: 0.45, depth: 10, rotate: 6 },
+  { text: "ふわふわ", x: "-10%", y: "72%", size: 20, opacity: 0.55, depth: 18, rotate: 4 },
+  { text: "あんパン", x: "70%", y: "80%", size: 16, opacity: 0.4, depth: 8, rotate: -5 },
+  { text: "焼きたて", x: "84%", y: "40%", size: 14, opacity: 0.45, depth: 12, rotate: 10 },
+  { text: "卵なし", x: "-16%", y: "40%", size: 15, opacity: 0.4, depth: 6, rotate: -12 },
+  { text: "カレーパン", x: "30%", y: "-10%", size: 13, opacity: 0.35, depth: 16, rotate: 3 },
+] as const;
 
 export function StorySplit() {
   return (
@@ -215,6 +223,26 @@ export function StorySplit() {
               1200:958 ratio so `contain` never crops it, centred against the
               paragraph on desktop and sitting above it on a phone. */}
           <div className="relative mx-auto aspect-[1200/958] w-[220px] lg:mx-0 lg:w-full lg:max-w-[360px]">
+            {/* Japanese words for what we bake, scattered around the drawing.
+                Each rides the shared pointer vars at its own depth, so the
+                cloud shifts as one and the nearer words move more. */}
+            {STORY_KANA.map((k) => (
+              <span
+                key={k.text}
+                aria-hidden="true"
+                className="kana pointer-events-none absolute select-none whitespace-nowrap text-accent motion-reduce:transform-none"
+                style={{
+                  left: k.x,
+                  top: k.y,
+                  fontSize: k.size,
+                  opacity: k.opacity,
+                  transform: `translate(calc(var(--ink-px, 0) * ${k.depth}px), calc(var(--ink-py, 0) * ${k.depth}px)) rotate(${k.rotate}deg)`,
+                  transition: "transform 120ms linear",
+                }}
+              >
+                {k.text}
+              </span>
+            ))}
             <InkArt
               name="rolling-pin-and-flour-bag"
               width={360}
@@ -395,29 +423,46 @@ export function StandingOrderBand() {
 
         {/* The cartouche. The frame is drawn by the wrapper; the list inside
             carries the 32px padding that keeps every line clear of it. */}
-        <div className="relative mx-auto mt-10 max-w-[880px] [--notch-fill:var(--color-peach)]">
-          <span aria-hidden="true" className="notch-frame" />
-          <ol className="relative grid gap-10 p-8 sm:grid-cols-3 sm:gap-6">
-            {STANDING_STEPS.map(({ art, title }) => (
-              <li key={title} className="flex flex-col items-center">
-                {/* The drawings carry the steps. At .9 they are illustration,
-                    not atmosphere — the only place in the system the line art
-                    is the content rather than the ground. */}
-                <span className="relative block h-[96px] w-[120px]">
+        {/* The whole strip is one hanko: a cream stamp with the rough
+            terracotta ink edge and carved inner border, the three steps
+            inside it. Same device as the seal on the hero, at panel scale. */}
+        <div className="relative mx-auto mt-10 max-w-[880px] -rotate-[0.4deg]">
+          <svg
+            viewBox="0 0 880 300"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full"
+          >
+            <defs>
+              <filter id="strip-ink" x="-3%" y="-6%" width="106%" height="112%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.02 0.06" numOctaves="2" seed="5" result="noise" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.2" xChannelSelector="R" yChannelSelector="G" />
+              </filter>
+            </defs>
+            <g filter="url(#strip-ink)">
+              <rect x="2" y="2" width="876" height="296" rx="10" fill="var(--color-card)" stroke="var(--color-accent)" strokeWidth="2.5" vectorEffect="non-scaling-stroke" />
+              <rect x="14" y="14" width="852" height="272" rx="6" fill="none" stroke="var(--color-accent)" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
+            </g>
+          </svg>
+          <ol className="relative grid gap-8 px-8 py-9 sm:grid-cols-3 sm:gap-6 sm:px-10">
+            {STANDING_STEPS.map(({ art, title }, i) => (
+              <li key={title} className="flex flex-col items-center text-center">
+                <span className="relative block h-[96px] w-[130px]">
                   <InkArt
                     name={art}
-                    width={120}
+                    width={130}
                     fit="contain"
-                    opacity={0.9}
+                    opacity={0.92}
                     hideOnPhone={false}
                     parallax={false}
-                    sizes="120px"
+                    sizes="130px"
                     className="inset-0"
                   />
                 </span>
-                <h3 className="mt-4 max-w-[18ch] font-display text-[16px] leading-[1.3] text-ink">
+                <h3 className="mt-4 max-w-[16ch] font-display text-[17px] leading-[1.25] text-ink">
                   {title}
                 </h3>
+                <span className="micro mt-1.5 text-accent">{`Step ${i + 1}`}</span>
               </li>
             ))}
           </ol>
