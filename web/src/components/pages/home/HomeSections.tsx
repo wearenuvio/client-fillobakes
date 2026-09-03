@@ -267,10 +267,10 @@ export function StorySplit() {
             <p className="text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
               Our story
             </p>
-            <h2 className="mt-3 max-w-[16ch] font-display text-display-2 text-ink italic">
+            <h2 className="mt-3 max-w-[22ch] font-display text-display-2 text-ink italic">
               Baked the Japanese way, without a single egg.
             </h2>
-            <p className="mt-6 max-w-[54ch] text-body-lg text-ink-2">
+            <p className="mt-6 max-w-none text-body-lg text-ink-2">
               Neha and Nischal started Fillo in December 2025 with one loaf and
               a route. Most of us remember a neighbourhood that smelled of bread
               in the evening, and that routine disappeared into supermarket
