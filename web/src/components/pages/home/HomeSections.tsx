@@ -133,9 +133,12 @@ export function CategoryTiles() {
   return (
     <section data-reveal className="bg-paper py-[var(--section-y)]">
       <div className="container-content">
+        {/* One accent hairline frames the whole shelf, so the five kinds read
+            as one object between the peach band above and the reviews below. */}
+        <div className="rounded-lg border border-accent p-5 sm:p-8 lg:p-10">
         <SectionHead eyebrow="Shop by kind" heading="Five ways in." />
 
-        <ul className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-5">
+        <ul className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-5">
           {tiles.map((category) => {
             const mark = CATEGORY_MARK[category.slug];
             return (
@@ -189,6 +192,7 @@ export function CategoryTiles() {
             );
           })}
         </ul>
+        </div>
       </div>
     </section>
   );
