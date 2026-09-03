@@ -142,7 +142,7 @@ export function CategoryTiles() {
   return (
     <section data-reveal className="bg-paper py-[var(--section-y)]">
       <div className="container-content">
-        <SectionHead eyebrow="Shop by kind" heading="Five ways in." />
+        <SectionHead eyebrow="Shop by kind" eyebrowStyle="script" heading="Five ways in." />
 
         <ul className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-5">
           {tiles.map((category) => {
@@ -380,6 +380,7 @@ export function WhyReturn() {
       <div className="relative container-content">
         <SectionHead
           eyebrow="Why people return"
+          eyebrowStyle="script"
           heading="The four things they say back to us."
         />
         <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
@@ -620,6 +621,7 @@ export function JournalRow() {
       <div className="container-content">
         <SectionHead
           eyebrow="From the journal"
+          eyebrowStyle="script"
           heading="What we are reading about bread."
           link={{ href: "/journal", label: "All posts" }}
         />
