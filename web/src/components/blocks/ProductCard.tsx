@@ -6,7 +6,6 @@ import { Plus } from "lucide-react";
 import { cn } from "@/lib/cn";
 import type { Product } from "@/lib/catalog";
 import { cutoutVariants } from "@/lib/images";
-import { KanaLabel } from "@/components/ui/KanaLabel";
 import { Price } from "@/components/ui/Price";
 import { Button } from "@/components/ui/Button";
 import { StampBadge } from "@/components/ui/Stamp";
@@ -188,10 +187,20 @@ export function ProductCard({
       <div
         data-surface="well"
         className={cn(
-          "relative aspect-square w-full overflow-hidden bg-well",
+          "relative aspect-square w-full overflow-hidden bg-well @container",
           "transition-colors duration-[var(--dur-base)] ease-[var(--ease-standard)]",
         )}
       >
+        {/* The Japanese name sits inside the well as a faint watermark behind
+            the cutout — large, vertical-centred, never read as a label. */}
+        {product.kana ? (
+          <span
+            aria-hidden="true"
+            className="pointer-events-none font-[family-name:var(--font-kana)] absolute inset-0 flex select-none items-center justify-center text-[clamp(22px,13cqw,48px)] leading-none font-medium tracking-[0.04em] text-ink/[0.08] whitespace-nowrap"
+          >
+            {product.kana}
+          </span>
+        ) : null}
         <Link
           href={product.href}
           className="absolute inset-0 focus-visible:outline-offset-[-3px]"
@@ -279,12 +288,6 @@ export function ProductCard({
             {product.name}
           </Link>
         </h3>
-        {/* The kana slot is held open even for the seven SKUs that have no
-            verified reading, so the attribute line under it sits on the same
-            baseline right across a row. */}
-        <span className="mt-0.5 block min-h-[1lh]">
-          <KanaLabel kana={product.kana} className="whitespace-nowrap" />
-        </span>
 
         {/* Two lines reserved below 640, one from there up. In a 2-up phone
             grid the column is 123px of text and "Cream-filled · Sweet ·

@@ -13,6 +13,7 @@ import {
 import { cn } from "@/lib/cn";
 import { ButtonLink } from "@/components/ui/Button";
 import { InkArt, type InkArtName } from "@/components/ui/InkArt";
+import { ReviewsCarousel } from "@/components/pages/home/ReviewsCarousel";
 import { getCategories } from "@/lib/catalog";
 
 /**
@@ -501,58 +502,9 @@ export function Reviews() {
     // the tiles and the quotes and break the rhythm the rest of the page keeps.
     <section className="bg-paper pb-[var(--section-y)]">
       <div className="container-content">
-        <div className="grid items-start gap-10 md:grid-cols-3 md:gap-8">
-          {REVIEWS.map((review, i) => (
-            <figure
-              key={review.name}
-              className={cn(
-                "text-center md:text-left",
-                i === 1 && "md:text-center",
-              )}
-            >
-              <Stars
-                className={cn(
-                  "justify-center md:justify-start",
-                  i === 1 && "md:justify-center",
-                )}
-              />
-              <blockquote
-                className={cn(
-                  "mt-5 font-display text-ink italic",
-                  i === 1
-                    ? "text-[clamp(24px,2.6vw,32px)] leading-[1.2]"
-                    : "text-[20px] leading-[1.3]",
-                )}
-              >
-                {review.quote}
-              </blockquote>
-              <figcaption className="mt-5 text-body-sm text-muted">
-                {review.name} · {review.meta}
-              </figcaption>
-            </figure>
-          ))}
-        </div>
+        <ReviewsCarousel reviews={REVIEWS} />
       </div>
     </section>
-  );
-}
-
-function Stars({ className }: { className?: string }) {
-  return (
-    <span className={cn("flex gap-1", className)} aria-label="Five out of five">
-      {[0, 1, 2, 3, 4].map((i) => (
-        <svg
-          key={i}
-          width="13"
-          height="13"
-          viewBox="0 0 24 24"
-          fill="var(--color-gold)"
-          aria-hidden="true"
-        >
-          <path d="M12 2.5l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.6 6.1 20.7l1.2-6.6L2.5 9.5l6.6-.9z" />
-        </svg>
-      ))}
-    </span>
   );
 }
 
