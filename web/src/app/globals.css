@@ -1057,6 +1057,15 @@ html:has(.fillo-preloader[data-phase="visible"]:not(.fillo-skip)) body {
     mask-composite: intersect;
   }
 
+  /* The same perforated edge at card scale (testimonials). Holes and step
+     scale up, ground is the card colour, the inset hairline is the soft line. */
+  .stamp-card {
+    --stamp-hole: 5px;
+    --stamp-step: 14px;
+    background-color: var(--color-card);
+    box-shadow: inset 0 0 0 1px var(--color-line);
+  }
+
   /* The notched cartouche frame.
 
      A 1.5px ink outline whose four corners step inward, the way a woodblock

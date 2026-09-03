@@ -187,19 +187,36 @@ export function ProductCard({
       <div
         data-surface="well"
         className={cn(
-          "relative aspect-square w-full overflow-hidden bg-well @container",
+          "relative aspect-square w-full overflow-hidden bg-well",
           "transition-colors duration-[var(--dur-base)] ease-[var(--ease-standard)]",
         )}
       >
-        {/* The Japanese name sits inside the well as a faint watermark behind
-            the cutout — large, vertical-centred, never read as a label. */}
+        {/* The Japanese name rides a gentle arc along the bottom of the well,
+            in accent, and only shows on hover — a small reward, not a label. */}
         {product.kana ? (
-          <span
+          <svg
             aria-hidden="true"
-            className="pointer-events-none font-[family-name:var(--font-kana)] absolute inset-0 flex select-none items-center justify-center text-[clamp(22px,13cqw,48px)] leading-none font-medium tracking-[0.04em] text-ink/[0.08] whitespace-nowrap"
+            viewBox="0 0 200 44"
+            className={cn(
+              "pointer-events-none absolute right-0 bottom-1.5 left-0 mx-auto h-11 w-[min(200px,84%)] select-none",
+              "opacity-0 translate-y-1.5 transition-[opacity,transform] duration-[var(--dur-base)] ease-[var(--ease-standard)]",
+              "group-hover:opacity-100 group-hover:translate-y-0 motion-reduce:transition-none",
+            )}
           >
-            {product.kana}
-          </span>
+            <defs>
+              <path id={`kana-arc-${product.slug}`} d="M 14 34 Q 100 12 186 34" fill="none" />
+            </defs>
+            <text
+              fontSize="12"
+              letterSpacing="3"
+              fill="var(--color-accent)"
+              style={{ fontFamily: "var(--font-kana)" }}
+            >
+              <textPath href={`#kana-arc-${product.slug}`} startOffset="50%" textAnchor="middle">
+                {product.kana}
+              </textPath>
+            </text>
+          </svg>
         ) : null}
         <Link
           href={product.href}
@@ -280,7 +297,7 @@ export function ProductCard({
       </div>
 
       {/* -------- Meta ------------------------------------------------- */}
-      <div className="flex flex-1 flex-col p-4 lg:p-5">
+      <div className="flex flex-1 flex-col px-4 pt-3.5 pb-4 lg:px-5">
         {/* Two lines reserved whether the name needs them or not, so the price
             row sits on one baseline across the row. */}
         <h3 className="line-clamp-2 min-h-[2lh] font-display text-[20px] leading-[1.15] text-ink lg:text-[22px]">
@@ -294,13 +311,13 @@ export function ProductCard({
             Eggless" is about 174px, so a single truncated line lost the word
             the whole line exists for. Both states reserve their height, so
             the price row still lands on one baseline across a row. */}
-        <p className="mt-1.5 line-clamp-2 min-h-[2lh] text-[12px] text-muted sm:line-clamp-1 sm:min-h-[1lh]">
+        <p className="mt-1 line-clamp-2 min-h-[2lh] text-[12px] text-muted sm:line-clamp-1 sm:min-h-[1lh]">
           {attributes(product)}
         </p>
 
         {/* One 40px row for the control, whichever control it is, so adding
             an item never nudges the grid. */}
-        <div className="mt-auto flex h-10 items-center justify-between gap-3 pt-4">
+        <div className="mt-auto flex h-10 items-center justify-between gap-3 pt-3">
           <Price amount={product.price} muted={soldOut} />
 
           {soldOut ? (
@@ -332,9 +349,11 @@ export function ProductCard({
               aria-label={`Add ${product.name}`}
               className={cn(
                 "inline-flex size-10 shrink-0 items-center justify-center rounded-pill",
-                "bg-accent text-on-accent",
-                "transition-[background-color,transform] duration-[var(--dur-base)] ease-[var(--ease-standard)]",
-                "hover:bg-accent-hover hover:-translate-y-0.5 active:translate-y-0",
+                // Outline at rest; solid when the card (or the button) is hovered.
+                "border border-accent bg-transparent text-accent",
+                "group-hover:bg-accent group-hover:text-on-accent",
+                "transition-[background-color,color,transform] duration-[var(--dur-base)] ease-[var(--ease-standard)]",
+                "hover:bg-accent-hover hover:border-accent-hover hover:text-on-accent hover:-translate-y-0.5 active:translate-y-0",
                 "focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-paper focus-visible:outline-none",
                 "motion-reduce:transform-none",
               )}

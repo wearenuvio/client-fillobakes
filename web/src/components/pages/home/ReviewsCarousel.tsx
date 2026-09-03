@@ -62,7 +62,8 @@ export function ReviewsCarousel({ reviews }: { reviews: readonly Review[] }) {
             key={review.name}
             className={cn(
               "flex w-full shrink-0 snap-center flex-col justify-between",
-              "rounded-lg border border-line bg-card p-7 md:min-h-[260px]",
+              "stamp-badge stamp-card p-8 md:min-h-[268px]",
+              i % 2 === 0 ? "md:-rotate-[0.6deg]" : "md:rotate-[0.6deg]",
             )}
             aria-roledescription="slide"
             aria-label={`${i + 1} of ${reviews.length}`}
