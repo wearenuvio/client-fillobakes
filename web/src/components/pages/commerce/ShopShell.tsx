@@ -73,9 +73,16 @@ export function ShopShell({
 
       <ShopTabs tabs={shopTabs()} activeTab={activeTab} />
 
-      <section className="bg-paper pb-[var(--section-y)]">
+      {/* The tab strip supplies the gap below the header block on a phone. It
+          is gone from 1024, so the grid section grows its own top padding
+          there rather than butting straight up against the lead line. */}
+      <section className="bg-paper pt-6 pb-[var(--section-y)] lg:pt-10">
         <div className="container-content">
-          <ShopGrid items={shopItems(products)} />
+          <ShopGrid
+            items={shopItems(products)}
+            tabs={shopTabs()}
+            activeTab={activeTab}
+          />
         </div>
       </section>
 

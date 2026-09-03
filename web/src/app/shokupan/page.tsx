@@ -3,6 +3,7 @@ import Link from "next/link";
 import { CalendarCheck, EggOff, Leaf } from "lucide-react";
 import { buildMetadata, JsonLd, faqLd, bakeryLd } from "@/lib/seo";
 import { Stamp } from "@/components/ui/Stamp";
+import { InkArt } from "@/components/ui/InkArt";
 import { Faq } from "@/components/blocks/Faq";
 import { ButtonLink } from "@/components/ui/Button";
 import { Price } from "@/components/ui/Price";
@@ -106,11 +107,11 @@ export default function ShokupanPage() {
               priority
               sizes="(min-width: 1024px) 40vw, 100vw"
             />
-            <Stamp
-              lines={["baked this", "morning"]}
-              size={80}
-              className="absolute right-4 bottom-4 lg:right-6 lg:bottom-6"
-            />
+            {/* Wrapped rather than positioned directly: `Stamp` carries its
+                own `relative`, which wins over an `absolute` passed in. */}
+            <span className="absolute right-4 bottom-4 lg:right-6 lg:bottom-6">
+              <Stamp lines={["baked this", "morning"]} size={80} />
+            </span>
           </div>
         </div>
       </ContentSection>
@@ -161,8 +162,18 @@ export default function ShokupanPage() {
       </ContentSection>
 
       {/* ---- The dark band: one line, one sentence, two doors ---------- */}
-      <section data-surface="dark" className="bg-choc py-[var(--section-y-lg)]">
-        <div className="container-content">
+      <section
+        data-surface="dark"
+        className="relative overflow-hidden bg-choc py-[var(--section-y-lg)]"
+      >
+        <InkArt
+          name="bakery-van"
+          tone="light"
+          width={480}
+          opacity={0.16}
+          className="top-1/2 -right-20 -translate-y-1/2"
+        />
+        <div className="relative container-content">
           <div className="max-w-[24ch]">
             <h2 className="text-display-2 text-on-choc">
               Order by 8pm. At your door tomorrow.

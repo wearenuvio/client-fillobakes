@@ -1,5 +1,9 @@
+"use client";
+
+import * as React from "react";
 import Image from "next/image";
 import { cn } from "@/lib/cn";
+import { retainInkPointer } from "@/components/ui/ink-pointer";
 
 /**
  * InkArt — the hand-drawn line drawings in `/images/lineart`, placed behind a
@@ -59,6 +63,7 @@ export function InkArt({
    * comes out as a set of vertical strokes.
    */
   fit = "width",
+  parallax = true,
 }: {
   name: InkArtName;
   tone?: "ink" | "light";
@@ -70,10 +75,32 @@ export function InkArt({
   style?: React.CSSProperties;
   hideOnPhone?: boolean;
   fit?: "width" | "contain";
+  /**
+   * Drift with the pointer and with the scroll. On for background atmosphere,
+   * which is what most of these are; off for a drawing that has to stay put
+   * inside a box it would otherwise wander out of — a category tile's mark or
+   * a Standing Order step, both of which are contained illustration rather
+   * than ground.
+   */
+  parallax?: boolean;
 }) {
   const [w, h] = ART[name];
   const src = `/images/lineart/${name}${tone === "light" ? "-light" : ""}.png`;
   const contain = fit === "contain";
+
+  useInkPointer(parallax);
+
+  const art = (
+    <Image
+      src={src}
+      alt=""
+      width={w}
+      height={h}
+      loading="lazy"
+      sizes={sizes ?? `${width}px`}
+      draggable={false}
+    />
+  );
 
   return (
     <span
@@ -86,15 +113,26 @@ export function InkArt({
       )}
       style={{ opacity, ...(contain ? null : { width }), ...style }}
     >
-      <Image
-        src={src}
-        alt=""
-        width={w}
-        height={h}
-        loading="lazy"
-        sizes={sizes ?? `${width}px`}
-        draggable={false}
-      />
+      {/* Two layers, because one element cannot carry two transforms. The
+          outer one drifts on the scroll timeline, the inner one follows the
+          pointer; putting both on a single element would have the scroll
+          animation overwrite the pointer transform outright. Neither touches
+          the wrapper, which is where the caller's own rotations live. */}
+      {parallax ? (
+        <span className="ink-art-scroll">
+          <span className="ink-art-pointer">{art}</span>
+        </span>
+      ) : (
+        art
+      )}
     </span>
   );
+}
+
+/** Joins the shared pointer loop for as long as this drawing is mounted. */
+function useInkPointer(enabled: boolean) {
+  React.useEffect(() => {
+    if (!enabled) return;
+    return retainInkPointer();
+  }, [enabled]);
 }

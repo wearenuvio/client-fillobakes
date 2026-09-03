@@ -4,6 +4,8 @@ import { fontVariables, KANA_FONT_HREF } from "@/app/fonts";
 import { SITE } from "@/lib/config";
 import { buildMetadata } from "@/lib/seo";
 import { SiteChrome } from "@/components/blocks/SiteChrome";
+import { Preloader } from "@/components/blocks/Preloader";
+import { RouteLoader } from "@/components/blocks/RouteLoader";
 
 export const metadata: Metadata = {
   ...buildMetadata("/"),
@@ -34,6 +36,8 @@ export default function RootLayout({
         <link rel="stylesheet" href={KANA_FONT_HREF} />
       </head>
       <body>
+        <Preloader />
+        <RouteLoader />
         <SiteChrome>{children}</SiteChrome>
       </body>
     </html>

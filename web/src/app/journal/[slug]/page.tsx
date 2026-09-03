@@ -115,6 +115,7 @@ export default async function JournalPostPage({ params }: Params) {
             <EditorialImage
               src={body.image.src}
               alt={body.image.alt}
+              focus={body.image.focus}
               ratio="16 / 9"
               sizes="(min-width: 1024px) 700px, 100vw"
               priority

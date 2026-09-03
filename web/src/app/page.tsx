@@ -34,7 +34,6 @@ export default function HomePage() {
     .filter((a) => a.serviceability !== "not_yet")
     .map((a) => a.name);
 
-  const hero = getProductBySlug("milk-shokupan");
   const total = getProducts().length;
 
   // Two rows: four across on desktop, two across on a phone.
@@ -57,10 +56,7 @@ export default function HomePage() {
       <JsonLd path={PATH} nodes={[bakeryLd(areaServed), websiteLd()]} />
 
       {/* 1 — Crave. */}
-      <HomeHero
-        image={hero?.image ?? null}
-        imageAlt="A loaf of Fillo milk shokupan, sliced"
-      />
+      <HomeHero />
 
       {/* 2 — The four quiet facts. */}
       <TrustStripV2 />

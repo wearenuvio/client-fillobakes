@@ -108,3 +108,9 @@ Nothing about run counts, cutoff clocks, lanes, or "[TBC]" on this page.
 - **Studio grade.** No clipped text, overflow, uneven card heights, misaligned baselines, layout shift, console errors. Every state checked (empty cart, sold out, few left, image fallback).
 - **Line art.** Faint hand-drawn wheat/bread line art (web/public/images/lineart/) may sit behind sections at ~.12 opacity, in the hero corner, footer, and on the dark band in the light variant. Never over text.
 - **Logo** stays navy as supplied. **Testimonials**: all 8 real ones are approved.
+
+## 7. Home hero + Standing Order decisions (client, 3 Sep, evening)
+- **Hero = big word over crumb photo.** Full-bleed warm macro of shokupan crumb (or the sliced loaf) with a soft chocolate scrim at the bottom only; script "Baked fresh, eggless." above; one oversized display word **"Fuwa fuwa"** (serif, cream, spanning ~80% of the width, like the CROISSANT reference) with a small subline "ふわふわ · the Japanese word for pillowy" and one sentence; buttons: primary "See the menu", secondary outline "How delivery works"; bottom-left small line "Order by 8pm · at your door tomorrow"; bottom-right seal. Mobile: word wraps to two lines, photo cropped to the crumb, buttons stacked.
+- **Standing Order = full-width peach band**: script "Your bread, every week." + display-2 "The Standing Order" + three line-art steps (choose your bread · choose your day and stop · we bake it fresh and drive) + "From ₹200 a week. Skip any week, pause any time." + one large terracotta CTA "Start with The Loaf" + ghost "How it works". Nothing else in the band.
+- No new sections (ingredients strip, how-to-order, spec chips): the references were for style only.
+- Section titles one line on desktop; See-all button under bestsellers; category tiles line art only; first why-return icon changed; dark band art must not overlap cutouts; footer compacted.

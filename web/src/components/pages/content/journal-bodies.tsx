@@ -21,7 +21,14 @@ export type JournalBody = {
   state: "published" | "commissioned";
   /** What is still missing, in the reader's words. Required on a draft. */
   draftNote?: string;
-  image: { src: string; alt: string; caption: string; credit: string };
+  image: {
+    src: string;
+    alt: string;
+    caption: string;
+    credit: string;
+    /** CSS object-position. Set it where a centre crop loses the subject. */
+    focus?: string;
+  };
   body: React.ReactNode;
   productSlugs: string[];
   related: { href: string; label: string }[];
@@ -34,10 +41,10 @@ export const JOURNAL_BODIES: Record<string, JournalBody> = {
     published: "2026-07-11T09:00:00+05:30",
     state: "published",
     image: {
-      src: "/images/stock/lifestyle/hands-tearing-bread-minimal.jpg",
-      alt: "Two hands pulling a slice of soft white bread apart.",
-      caption: "Two slices, one torn open. The texture is the argument.",
-      credit: "Photograph: Oktavisual Project",
+      src: "/images/stock/hero/shokupan-crust-close-warm.jpg",
+      alt: "A close view of a soft milk loaf, crust and crumb in warm light.",
+      caption: "No egg in it. The texture is the argument.",
+      credit: "",
     },
     productSlugs: ["milk-shokupan", "japanese-marble-bread"],
     related: [

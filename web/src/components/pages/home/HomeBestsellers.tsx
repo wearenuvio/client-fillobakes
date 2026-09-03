@@ -1,6 +1,7 @@
 import type { Product } from "@/lib/catalog";
 import { ProductCard } from "@/components/blocks/ProductCard";
 import { SectionHead } from "@/components/pages/home/HomeSections";
+import { ButtonLink } from "@/components/ui/Button";
 import { InkArt } from "@/components/ui/InkArt";
 import { stockFor } from "@/components/pages/commerce/run";
 
@@ -52,6 +53,16 @@ export function HomeBestsellers({
               />
             );
           })}
+        </div>
+
+        {/* The top-right link is for someone already scanning the heading; the
+            button is for someone who has just read all eight cards and is at
+            the bottom of the grid with nowhere to go. Same destination, two
+            different moments, so both stay. */}
+        <div className="mt-10 flex justify-center">
+          <ButtonLink href="/shop" variant="secondary" size="md">
+            See all {total} bakes
+          </ButtonLink>
         </div>
       </div>
     </section>

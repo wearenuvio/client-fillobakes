@@ -1,6 +1,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
+import { InkArt } from "@/components/ui/InkArt";
 import { ContentSection, PageHead, Eyebrow } from "@/components/pages/content/PageShell";
 import { Prose } from "@/components/pages/content/Prose";
 
@@ -44,7 +45,12 @@ export function PolicyLayout({
 }) {
   return (
     <>
-      <ContentSection surface="paper" size="none" className="pt-10 pb-8 lg:pt-14">
+      <ContentSection
+        surface="paper"
+        size="none"
+        className="overflow-hidden pt-10 pb-8 lg:pt-14"
+      >
+        <InkArt name="wheat-stalk-v2" width={170} className="top-4 -right-4" />
         <PageHead
           eyebrow="Policies"
           title={title}

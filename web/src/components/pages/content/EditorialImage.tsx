@@ -15,6 +15,8 @@ export function EditorialImage({
   caption,
   credit,
   ratio = "3 / 2",
+  /** CSS object-position, where a centre crop would lose the subject. */
+  focus,
   sizes,
   priority = false,
   rounded = true,
@@ -25,6 +27,7 @@ export function EditorialImage({
   caption?: string;
   credit?: string;
   ratio?: string;
+  focus?: string;
   sizes: string;
   priority?: boolean;
   rounded?: boolean;
@@ -45,6 +48,7 @@ export function EditorialImage({
           fill
           sizes={sizes}
           priority={priority}
+          style={focus ? { objectPosition: focus } : undefined}
           className="object-cover"
         />
       </div>

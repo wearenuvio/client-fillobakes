@@ -5,6 +5,7 @@ import { MapPin } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { ButtonLink } from "@/components/ui/Button";
 import { LoafGlyph } from "@/components/ui/LineArt";
+import { InkArt, type InkArtName } from "@/components/ui/InkArt";
 import { useAccountSession } from "@/components/pages/account/session";
 
 /**
@@ -21,6 +22,7 @@ export function AccountPage({
   lead,
   chip,
   actions,
+  art,
   children,
   className,
 }: {
@@ -30,14 +32,27 @@ export function AccountPage({
   /** The area chip: place, day, window — the three facts the cart repeats. */
   chip?: React.ReactNode;
   actions?: React.ReactNode;
+  /** One faint drawing behind the header, from 1024 up (DESIGN-v2 §6). */
+  art?: InkArtName;
   children: React.ReactNode;
   className?: string;
 }) {
   const { hydrated, signedIn } = useAccountSession();
 
   return (
-    <div className={cn("min-w-0", className)}>
-      <header className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+    <div className={cn("relative min-w-0 overflow-hidden", className)}>
+      {/* The header's right third is clear on every screen that does not
+          carry the area chip, so the drawing sits there rather than bleeding
+          off an edge the account column does not have. */}
+      {art ? (
+        <InkArt
+          name={art}
+          width={210}
+          opacity={0.12}
+          className="top-0 right-0 hidden lg:block"
+        />
+      ) : null}
+      <header className="relative flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
         <div className="min-w-0">
           {kicker ? (
             <p className="mb-3 text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
@@ -57,7 +72,7 @@ export function AccountPage({
         ) : null}
       </header>
 
-      <div className="mt-8 lg:mt-10">
+      <div className="relative mt-8 lg:mt-10">
         {hydrated && !signedIn ? <SignedOut /> : children}
       </div>
     </div>

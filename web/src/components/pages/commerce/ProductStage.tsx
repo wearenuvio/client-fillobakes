@@ -60,11 +60,14 @@ export function ProductGalleryV2({
           </span>
         )}
 
-        <Stamp
-          lines={["baked this", "morning"]}
-          size={96}
-          className="absolute right-4 bottom-4 sm:right-6 sm:bottom-6"
-        />
+        {/* The seal needs its own positioned wrapper. `Stamp` puts `relative`
+            on its root, and in the generated stylesheet that lands after
+            `absolute`, so passing the placement down as a className lost the
+            fight and dropped the seal into the top-left corner of the well,
+            where `overflow-hidden` cut it in half. */}
+        <span className="absolute right-4 bottom-4 sm:right-6 sm:bottom-6">
+          <Stamp lines={["baked this", "morning"]} size={96} />
+        </span>
       </div>
 
       {/* Thumbs: one fixed square each, so a tall lifestyle frame and a wide

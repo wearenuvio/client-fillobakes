@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { Plus } from "lucide-react";
 import { cn } from "@/lib/cn";
 import type { Product } from "@/lib/catalog";
-import { getCategoryOf } from "@/lib/catalog";
 import { cutoutVariants } from "@/lib/images";
 import { KanaLabel } from "@/components/ui/KanaLabel";
 import { Price } from "@/components/ui/Price";
@@ -14,31 +14,33 @@ import { LoafGlyph } from "@/components/ui/LineArt";
 import { useCartStore, useCartHydrated, qtyOf } from "@/store/cart";
 
 /**
- * ProductCard — DESIGN-v2 §2.
+ * ProductCard — the menu-board card (moodboard mb1).
  *
- * A card ground with a 1:1 well behind a cutout at 78% width. Below it: the
- * category in small caps, the name in the display serif, the kana directly
- * under the name, then price and one accent Add that becomes a stepper.
+ * A flat square of `--color-well` with the cutout floating on it, and the
+ * words underneath on the page's own ground. No white card, no border, no
+ * radius on the well: the reference is a printed menu board, where the item
+ * is a picture and a line of type and the paper does the rest. Card chrome
+ * around each of twenty-three items turned the shop grid into a spreadsheet.
  *
- * There is deliberately no description. A menu board lists the bake and the
- * price; the sentence about it belongs on the product page, and stripping it
- * out is what lets eight cards read as one grid rather than eight paragraphs.
+ * Under the well, left-aligned: the name in the display serif, the kana, one
+ * attribute line of three words, and the price row. The category label that
+ * used to sit above the name is gone — the attribute line says more in the
+ * same space, and on a category page the label repeated the tab.
  *
- * Heights are equalised structurally, not by hope: the category line is a
- * single truncated line, the name is clamped to two and reserves both, and the
- * kana never wraps. So the price row lands on the same baseline in every card
- * of a row whether the name is "Fruit Sando" or "Japanese Marble Bread".
+ * Heights are equalised structurally: the name is clamped to two lines and
+ * reserves both, the kana and the attribute line never wrap, and the price
+ * row is pushed to the bottom by `mt-auto`. So the row of prices lands on one
+ * baseline whether the name is "Fruit Sando" or "Japanese Marble Bread".
  *
  * Hover swaps the `-v1` cutout for `-v2` on a 250ms cross-fade, both frames
- * loaded up front so the second one never pops in late. Where only one
- * revision exists the card falls back to a gentle scale, and on touch — where
- * there is no hover — the resting frame is all anyone ever sees.
+ * loaded up front. Where only one revision exists the card falls back to a
+ * gentle scale, and on touch the resting frame is all anyone ever sees.
  *
- * Sold out keeps the card warm rather than killing it grey: the cutout
- * desaturates halfway and no further, the ground stays card white, and the
- * button becomes a secondary "Notify me". Running out is good news, not a
- * fault, so nothing turns red and nothing leaves the grid. "Few left" is gold
- * type on a paper pill, and never a number.
+ * Sold out is one image and no swap. Cross-fading two stacked frames at
+ * reduced opacity used to blend them into a double exposure, which read as a
+ * rendering fault rather than as "gone". Now it is a single grey frame at 42%
+ * with the tag over it — unmistakable at arm's length, and still warm,
+ * because the ground and the type never change.
  */
 
 export type ProductCardStock = {
@@ -52,6 +54,70 @@ export type ProductCardStock = {
 };
 
 const SIZES = "(min-width: 1280px) 280px, (min-width: 768px) 30vw, 45vw";
+
+/* -------------------------------------------------------------------------- */
+/* The attribute line                                                         */
+/* -------------------------------------------------------------------------- */
+
+/** The one thing a customer would say first about this bake. */
+const FLAVOUR: [string, string][] = [
+  ["spicy", "Spicy"],
+  ["chocolate", "Chocolate"],
+  ["strawberry", "Strawberry"],
+  ["apple", "Apple"],
+  ["coffee", "Coffee"],
+  ["cardamom", "Cardamom"],
+  ["cheese", "Cheese"],
+  ["paneer", "Paneer"],
+  ["mushroom", "Mushroom"],
+  ["garlic", "Garlic"],
+  ["nuts", "Nutty"],
+  ["fruit", "Fruity"],
+  ["mild", "Mild"],
+];
+
+/** What the kind feels like, when no flavour tag stands out. */
+const TEXTURE: Record<string, string> = {
+  breads: "Soft",
+  anpan: "Cream-filled",
+  karepan: "Crisp",
+  "pies-strudels": "Flaky",
+  "fruit-sandos": "Chilled",
+};
+
+/** What the kind is called, as a fallback second word. */
+const NOUN: Record<string, string> = {
+  breads: "Milk bread",
+  anpan: "An pan",
+  karepan: "Kare pan",
+  "pies-strudels": "Pastry",
+  "fruit-sandos": "Sando",
+};
+
+/**
+ * Three words, dot separated, derived from the SKU's own tags — never written
+ * per product, so a new item in products.json gets a correct line for free.
+ * Eggless is always last: it is the one claim the whole catalogue makes and
+ * the reason most people are on the page.
+ */
+function attributes(product: Product): string {
+  const tags = new Set(product.tags);
+  const category = product.category;
+
+  const flavour =
+    FLAVOUR.find(([tag]) => tags.has(tag))?.[1] ?? TEXTURE[category] ?? "Soft";
+
+  let second = tags.has("savory")
+    ? "Savoury"
+    : tags.has("sweet")
+      ? "Sweet"
+      : (NOUN[category] ?? "Baked daily");
+
+  // "Spicy · Spicy · Eggless" helps nobody.
+  if (second === flavour) second = NOUN[category] ?? "Baked daily";
+
+  return `${flavour} · ${second} · Eggless`;
+}
 
 export function ProductCard({
   product,
@@ -87,19 +153,21 @@ export function ProductCard({
     typeof stock?.left === "number" &&
     stock.left > 0 &&
     stock.left <= 5;
-  const category = getCategoryOf(product);
 
   // The resting frame is -v1 when it exists, otherwise whatever resolved.
   const variants = cutoutVariants(product.slug);
   const isCutout = product.image?.kind === "cutout";
   const resting = isCutout ? (variants.v1 ?? product.image?.src ?? null) : null;
+  // Sold out never swaps: one frame, greyed, is the whole state.
   const hover =
-    isCutout && variants.v2 && variants.v2 !== resting ? variants.v2 : null;
+    !soldOut && isCutout && variants.v2 && variants.v2 !== resting
+      ? variants.v2
+      : null;
 
   const cutoutBox = cn(
-    "absolute top-1/2 left-1/2 w-[78%] -translate-x-1/2 -translate-y-1/2",
+    "absolute top-1/2 left-1/2 w-[74%] -translate-x-1/2 -translate-y-1/2",
     "object-contain cutout transition-opacity duration-[250ms] ease-[var(--ease-standard)]",
-    soldOut && "opacity-80 grayscale-[.5]",
+    soldOut && "opacity-[0.42] grayscale",
   );
 
   return (
@@ -107,14 +175,21 @@ export function ProductCard({
       className={cn(
         "group relative flex flex-col overflow-hidden rounded-lg border border-line bg-card",
         "transition-[box-shadow,transform] duration-[var(--dur-base)] ease-[var(--ease-standard)]",
-        "hover:-translate-y-0.5 hover:shadow-lift",
+        "hover:-translate-y-0.5 hover:shadow-lift motion-reduce:transform-none",
         className,
       )}
     >
-      {/* -------- Well: 1:1, cutout at 78%, centred ------------------- */}
+      {/* -------- Well: flat, square, edge to edge, no inner radius ----
+          The card keeps its own 10px corner and hairline; the well does not
+          add a second one inside it. `overflow-hidden` on the article is what
+          rounds the two top corners, so the square meets the card edge
+          cleanly on all three sides. */}
       <div
         data-surface="well"
-        className="relative aspect-square w-full overflow-hidden bg-well"
+        className={cn(
+          "relative aspect-square w-full overflow-hidden bg-well",
+          "transition-colors duration-[var(--dur-base)] ease-[var(--ease-standard)]",
+        )}
       >
         <Link
           href={product.href}
@@ -136,7 +211,8 @@ export function ProductCard({
                     ? "group-hover:opacity-0"
                     : cn(
                         "transition-transform duration-[var(--dur-base)]",
-                        "group-hover:scale-103 motion-reduce:transform-none",
+                        !soldOut && "group-hover:scale-103",
+                        "motion-reduce:transform-none",
                       ),
                 )}
               />
@@ -163,10 +239,11 @@ export function ProductCard({
               priority={priority}
               sizes={SIZES}
               className={cn(
-                "absolute inset-[7%] size-[86%] rounded-md object-cover",
+                "absolute inset-[7%] size-[86%] object-cover",
                 "transition-transform duration-[var(--dur-base)] ease-[var(--ease-standard)]",
-                "group-hover:scale-103 motion-reduce:transform-none",
-                soldOut && "opacity-80 grayscale-[.5]",
+                !soldOut && "group-hover:scale-103",
+                "motion-reduce:transform-none",
+                soldOut && "opacity-[0.42] grayscale",
               )}
             />
           ) : (
@@ -178,7 +255,7 @@ export function ProductCard({
 
         {/* -------- One tag, top-left. Never two. ------------------------ */}
         {soldOut ? (
-          <span className="pointer-events-none absolute top-3 left-3 inline-flex h-6 items-center rounded-pill bg-paper px-2.5 text-[11px] font-medium tracking-[0.08em] text-ink-2 uppercase">
+          <span className="pointer-events-none absolute top-3 left-3 inline-flex h-6 items-center rounded-pill bg-paper px-2.5 text-[11px] font-medium tracking-[0.08em] text-ink uppercase">
             Sold out today
           </span>
         ) : few ? (
@@ -194,22 +271,27 @@ export function ProductCard({
 
       {/* -------- Meta ------------------------------------------------- */}
       <div className="flex flex-1 flex-col p-4 lg:p-5">
-        {/* One line each, always. "Pies and strudels" is the longest label in
-            the catalogue and is the reason this truncates rather than wraps. */}
-        <p className="truncate text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
-          {category?.label}
-        </p>
-
         {/* Two lines reserved whether the name needs them or not, so the price
             row sits on one baseline across the row. */}
-        <h3 className="mt-1.5 line-clamp-2 min-h-[2lh] font-display text-[20px] leading-[1.15] text-ink lg:text-[22px]">
+        <h3 className="line-clamp-2 min-h-[2lh] font-display text-[20px] leading-[1.15] text-ink lg:text-[22px]">
           <Link href={product.href} className="link-underline">
             {product.name}
           </Link>
         </h3>
-        <KanaLabel kana={product.kana} className="mt-0.5 whitespace-nowrap" />
+        {/* The kana slot is held open even for the seven SKUs that have no
+            verified reading, so the attribute line under it sits on the same
+            baseline right across a row. */}
+        <span className="mt-0.5 block min-h-[1lh]">
+          <KanaLabel kana={product.kana} className="whitespace-nowrap" />
+        </span>
 
-        <div className="mt-auto flex flex-col items-start gap-3 pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="mt-1.5 truncate text-[12px] text-muted">
+          {attributes(product)}
+        </p>
+
+        {/* One 40px row for the control, whichever control it is, so adding
+            an item never nudges the grid. */}
+        <div className="mt-auto flex h-10 items-center justify-between gap-3 pt-4">
           <Price amount={product.price} muted={soldOut} />
 
           {soldOut ? (
@@ -217,7 +299,6 @@ export function ProductCard({
               variant="secondary"
               size="sm"
               onClick={() => onNotifyMe?.(product.slug)}
-              className="w-full sm:w-auto"
             >
               Notify me
             </Button>
@@ -229,15 +310,21 @@ export function ProductCard({
               label={`Quantity of ${product.name}`}
             />
           ) : (
-            <Button
-              variant="primary"
-              size="sm"
+            <button
+              type="button"
               onClick={() => add(product.slug)}
-              aria-label={`Add ${product.name} to your order`}
-              className="w-full sm:w-auto"
+              aria-label={`Add ${product.name}`}
+              className={cn(
+                "inline-flex size-10 shrink-0 items-center justify-center rounded-pill",
+                "bg-accent text-on-accent",
+                "transition-[background-color,transform] duration-[var(--dur-base)] ease-[var(--ease-standard)]",
+                "hover:bg-accent-hover hover:-translate-y-0.5 active:translate-y-0",
+                "focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-paper focus-visible:outline-none",
+                "motion-reduce:transform-none",
+              )}
             >
-              Add
-            </Button>
+              <Plus size={20} strokeWidth={2} aria-hidden="true" />
+            </button>
           )}
         </div>
       </div>

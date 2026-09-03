@@ -773,3 +773,155 @@
     transform: none;
   }
 }
+
+/* ==========================================================================
+   PRELOADER + ROUTE LOADING (additive; see components/blocks/Preloader.tsx
+   and components/blocks/RouteLoader.tsx)
+
+   Unlayered on purpose: these rules must beat the Tailwind utilities on the
+   same elements, and the reduced-motion overrides at the bottom must beat the
+   global `*` reset above.
+   ========================================================================== */
+
+/* The page cannot scroll under the preloader, and no JavaScript is needed to
+   hold it still: the overlay is server-rendered, so the lock is in force from
+   the first paint and lifts the moment React flips the phase or unmounts it. */
+html:has(.fillo-preloader[data-phase="visible"]:not(.fillo-skip)),
+html:has(.fillo-preloader[data-phase="visible"]:not(.fillo-skip)) body {
+  overflow: hidden;
+}
+
+/* Already seen this session — flagged by the inline boot script before paint. */
+.fillo-preloader.fillo-skip {
+  display: none;
+}
+
+@keyframes fillo-preloader-out {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-100%);
+  }
+}
+
+@keyframes fillo-preloader-fade {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* The last cutout settles back as the sheet lifts, so the flipbook reads as
+   coming to rest rather than being yanked off screen. */
+@keyframes fillo-cutout-rest {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(0.9);
+  }
+}
+
+@keyframes fillo-hairline {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Four frames, hard cuts. Each frame is lit for a quarter of the cycle and
+   the delay walks them round; `steps(1, end)` keeps the cut honest. */
+@keyframes fillo-flip {
+  0% {
+    opacity: 1;
+  }
+  25% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes fillo-topbar-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes fillo-topbar-hide {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.fillo-preloader[data-phase="exiting"] {
+  animation: fillo-preloader-out 520ms cubic-bezier(0.76, 0, 0.24, 1) both;
+}
+.fillo-preloader[data-phase="exiting"] .fillo-preloader-well {
+  animation: fillo-cutout-rest 520ms cubic-bezier(0.76, 0, 0.24, 1) both;
+}
+
+.fillo-hairline-fill {
+  transform-origin: left center;
+  animation: fillo-hairline 2400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+/* On the way out the hairline is simply full — no catching up in public. */
+.fillo-preloader[data-phase="exiting"] .fillo-hairline-fill {
+  animation: none;
+  transform: scaleX(1);
+}
+
+.fillo-flip-frame {
+  opacity: 0;
+  animation-name: fillo-flip;
+  animation-timing-function: steps(1, end);
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+}
+
+.fillo-topbar {
+  animation: fillo-topbar-hide 140ms linear 400ms both;
+}
+.fillo-topbar-fill {
+  transform-origin: left center;
+  animation: fillo-topbar-fill 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* One still cutout and a fade. The `*` reset above would otherwise snap the
+     exit to 0.01ms and leave the flipbook frames blank. */
+  .fillo-flip-frame {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+  .fillo-flip-frame[data-first="true"] {
+    opacity: 1 !important;
+  }
+  .fillo-preloader[data-phase="exiting"] {
+    animation: fillo-preloader-fade 320ms linear both !important;
+  }
+  .fillo-preloader[data-phase="exiting"] .fillo-preloader-well {
+    animation: none !important;
+    transform: none !important;
+  }
+  .fillo-hairline-fill,
+  .fillo-topbar-fill {
+    animation: none !important;
+    transform: scaleX(1) !important;
+  }
+  .fillo-topbar {
+    animation: none !important;
+  }
+}

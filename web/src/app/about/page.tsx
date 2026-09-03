@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { buildMetadata, JsonLd } from "@/lib/seo";
 import { ButtonLink } from "@/components/ui/Button";
-import { AnPanGlyph, LoafGlyph, WheatGlyph } from "@/components/ui/LineArt";
+import { InkArt, type InkArtName } from "@/components/ui/InkArt";
 import {
   ContentSection,
   SectionHead,
@@ -24,30 +24,31 @@ export const metadata: Metadata = buildMetadata(PATH);
  */
 
 /**
- * The three steps. `Glyph` is the placeholder that holds the slot until the
- * commissioned hand-drawn line art lands in /images/lineart — the drawing
- * drops into the same square with no layout change.
+ * The three steps, each carrying one of the commissioned line drawings from
+ * /images/lineart on a well. They sit at a higher opacity than a background
+ * mark because here the drawing IS the content of the slot, not atmosphere
+ * behind text.
  */
-const STEPS = [
+const STEPS: { n: string; title: string; body: string; art: InkArtName }[] = [
   {
     n: "01",
     title: "Mix and rest",
     body: "A wet dough, mixed in small batches and left cool overnight. Time is what replaces the egg.",
-    Glyph: WheatGlyph,
+    art: "rolling-pin-and-flour-bag",
   },
   {
     n: "02",
     title: "Shape by hand",
     body: "Every loaf and every bun is rolled by hand. A dough this soft does not behave in a machine.",
-    Glyph: AnPanGlyph,
+    art: "anpan-bun",
   },
   {
     n: "03",
     title: "Bake at dawn, then drive",
     body: "The ovens go on at four. By the time the van leaves, everything on board was made this morning.",
-    Glyph: LoafGlyph,
+    art: "oven-with-loaves",
   },
-] as const;
+];
 
 export default function AboutPage() {
   return (
@@ -55,8 +56,18 @@ export default function AboutPage() {
       <JsonLd path={PATH} crumbs={[{ name: "Our story", path: PATH }]} />
 
       {/* ---- Hero: photo left, the line right ------------------------- */}
-      <ContentSection surface="paper" size="none" className="pt-8 pb-[var(--section-y)] lg:pt-12">
-        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+      <ContentSection
+        surface="paper"
+        size="none"
+        className="overflow-hidden pt-8 pb-[var(--section-y)] lg:pt-12"
+      >
+        <InkArt
+          name="wheat-stalk"
+          width={170}
+          opacity={0.12}
+          className="top-1/2 right-[-40px] hidden -translate-y-1/2 lg:block"
+        />
+        <div className="relative grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
           <div className="relative order-2 lg:order-1">
             <div className="relative aspect-[4/5] w-full overflow-hidden rounded-lg">
               <Image
@@ -95,17 +106,18 @@ export default function AboutPage() {
       <ContentSection surface="paper-2">
         <SectionHead eyebrow="How we bake" heading="Three things, done slowly." />
         <ol className="mt-12 grid gap-10 md:grid-cols-3 md:gap-8">
-          {STEPS.map(({ n, title, body, Glyph }) => (
+          {STEPS.map(({ n, title, body, art }) => (
             <li key={n}>
-              {/* Line-art slot. A delivered drawing replaces the glyph. */}
               <div
                 data-surface="well"
-                className="grid aspect-[3/2] w-full place-items-center rounded-lg bg-well"
+                className="relative grid aspect-[3/2] w-full place-items-center overflow-hidden rounded-lg bg-well"
               >
-                <Glyph
-                  size={148}
-                  strokeWidth={1.25}
-                  className="text-muted opacity-75"
+                <InkArt
+                  name={art}
+                  width={230}
+                  opacity={0.7}
+                  hideOnPhone={false}
+                  className="top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
                 />
               </div>
               <p className="mt-6 text-body-sm text-muted tabular">{n}</p>
@@ -132,6 +144,8 @@ export default function AboutPage() {
       </section>
 
       {/* ---- Why eggless ------------------------------------------------ */}
+      {/* No line art here: the three drawings above are this page's allowance,
+          and there is no clear ground in this section that is not under text. */}
       <ContentSection surface="peach">
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-5">

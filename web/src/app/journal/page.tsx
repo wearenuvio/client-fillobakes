@@ -71,10 +71,11 @@ export default function JournalIndexPage() {
                         fill
                         priority={index < 2}
                         sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                        style={{ objectPosition: body.image.focus ?? "50% 60%" }}
                         className={
                           soon
-                            ? "object-cover object-[50%_60%] opacity-70 grayscale-[.5]"
-                            : "object-cover object-[50%_60%] transition-transform duration-[var(--dur-base)] group-hover:scale-105 motion-reduce:transform-none"
+                            ? "object-cover opacity-70 grayscale-[.5]"
+                            : "object-cover transition-transform duration-[var(--dur-base)] group-hover:scale-105 motion-reduce:transform-none"
                         }
                       />
                     ) : null}

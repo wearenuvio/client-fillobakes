@@ -3,17 +3,17 @@ import Link from "next/link";
 import {
   ArrowRight,
   CalendarCheck,
+  Cloud,
   EggOff,
   Leaf,
   MapPin,
-  Sparkles,
   Sunrise,
   Wheat,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { ButtonLink } from "@/components/ui/Button";
 import { InkArt, type InkArtName } from "@/components/ui/InkArt";
-import { getCategories, getProductBySlug } from "@/lib/catalog";
+import { getCategories } from "@/lib/catalog";
 
 /**
  * The quiet sections of the home page — DESIGN-v2 §3.2, .4, .5, .6, .8, .9, .10.
@@ -49,7 +49,13 @@ export function SectionHead({
         <p className="text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
           {eyebrow}
         </p>
-        <h2 className="mt-3 max-w-[18ch] text-h2 text-ink">{heading}</h2>
+        {/* Two lines on a phone, one line from lg: the heading is the only
+            thing in its flex item, so lifting the measure lets "The four
+            things they say back to us." set on a single line beside the
+            link rather than breaking after "say". */}
+        <h2 className="mt-3 max-w-[20ch] text-h2 text-ink lg:max-w-none">
+          {heading}
+        </h2>
       </div>
       {link ? (
         <Link
@@ -101,15 +107,15 @@ export function TrustStripV2() {
 /* 4 — Categories                                                             */
 /* -------------------------------------------------------------------------- */
 
-const CATEGORY_FACE: Record<string, string> = {
-  breads: "milk-shokupan",
-  anpan: "custard-an-pan",
-  karepan: "seoul-spice",
-  "pies-strudels": "bangalore-bloom",
-  "fruit-sandos": "fruit-sando",
-};
-
-/** The drawn twin of each tile's photograph, faint behind the cutout. */
+/**
+ * The tiles are drawings, not photographs.
+ *
+ * A cutout tile competes with the eight cutouts in the Bestsellers grid
+ * directly above it, and the two bands end up reading as one long product
+ * list. Drawn at full strength on the well ground, the row becomes a change
+ * of voice — a hand-lettered menu board between two photographic grids — and
+ * the categories stop pretending to be products.
+ */
 const CATEGORY_MARK: Record<string, InkArtName> = {
   breads: "shokupan-loaf",
   anpan: "anpan-bun",
@@ -120,7 +126,7 @@ const CATEGORY_MARK: Record<string, InkArtName> = {
 
 export function CategoryTiles() {
   const tiles = getCategories().filter(
-    (c) => c.count > 0 && CATEGORY_FACE[c.slug],
+    (c) => c.count > 0 && CATEGORY_MARK[c.slug],
   );
 
   return (
@@ -130,44 +136,35 @@ export function CategoryTiles() {
 
         <ul className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-5">
           {tiles.map((category) => {
-            const face = getProductBySlug(CATEGORY_FACE[category.slug]);
             const mark = CATEGORY_MARK[category.slug];
             return (
               <li key={category.slug}>
                 <Link
                   href={`/shop/${category.slug}`}
-                  className="group block rounded-lg transition-transform duration-[var(--dur-base)] ease-[var(--ease-standard)] hover:-translate-y-0.5"
+                  className="group block rounded-lg"
                 >
-                  <div className="relative grid aspect-[4/3] place-items-center overflow-hidden rounded-lg bg-well">
-                    {/* The drawn twin, faint behind the photograph. Nothing
-                        here is text, so it can sit under the whole tile. */}
+                  <div
+                    className={cn(
+                      "relative grid aspect-[4/3] place-items-center overflow-hidden rounded-lg",
+                      // One step down the paper ramp on hover — paper, paper-2,
+                      // well, line — so the tile answers the cursor without
+                      // any shadow or lift on the tile itself.
+                      "bg-well transition-colors duration-[var(--dur-base)] ease-[var(--ease-standard)]",
+                      "group-hover:bg-line",
+                    )}
+                  >
                     {mark ? (
                       <InkArt
                         name={mark}
                         width={220}
                         fit="contain"
-                        opacity={0.11}
+                        opacity={1}
                         hideOnPhone={false}
                         sizes="(min-width: 1024px) 220px, 40vw"
-                        className="inset-[9%]"
-                      />
-                    ) : null}
-                    {face?.image ? (
-                      <Image
-                        src={face.image.src}
-                        alt=""
-                        width={400}
-                        height={400}
-                        sizes="(min-width: 1024px) 220px, 40vw"
                         className={cn(
-                          // `relative` so it paints above the drawn mark: an
-                          // absolutely positioned sibling otherwise wins over
-                          // a static one whatever the source order.
-                          "relative transition-transform duration-[var(--dur-base)] ease-[var(--ease-standard)]",
-                          "group-hover:scale-105 motion-reduce:transform-none",
-                          face.image.kind === "cutout"
-                            ? "w-[74%] object-contain cutout-sm"
-                            : "size-full object-cover",
+                          "inset-[14%]",
+                          "transition-transform duration-[var(--dur-base)] ease-[var(--ease-standard)]",
+                          "group-hover:-translate-y-0.5 motion-reduce:transform-none",
                         )}
                       />
                     ) : (
@@ -277,7 +274,9 @@ export function StorySplit() {
 
 const REASONS = [
   {
-    icon: Sparkles,
+    // A cloud, not a sparkle: the claim is about the crumb being soft, and a
+    // sparkle is the generic "premium" glyph that says nothing about bread.
+    icon: Cloud,
     title: "Pillowy, every time",
     body: "A fuwa fuwa crumb that pulls apart in soft sheets, from hydration and a long, cool ferment.",
   },
@@ -343,57 +342,96 @@ export function WhyReturn() {
 /* 8 — Come back                                                              */
 /* -------------------------------------------------------------------------- */
 
+/**
+ * The Standing Order — a full-width peach band, and the only place on the
+ * home page that asks for a habit rather than an order.
+ *
+ * It used to be one of two cards side by side, which made the weekly loaf and
+ * the loyalty scheme look like the same size of decision. They are not: one is
+ * a standing commitment worth the width of the page, the other is a free
+ * sign-up that belongs on one line. So the band takes the whole width, states
+ * the three steps as drawings, and ends on a single large button. Fillo+
+ * follows it as a strip.
+ */
+const STANDING_STEPS = [
+  { art: "shokupan-loaf", title: "Choose your bread" },
+  { art: "bakery-van", title: "Choose your day and stop" },
+  { art: "oven-with-loaves", title: "We bake it fresh and drive" },
+] as const satisfies readonly { art: InkArtName; title: string }[];
+
 export function ComeBack() {
   return (
-    <section data-reveal className="border-y border-line bg-paper-2 py-[var(--section-y)]">
-      <div className="container-content">
-        <div className="grid gap-4 md:grid-cols-2 md:gap-6">
-          <ComeBackCard
-            eyebrow="The Standing Order"
-            heading="Your bread, every week."
-            body="A loaf and whatever else you like, on your route's run day. Skip any week, pause any time."
-            href="/standing-order"
-            cta="How it works"
-          />
-          <ComeBackCard
-            eyebrow="Fillo+"
-            heading="Join free, earn on every order."
-            body="Two coins for every ₹100. Twenty-five coins is ₹25 off, and they never expire."
-            href="/fillo-plus"
-            cta="Join free"
-          />
-        </div>
-      </div>
-    </section>
-  );
-}
+    <>
+      <section data-reveal className="bg-peach py-[var(--section-y)]">
+        <div className="container-content text-center">
+          <p className="script">Your bread, every week.</p>
+          <h2 className="mt-3 font-display text-display-2 text-ink">
+            The Standing Order
+          </h2>
 
-function ComeBackCard({
-  eyebrow,
-  heading,
-  body,
-  href,
-  cta,
-}: {
-  eyebrow: string;
-  heading: string;
-  body: string;
-  href: string;
-  cta: string;
-}) {
-  return (
-    <div className="flex flex-col rounded-xl bg-peach p-8 lg:p-10">
-      <p className="text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
-        {eyebrow}
-      </p>
-      <h3 className="mt-3 max-w-[14ch] font-display text-[clamp(28px,3vw,36px)] leading-[1.05] text-ink">
-        {heading}
-      </h3>
-      <p className="mt-4 max-w-[42ch] text-body text-ink-2">{body}</p>
-      <ButtonLink href={href} variant="secondary" size="md" className="mt-8 self-start">
-        {cta}
-      </ButtonLink>
-    </div>
+          {/* The drawings carry the steps. At .9 they are illustration, not
+              atmosphere — the only place in the system the line art is
+              allowed to be the content rather than the ground. */}
+          <ol className="mx-auto mt-12 grid max-w-[62rem] gap-10 sm:grid-cols-3 sm:gap-8">
+            {STANDING_STEPS.map(({ art, title }) => (
+              <li key={title} className="flex flex-col items-center">
+                <span className="relative block h-[120px] w-[150px]">
+                  <InkArt
+                    name={art}
+                    width={150}
+                    fit="contain"
+                    opacity={0.9}
+                    hideOnPhone={false}
+                    sizes="150px"
+                    className="inset-0"
+                  />
+                </span>
+                <h3 className="mt-5 max-w-[16ch] font-display text-[16px] leading-[1.3] text-ink">
+                  {title}
+                </h3>
+              </li>
+            ))}
+          </ol>
+
+          <p className="mx-auto mt-12 max-w-[46ch] text-body-lg text-ink-2">
+            From ₹200 a week. Skip any week, pause any time.
+          </p>
+
+          <div className="mt-8 flex flex-col items-stretch gap-4 sm:flex-row sm:items-center sm:justify-center sm:gap-8">
+            <ButtonLink href="/standing-order" size="lg">
+              Start with The Loaf
+            </ButtonLink>
+            <ButtonLink
+              href="/standing-order"
+              variant="ghost"
+              size="lg"
+              icon={<ArrowRight size={16} strokeWidth={1.5} aria-hidden="true" />}
+            >
+              How it works
+            </ButtonLink>
+          </div>
+        </div>
+      </section>
+
+      {/* Fillo+ — one line, because joining is one tap and costs nothing. */}
+      <section className="border-y border-line bg-paper-2 py-6">
+        <div className="container-content flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+          <p className="text-body text-ink-2">
+            <span className="font-semibold text-ink">Fillo+</span> — join free
+            and earn two coins on every ₹100. Twenty-five coins is ₹25 off.
+          </p>
+          <ButtonLink
+            href="/fillo-plus"
+            variant="ghost"
+            size="md"
+            className="shrink-0"
+            icon={<ArrowRight size={16} strokeWidth={1.5} aria-hidden="true" />}
+          >
+            Join free
+          </ButtonLink>
+        </div>
+      </section>
+    </>
   );
 }
 

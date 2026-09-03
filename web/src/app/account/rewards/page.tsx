@@ -24,6 +24,7 @@ export default async function RewardsPage({ searchParams }: Search) {
         ]}
       />
       <AccountPage
+        art="wheat-pair-v2"
         h1="Fillo coins"
         kicker="Fillo+"
         lead="Two coins for every ₹100. Twenty-five coins is ₹25 off, and they never expire."

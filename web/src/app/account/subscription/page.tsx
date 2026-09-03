@@ -24,6 +24,7 @@ export default async function StandingOrderPage({ searchParams }: Search) {
         ]}
       />
       <AccountPage
+        art="shokupan-loaf-v2"
         h1="Your standing order"
         kicker="The Standing Order"
         lead="Skip any week, pause any time, change what is in it. All of it is here, not behind a phone call."

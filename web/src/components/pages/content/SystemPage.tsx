@@ -2,6 +2,7 @@ import * as React from "react";
 import Image from "next/image";
 import { cn } from "@/lib/cn";
 import { AnPanGlyph } from "@/components/ui/LineArt";
+import { InkArt } from "@/components/ui/InkArt";
 import { resolveProductImage } from "@/lib/images";
 
 /**
@@ -33,10 +34,18 @@ export function SystemPage({
   const bun = resolveProductImage("custard-an-pan");
 
   return (
-    <section className={cn("bg-paper py-[var(--section-y)]", className)}>
+    <section
+      className={cn("relative overflow-hidden bg-paper py-[var(--section-y)]", className)}
+    >
       <div className="container-content">
-        <div className="flex flex-col items-center text-center">
-          <div className="grid size-[200px] place-items-center sm:size-[240px]">
+        <div className="relative flex flex-col items-center text-center">
+          <InkArt
+            name="crumbs-scatter"
+            width={460}
+            opacity={0.12}
+            className="-top-8 left-1/2 -translate-x-1/2"
+          />
+          <div className="relative grid size-[200px] place-items-center sm:size-[240px]">
             {bun ? (
               <Image
                 src={bun.src}

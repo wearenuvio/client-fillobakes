@@ -56,8 +56,8 @@ export default function FranchisePage() {
         className="overflow-hidden pt-10 pb-8 lg:pt-14"
       >
         <InkArt
-          name="rolling-pin-and-flour-bag"
-          width={400}
+          name="bakery-van"
+          width={420}
           opacity={0.1}
           className="top-1/2 right-[-70px] hidden -translate-y-1/2 lg:block"
         />
@@ -73,6 +73,8 @@ export default function FranchisePage() {
         </p>
       </ContentSection>
 
+      {/* No line art on this band: the three cards fill the container, so any
+          drawing here lands under a card rather than behind clear ground. */}
       <ContentSection surface="paper-2">
         <SectionHead eyebrow="What we offer" heading="Three things, and no deck." />
         <ol className="mt-10 grid gap-4 md:grid-cols-3 md:gap-6">

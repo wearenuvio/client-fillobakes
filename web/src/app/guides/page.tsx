@@ -38,10 +38,10 @@ export default function GuidesIndexPage() {
         className="overflow-hidden pt-10 pb-8 lg:pt-14"
       >
         <InkArt
-          name="shokupan-loaf"
-          width={400}
-          opacity={0.1}
-          className="top-1/2 right-[-70px] hidden -translate-y-1/2 lg:block"
+          name="steam-swirls"
+          width={180}
+          opacity={0.12}
+          className="top-1/2 right-2 hidden -translate-y-1/2 lg:block"
         />
         <PageHead
           script="What the words mean."

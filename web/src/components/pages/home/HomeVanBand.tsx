@@ -80,20 +80,26 @@ export function HomeVanBand({
       data-reveal
       className="relative overflow-hidden bg-choc py-[var(--section-y-lg)]"
     >
-      {/* -------- Line art, behind the cutouts ----------------------- */}
+      {/* -------- Line art, in the corners the cutouts leave empty -----
+          The two photographic cutouts sit bottom-left and top-right, so the
+          drawings take the other two corners. A drawing under a cutout reads
+          as a printing fault rather than as atmosphere — the lines come out
+          of the product's edges — so the diagonal is deliberate and the two
+          layers never touch. The van is also pulled clear of the centred
+          text column's right edge. */}
       <InkArt
         name="wheat-pair-v2"
         tone="light"
-        width={360}
+        width={340}
         opacity={0.18}
-        className="bottom-[-40px] left-[-90px] w-[360px]"
+        className="top-[-40px] left-[-100px] w-[340px]"
       />
       <InkArt
         name="bakery-van"
         tone="light"
-        width={420}
+        width={340}
         opacity={0.18}
-        className="top-1/2 right-[-70px] w-[420px] -translate-y-1/2"
+        className="right-[-90px] bottom-[-30px] w-[340px]"
       />
 
       {/* -------- Cutouts floating off both edges -------------------- */}
