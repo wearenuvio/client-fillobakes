@@ -217,6 +217,19 @@ const STORY_KANA = [
   { text: "毎朝", x: "8%", y: "102%", size: 15, opacity: 0.45, depth: 9, rotate: -5 },
   { text: "サンド", x: "44%", y: "105%", size: 14, opacity: 0.4, depth: 13, rotate: 3 },
   { text: "手作り", x: "76%", y: "101%", size: 15, opacity: 0.5, depth: 11, rotate: -9 },
+  // Second, outer ring: smaller, fainter, moving more — the far wave.
+  { text: "バター", x: "-26%", y: "-4%", size: 12, opacity: 0.3, depth: 24, rotate: 7 },
+  { text: "朝の匂い", x: "22%", y: "-20%", size: 12, opacity: 0.28, depth: 26, rotate: -6 },
+  { text: "ミルク食パン", x: "62%", y: "-18%", size: 11, opacity: 0.3, depth: 22, rotate: 5 },
+  { text: "ベンガルール", x: "104%", y: "-2%", size: 11, opacity: 0.28, depth: 25, rotate: -8 },
+  { text: "しっとり", x: "-30%", y: "32%", size: 13, opacity: 0.3, depth: 28, rotate: 9 },
+  { text: "発酵", x: "-28%", y: "62%", size: 12, opacity: 0.28, depth: 21, rotate: -3 },
+  { text: "きつね色", x: "112%", y: "30%", size: 12, opacity: 0.3, depth: 27, rotate: 6 },
+  { text: "バン", x: "114%", y: "60%", size: 12, opacity: 0.28, depth: 20, rotate: -10 },
+  { text: "小さな窯", x: "-16%", y: "116%", size: 12, opacity: 0.3, depth: 23, rotate: 4 },
+  { text: "配達", x: "30%", y: "120%", size: 12, opacity: 0.28, depth: 26, rotate: -7 },
+  { text: "ふっくら", x: "62%", y: "118%", size: 12, opacity: 0.3, depth: 24, rotate: 8 },
+  { text: "パン屋", x: "96%", y: "112%", size: 12, opacity: 0.28, depth: 22, rotate: -5 },
 ] as const;
 
 export function StorySplit() {
