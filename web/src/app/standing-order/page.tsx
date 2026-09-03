@@ -155,11 +155,11 @@ export default function StandingOrderPage() {
                 action={
                   <ButtonLink
                     href={`/account/subscription/setup?plan=${plan.id}`}
-                    variant="secondary"
+                    variant={i === 1 ? "primary" : "secondary"}
                     size="md"
                     fullWidth
                   >
-                    Choose {plan.name}
+                    {i === 1 ? "Start here" : `Choose ${plan.name}`}
                   </ButtonLink>
                 }
               />

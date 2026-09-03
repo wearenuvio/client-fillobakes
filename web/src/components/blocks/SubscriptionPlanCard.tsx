@@ -184,8 +184,12 @@ export function SubscriptionPlanCard({
           </Button>
         ) : (
           (action ?? (
-            <Button variant="secondary" size="md" fullWidth>
-              {isCurrent ? "Manage" : "Choose this one"}
+            <Button
+              variant={recommended ? "primary" : "secondary"}
+              size="md"
+              fullWidth
+            >
+              {isCurrent ? "Manage" : recommended ? "Start here" : "Choose this one"}
             </Button>
           ))
         )}
