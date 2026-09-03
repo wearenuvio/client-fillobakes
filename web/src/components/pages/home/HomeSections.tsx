@@ -33,11 +33,14 @@ export function SectionHead({
   heading,
   link,
   className,
+  eyebrowStyle = "caps",
 }: {
   eyebrow: string;
   heading: React.ReactNode;
   link?: { href: string; label: string };
   className?: string;
+  /** `script` sets the eyebrow like the hero's "Baked fresh, eggless." line. */
+  eyebrowStyle?: "caps" | "script";
 }) {
   return (
     <div
@@ -47,7 +50,13 @@ export function SectionHead({
       )}
     >
       <div>
-        <p className="text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
+        <p
+          className={
+            eyebrowStyle === "script"
+              ? "script"
+              : "text-[12px] font-medium tracking-[0.12em] text-muted uppercase"
+          }
+        >
           {eyebrow}
         </p>
         {/* Two lines on a phone, one line from lg: the heading is the only
@@ -234,9 +243,9 @@ const STORY_KANA = [
 
 export function StorySplit() {
   return (
-    <section data-reveal className="bg-peach py-[var(--section-y)]">
+    <section data-reveal className="overflow-x-clip bg-peach py-[var(--section-y)]">
       <div className="container-content">
-        <div className="grid items-center gap-12 lg:grid-cols-[2fr_3fr] lg:gap-16">
+        <div className="grid items-center gap-12 lg:grid-cols-[3fr_2fr] lg:gap-16">
           {/* One drawing instead of two stock photographs (client, Sep 2026).
               The photographs were bought crops of somebody else's kitchen and
               read as stock the moment you looked twice; the mb7 cue — rolling
@@ -244,7 +253,7 @@ export function StorySplit() {
               is illustration rather than atmosphere. Boxed at the file's own
               1200:958 ratio so `contain` never crops it, centred against the
               paragraph on desktop and sitting above it on a phone. */}
-          <div className="relative mx-auto aspect-[1200/958] w-[220px] lg:mx-0 lg:w-full lg:max-w-[340px]">
+          <div className="relative order-first mx-auto aspect-[1200/958] w-[220px] lg:order-last lg:mx-0 lg:w-full lg:max-w-[340px] lg:justify-self-center">
             {/* Japanese words for what we bake, scattered around the drawing.
                 Each rides the shared pointer vars at its own depth, so the
                 cloud shifts as one and the nearer words move more. */}
@@ -277,9 +286,7 @@ export function StorySplit() {
           </div>
 
           <div>
-            <p className="text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
-              Our story
-            </p>
+            <p className="script">Our story</p>
             <h2 className="mt-3 max-w-[22ch] font-display text-display-2 text-ink italic">
               Baked the Japanese way, without a single egg.
             </h2>

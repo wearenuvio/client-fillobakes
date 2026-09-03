@@ -50,6 +50,7 @@ export function HomeBestsellers({
       <div className="relative container-content">
         <SectionHead
           eyebrow="Bestsellers"
+          eyebrowStyle="script"
           heading="The ones people come back for."
           link={{ href: "/shop", label: `See all ${total}` }}
         />
