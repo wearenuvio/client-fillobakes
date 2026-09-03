@@ -67,17 +67,20 @@ export default function AboutPage() {
 
       <ContentSection surface="paper" size="none" className="pb-[var(--section-y)]">
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
-          <div className="relative order-2 lg:order-1">
-            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-lg">
-              <Image
-                src="/images/stock/lifestyle/hands-holding-loaf-linen-table.jpg"
-                alt="Hands lifting a loaf off a linen-covered table"
-                fill
-                priority
-                sizes="(min-width: 1024px) 46vw, 100vw"
-                className="object-cover object-[50%_48%]"
+          <div className="relative order-2 flex items-center justify-center lg:order-1">
+            {/* One drawing instead of a stock photo, centred to the text. */}
+            <span className="relative block h-[220px] w-[260px] lg:h-[300px] lg:w-[360px]">
+              <InkArt
+                name="shokupan-loaf-v2"
+                width={360}
+                fit="contain"
+                opacity={0.9}
+                hideOnPhone={false}
+                parallax
+                sizes="(min-width: 1024px) 360px, 260px"
+                className="inset-0"
               />
-            </div>
+            </span>
           </div>
 
           <div className="order-1 lg:order-2">
