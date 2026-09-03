@@ -199,44 +199,29 @@ export function CategoryTiles() {
 
 export function StorySplit() {
   return (
-    <section
-      data-reveal
-      className="relative overflow-hidden bg-peach py-[var(--section-y)]"
-    >
-      {/* The mb7 cue: rolling pin and flour bag, low on the left behind the
-          photographs, at a strength you notice only once. */}
-      <InkArt
-        name="rolling-pin-and-flour-bag"
-        width={360}
-        opacity={0.12}
-        className="bottom-[var(--section-y)] left-2 w-[360px]"
-      />
-      <div className="relative container-content">
+    <section data-reveal className="bg-peach py-[var(--section-y)]">
+      <div className="container-content">
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          {/* Two photos: one tall, one small and offset. Both warmed: the
-              stock frames are lit cool and sit grey against the peach. */}
-          <div className="relative">
-            <div className="photo-warm relative aspect-[4/5] w-[82%] overflow-hidden rounded-xl">
-              <Image
-                src="/images/stock/lifestyle/hands-holding-loaf-linen-table.jpg"
-                alt="Hands lifting a loaf off a linen-covered table"
-                fill
-                sizes="(min-width: 1024px) 40vw, 82vw"
-                className="object-cover object-[50%_45%]"
-              />
-            </div>
-            <div className="photo-warm absolute right-0 bottom-[-28px] aspect-square w-[44%] overflow-hidden rounded-xl border-[6px] border-peach">
-              <Image
-                src="/images/stock/hero/milk-bread-loaves-cooling-rack.jpg"
-                alt="Milk bread loaves cooling on a rack"
-                fill
-                sizes="(min-width: 1024px) 22vw, 44vw"
-                className="object-cover"
-              />
-            </div>
+          {/* One drawing instead of two stock photographs (client, Sep 2026).
+              The photographs were bought crops of somebody else's kitchen and
+              read as stock the moment you looked twice; the mb7 cue — rolling
+              pin and flour bag — is the bakery's own hand, and at full ink it
+              is illustration rather than atmosphere. Boxed at the file's own
+              1200:958 ratio so `contain` never crops it, centred against the
+              paragraph on desktop and sitting above it on a phone. */}
+          <div className="relative mx-auto aspect-[1200/958] w-[220px] lg:mx-0 lg:w-full lg:max-w-[360px]">
+            <InkArt
+              name="rolling-pin-and-flour-bag"
+              width={360}
+              fit="contain"
+              opacity={0.9}
+              hideOnPhone={false}
+              sizes="(min-width: 1024px) 360px, 220px"
+              className="inset-0"
+            />
           </div>
 
-          <div className="mt-10 lg:mt-0">
+          <div>
             <p className="text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
               Our story
             </p>
@@ -306,12 +291,30 @@ export function WhyReturn() {
       data-reveal
       className="relative overflow-hidden bg-paper py-[var(--section-y)]"
     >
-      <InkArt
-        name="oven-with-loaves"
-        width={400}
-        opacity={0.1}
-        className="right-2 bottom-[var(--section-y)] w-[400px]"
-      />
+      {/* Boxed rather than free-floating: the drawing is 1200x942, so the
+          old 400px width was 314px tall, hung off the bottom padding line,
+          and the four opaque cards ate everything but the chimney and the two
+          jambs — a fragment, and one the scroll drift pushed through the top
+          edge of a section that clips.
+
+          Now it sits in the clear band beside the heading, pinned to the
+          section's own top padding line and inset from the right, so the
+          whole oven reads and only its feet tuck behind the top corner of the
+          last card. Inside the section on every edge at any height, and never
+          near a word: the heading ends well short of it. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute top-[var(--section-y)] right-4 hidden aspect-[1200/942] w-[200px] lg:block xl:w-[230px]"
+      >
+        <InkArt
+          name="oven-with-loaves"
+          width={230}
+          fit="contain"
+          opacity={0.12}
+          sizes="230px"
+          className="inset-0"
+        />
+      </div>
       <div className="relative container-content">
         <SectionHead
           eyebrow="Why people return"
@@ -346,15 +349,23 @@ export function WhyReturn() {
 /* -------------------------------------------------------------------------- */
 
 /**
- * The Standing Order — a full-width peach band, and the only place on the
- * home page that asks for a habit rather than an order.
+ * The Standing Order — the one place on the home page that asks for a habit
+ * rather than an order.
  *
- * It used to be one of two cards side by side, which made the weekly loaf and
- * the loyalty scheme look like the same size of decision. They are not: one is
- * a standing commitment worth the width of the page, the other is a free
- * sign-up that belongs on one line. So the band takes the whole width, states
- * the three steps as drawings, and ends on a single large button. Fillo+
- * follows it as a strip.
+ * A full-width peach band (§7), which is the one place on this page a second
+ * ground is worth spending: the weekly loaf is a different kind of decision
+ * from the bakes above it, and the colour is what says so.
+ *
+ * The notched ink cartouche — the only one in the system (§9) — wraps the
+ * three drawn steps and nothing else. A frame around the whole band would
+ * make a certificate of the section; around the steps alone it reads as what
+ * it is, a printed card explaining a routine. So: script and title above the
+ * card, the card, then the price line and the buttons under it, all centred
+ * on one axis.
+ *
+ * The corner notch is a fixed pixel size, so the card is the same shape at
+ * 375 as at 1440 rather than stretching, and the three steps stack inside the
+ * same frame on a phone.
  */
 const STANDING_STEPS = [
   { art: "shokupan-loaf", title: "Choose your bread" },
@@ -365,64 +376,58 @@ const STANDING_STEPS = [
 export function StandingOrderBand() {
   return (
     <section data-reveal className="bg-peach py-[var(--section-y)]">
-      <div className="container-content">
-        {/* The one notched cartouche in the system. The frame is drawn by
-              the wrapper and the panel's padding keeps every line of type
-              clear of it; the corner notch is a fixed pixel size, so it is
-              the same shape at 375 as at 1440 rather than stretching. */}
-        <div className="relative">
+      <div className="container-content text-center">
+        <p className="script">Your bread, every week.</p>
+        <h2 className="mt-3 font-display text-display-2 text-ink">
+          The Standing Order
+        </h2>
+
+        {/* The cartouche. The frame is drawn by the wrapper; the list inside
+            carries the 32px padding that keeps every line clear of it. */}
+        <div className="relative mx-auto mt-10 max-w-[880px] [--notch-fill:var(--color-peach)]">
           <span aria-hidden="true" className="notch-frame" />
-          <div className="relative px-6 py-12 text-center sm:px-12 lg:px-16 lg:py-16">
-            <p className="script">Your bread, every week.</p>
-            <h2 className="mt-3 font-display text-display-2 text-ink">
-              The Standing Order
-            </h2>
+          <ol className="relative grid gap-10 p-8 sm:grid-cols-3 sm:gap-6">
+            {STANDING_STEPS.map(({ art, title }) => (
+              <li key={title} className="flex flex-col items-center">
+                {/* The drawings carry the steps. At .9 they are illustration,
+                    not atmosphere — the only place in the system the line art
+                    is the content rather than the ground. */}
+                <span className="relative block h-[96px] w-[120px]">
+                  <InkArt
+                    name={art}
+                    width={120}
+                    fit="contain"
+                    opacity={0.9}
+                    hideOnPhone={false}
+                    parallax={false}
+                    sizes="120px"
+                    className="inset-0"
+                  />
+                </span>
+                <h3 className="mt-4 max-w-[18ch] font-display text-[16px] leading-[1.3] text-ink">
+                  {title}
+                </h3>
+              </li>
+            ))}
+          </ol>
+        </div>
 
-            {/* The drawings carry the steps. At .9 they are illustration, not
-              atmosphere — the only place in the system the line art is
-              allowed to be the content rather than the ground. */}
-            <ol className="mx-auto mt-12 grid max-w-[62rem] gap-10 sm:grid-cols-3 sm:gap-8">
-              {STANDING_STEPS.map(({ art, title }) => (
-                <li key={title} className="flex flex-col items-center">
-                  <span className="relative block h-[120px] w-[150px]">
-                    <InkArt
-                      name={art}
-                      width={150}
-                      fit="contain"
-                      opacity={0.9}
-                      hideOnPhone={false}
-                      parallax={false}
-                      sizes="150px"
-                      className="inset-0"
-                    />
-                  </span>
-                  <h3 className="mt-5 max-w-[16ch] font-display text-[16px] leading-[1.3] text-ink">
-                    {title}
-                  </h3>
-                </li>
-              ))}
-            </ol>
+        <p className="mx-auto mt-10 max-w-[46ch] text-body-lg text-ink-2">
+          From ₹200 a week. Skip any week, pause any time.
+        </p>
 
-            <p className="mx-auto mt-12 max-w-[46ch] text-body-lg text-ink-2">
-              From ₹200 a week. Skip any week, pause any time.
-            </p>
-
-            <div className="mt-8 flex flex-col items-stretch gap-4 sm:flex-row sm:items-center sm:justify-center sm:gap-8">
-              <ButtonLink href="/standing-order" size="lg">
-                Start with The Loaf
-              </ButtonLink>
-              <ButtonLink
-                href="/standing-order"
-                variant="ghost"
-                size="lg"
-                icon={
-                  <ArrowRight size={16} strokeWidth={1.5} aria-hidden="true" />
-                }
-              >
-                How it works
-              </ButtonLink>
-            </div>
-          </div>
+        <div className="mt-8 flex flex-col items-stretch gap-4 sm:flex-row sm:items-center sm:justify-center sm:gap-8">
+          <ButtonLink href="/standing-order" size="lg">
+            Start with The Loaf
+          </ButtonLink>
+          <ButtonLink
+            href="/standing-order"
+            variant="ghost"
+            size="lg"
+            icon={<ArrowRight size={16} strokeWidth={1.5} aria-hidden="true" />}
+          >
+            How it works
+          </ButtonLink>
         </div>
       </div>
     </section>
@@ -485,7 +490,10 @@ const REVIEWS = [
 
 export function Reviews() {
   return (
-    <section className="bg-paper py-[var(--section-y)]">
+    // Bottom padding only: the section above it is also paper and already
+    // ends on a full section of air, so a second one would put 192px between
+    // the tiles and the quotes and break the rhythm the rest of the page keeps.
+    <section className="bg-paper pb-[var(--section-y)]">
       <div className="container-content">
         <div className="grid items-start gap-10 md:grid-cols-3 md:gap-8">
           {REVIEWS.map((review, i) => (
@@ -567,7 +575,7 @@ const POSTS = [
 
 export function JournalRow() {
   return (
-    <section data-reveal className="bg-paper pb-[var(--section-y)]">
+    <section data-reveal className="bg-paper py-[var(--section-y)]">
       <div className="container-content">
         <SectionHead
           eyebrow="From the journal"

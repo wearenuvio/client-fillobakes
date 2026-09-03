@@ -383,9 +383,12 @@
   --space-40: 10rem;
   --space-48: 12rem;
 
-  /* Section rhythm: 64px mobile → 96px desktop (§1). */
-  --section-y: clamp(4rem, 1.6rem + 4.4vw, 6rem);
-  --section-y-lg: clamp(5rem, 2.2rem + 5.2vw, 7.5rem);
+  /* Section rhythm (§1): 64px below 1024, 96px from 1024. A step, not a
+     ramp — a fluid clamp only reaches 96px somewhere past 1600px, so the
+     desktop rhythm the spec asks for never actually arrives on a laptop. The
+     lg pair is the dark band's deeper measure, stepped on the same line. */
+  --section-y: 4rem;
+  --section-y-lg: 5rem;
 
   --border-hairline: 1px solid var(--color-line);
   --border-hairline-strong: 1px solid var(--color-paper-400);
@@ -444,6 +447,15 @@
 @media (min-width: 768px) {
   :root {
     --gutter: 24px;
+  }
+}
+
+/* The desktop rhythm arrives at the layout breakpoint, where the grids go
+   wide, rather than drifting up with the viewport. */
+@media (min-width: 1024px) {
+  :root {
+    --section-y: 6rem;
+    --section-y-lg: 7.5rem;
   }
 }
 
@@ -729,18 +741,10 @@
     opacity: 0.12;
   }
 
-  /* Scroll reveal — once, on first entry. 400ms, never re-animates. */
-  .reveal {
-    opacity: 0;
-    transform: translateY(14px);
-    transition:
-      opacity var(--dur-slower) var(--ease-out),
-      transform var(--dur-slower) var(--ease-out);
-  }
-  .reveal[data-revealed="true"] {
-    opacity: 1;
-    transform: none;
-  }
+  /* The scroll reveal is a Web Animations effect rather than a class — see
+     components/blocks/RevealOnScroll.tsx for why there is no `.reveal` rule
+     here any more. Reduced motion is handled in the component, which never
+     starts an animation at all. */
 }
 
 /* ==========================================================================
@@ -767,10 +771,6 @@
   [data-motion="float"] {
     animation: none !important;
     transform: none !important;
-  }
-  .reveal {
-    opacity: 1;
-    transform: none;
   }
 }
 
@@ -1093,7 +1093,10 @@ html:has(.fillo-preloader[data-phase="visible"]:not(.fillo-skip)) body {
     content: "";
     position: absolute;
     inset: var(--notch-stroke);
-    background-color: var(--color-peach);
+    /* The card's inside is the ground it sits on — paper by default, so the
+       frame reads as one drawn line rather than a tinted panel. A call site
+       on another ground sets `--notch-fill`. */
+    background-color: var(--notch-fill, var(--color-paper));
     background-image: var(--seigaiha, none);
     background-repeat: repeat;
     clip-path: inherit;

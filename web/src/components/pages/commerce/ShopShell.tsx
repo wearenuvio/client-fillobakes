@@ -43,12 +43,20 @@ export function shopItems(products: Product[]): ShopItem[] {
   });
 }
 
-/** Each shop route's drawing: its own kind, or the kare pan for the index. */
+/**
+ * Each shop route's drawing: its own kind, and the loaf for the index.
+ *
+ * The kare pan drawing is the densest of the set — a filled, hatched bun that
+ * reads as a smudge rather than a line at 14% behind a header. So the menu
+ * index takes the shokupan loaf, which is the thing the bakery is known for
+ * anyway, and the kare pan route takes the an pan bun: same open line, and
+ * still a bun.
+ */
 const CATEGORY_ART: Record<string, InkArtName> = {
-  all: "karepan",
+  all: "shokupan-loaf",
   breads: "shokupan-loaf",
   anpan: "anpan-bun",
-  karepan: "karepan",
+  karepan: "anpan-bun",
   "pies-strudels": "croissant",
   "fruit-sandos": "fruit-sando",
 };
@@ -76,7 +84,7 @@ export function ShopShell({
         script="Everything eggless."
         title={heading}
         lede={lead}
-        art={CATEGORY_ART[activeTab] ?? "karepan"}
+        art={CATEGORY_ART[activeTab] ?? "shokupan-loaf"}
         artSize="md"
         actions={
           <span className="text-body-lg text-muted tabular">

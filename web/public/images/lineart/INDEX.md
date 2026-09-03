@@ -47,6 +47,9 @@ percentage widths behave predictably. Untrimmed 1024/1536 masters are kept in
 | `steam-swirls.png` / `-light` | 612×1200 | 121 / 127 KB | Small accent above a hot item — PDP "baked this morning" line, the freshness item in the trust strip, ~40px. |
 | `crumbs-scatter.png` / `-light` | 1146×778 | 67 KB | Scattered crumbs around the hero cutout (an alternative to the CSS crumb dots), and under the cart-drawer total. Lightest file. |
 | `stamp-ring.png` / `-light` | 1187×1189 | 209 / 208 KB | **Seal** — the 88px round seal ring on the hero and PDP; set the two lines of 10px caps inside the empty centre in HTML, rotated −8deg. |
+| `sakura-sprig.png` / `-light` | 951×1122 | 212 / 212 KB | **Our story page header** — the sprig sits top-right of the story hero, ~200px, opacity .18; and the **order-confirmation** page as the small mark above "Thank you — we're baking.", ~72px at full opacity. |
+| `sparrow-branch.png` / `-light` | 1068×940 | 187 / 187 KB | **Journal and Guides index headers** — perched at the end of the page title rule, ~120px at full opacity. Also the Journal card mark on posts with no photo. |
+| `seigaiha-tile.png` / `-light` | 644×426 | 122 / 122 KB | **Repeating texture, not a motif** — `background-repeat: repeat` at `opacity: .06` behind the Standing Order band and the account header. Set `background-size` (≈320px wide) to control scale; do not stretch it. |
 
 ## Dark band
 
@@ -57,7 +60,24 @@ spec, so keep the line art behind them.
 
 ## Pending
 
-Nothing pending. All 16 subjects generated (13 base + 3 variants for wheat-stalk,
-wheat-pair and shokupan-loaf), each verified to carry a real alpha channel with a fully
-transparent ground — no background-removal pass was needed on any file. 32 PNGs, 8.1 MB
-total.
+Nothing pending. 19 subjects generated (13 base + 3 variants + 3 later additions), each
+verified to carry a real alpha channel with a fully transparent ground — no
+background-removal pass was needed on any file. 38 PNGs.
+
+### Note on `seigaiha-tile`
+
+The three later additions (`sakura-sprig`, `sparrow-branch`, `seigaiha-tile`) were generated
+3 Sep 2026 from the same locked prompt with `wheat-pair.png` and `bakery-van.png` attached as
+style references, so they carry the identical single-weight line.
+
+`seigaiha-tile` is the one asset that breaks two of the house rules, deliberately:
+
+- It is a **repeating pattern**, which `REFERENCE-NOTES.md` otherwise rules out. It is used
+  only as a faint ground texture at .06, never as a placed object, so the "discrete objects
+  we can place" rule still holds for every other file.
+- It is **not square**. 644×426 is the pattern's true repeat — two horizontal wave periods by
+  one vertical row-pair. The generator returned a 1254×1254 image with a transparent margin
+  on all four sides, which would have shown a gap line on every tile boundary, so it was
+  cropped to the repeat rather than padded to a square. Squaring it now would need either a
+  1.5× vertical stretch (which flattens the arcs) or a crop that reopens the seam. Tiling was
+  verified by compositing 2×2 copies and inspecting both seams; neither is visible.

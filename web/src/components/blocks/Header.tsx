@@ -223,11 +223,11 @@ export function Header({ onOpenAreaSheet }: { onOpenAreaSheet?: () => void }) {
 /* -------------------------------------------------------------------------- */
 
 const MARQUEE = [
-  "Baked every morning",
-  "Order by 8pm, at your door tomorrow",
-  "100% eggless",
+  "Fresh from the van, every morning",
   "Free delivery over \u20B9499",
   "Catch the van, pay no delivery fee",
+  "The Standing Order: your bread, every week",
+  "Bengaluru, Tue to Sun",
 ] as const;
 
 /**

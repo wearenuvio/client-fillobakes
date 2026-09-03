@@ -30,11 +30,23 @@ const SURFACES: Record<PageHeaderSurface, string> = {
   peach: "bg-peach",
 };
 
-/** Rendered width of the drawing, and the width it starts appearing at. */
+/**
+ * The box the drawing is fitted into, not its width.
+ *
+ * Every size shares one height, so whichever drawing a page carries it
+ * occupies the same band beside the title. Only the width allowance changes,
+ * because a van needs more of it than a wheat stalk does.
+ *
+ * Sizing by width alone makes a portrait drawing enormous and a landscape one
+ * small — a wheat stalk is 276×1200 and a croissant 1200×757, so the same
+ * `width` gives wildly different heights. Every header drawing is fitted into
+ * a box of the same height instead, so the headers read as one object however
+ * different the drawings are.
+ */
 const ART_SIZE = {
-  sm: { width: 150, from: "hidden sm:block" },
-  md: { width: 220, from: "hidden md:block" },
-  lg: { width: 320, from: "hidden lg:block" },
+  sm: { box: "h-[132px] w-[150px]", px: 150, from: "hidden sm:block" },
+  md: { box: "h-[132px] w-[230px]", px: 230, from: "hidden md:block" },
+  lg: { box: "h-[132px] w-[300px]", px: 300, from: "hidden lg:block" },
 } as const;
 
 export type PageHeaderProps = {
@@ -112,10 +124,14 @@ export function PageHeader({
           {art ? (
             <InkArt
               name={art}
-              width={size.width}
+              // `contain` ignores width for layout; it is here so next/image
+              // still asks for a sensibly sized file.
+              width={size.px}
+              fit="contain"
               opacity={0.14}
               parallax
               className={cn(
+                size.box,
                 size.from,
                 artAlign === "corner"
                   ? "-top-4 right-0"

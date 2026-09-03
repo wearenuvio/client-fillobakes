@@ -134,7 +134,6 @@ export default function StandingOrderPage() {
         script="Your bread, every week."
         title="The Standing Order"
         lede="Pick a plan, pick a day. Skip any week, pause any time."
-        surface="peach"
         art="shokupan-loaf-v2"
         artSize="lg"
       />

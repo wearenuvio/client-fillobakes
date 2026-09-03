@@ -28,17 +28,25 @@ export function HomeBestsellers({
       data-reveal
       className="relative overflow-hidden bg-paper py-[var(--section-y)]"
     >
-      {/* Inside the section on every edge. `bottom-[var(--section-y)]` puts
-          the loaf's foot on the line the content ends on, and the right inset
-          keeps it off the window edge, so `overflow-hidden` has nothing to
-          cut. It clears the centred "See all" button horizontally and only
-          ever shows through the gutters between opaque cards. */}
-      <InkArt
-        name="shokupan-loaf"
-        width={400}
-        opacity={0.1}
-        className="right-2 bottom-[var(--section-y)] w-[400px]"
-      />
+      {/* Inside the section on every edge, and boxed at the drawing's own
+          1200:813 ratio so `contain` can never crop it. `bottom-[var(--section-y)]`
+          puts the loaf's foot on the line the content ends on, the right
+          inset keeps it off the window edge, and it only ever shows through
+          the gutters between opaque cards. Desktop only: at 375 there is no
+          clear ground for it to sit on. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute right-4 bottom-[var(--section-y)] hidden aspect-[1200/813] w-[300px] lg:block xl:w-[360px]"
+      >
+        <InkArt
+          name="shokupan-loaf"
+          width={360}
+          fit="contain"
+          opacity={0.1}
+          sizes="360px"
+          className="inset-0"
+        />
+      </div>
       <div className="relative container-content">
         <SectionHead
           eyebrow="Bestsellers"

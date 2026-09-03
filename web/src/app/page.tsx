@@ -74,20 +74,24 @@ export default function HomePage() {
       {/* 5 — Choose: the five kinds. */}
       <CategoryTiles />
 
-      {/* 6 — Believe: the founders and the method. */}
+      {/* 6 — Believe, in other people's words. It sits here, on paper,
+             because the two tinted grounds either side of it — the Standing
+             Order band above the kinds and the story below — must never
+             touch, and because a stranger vouching for the bread is the right
+             thing to read just after the menu of it. */}
+      <Reviews />
+
+      {/* 7 — Believe: the founders and the method. */}
       <StorySplit />
 
-      {/* 7 — Believe: the four reasons people come back. */}
+      {/* 8 — Believe: the four reasons people come back. */}
       <WhyReturn />
 
-      {/* 8 — Get it. The page's one dark band. */}
+      {/* 9 — Get it. The page's one dark band. */}
       <HomeVanBand />
 
-      {/* 9 — The free membership, one line, after the delivery answer. */}
+      {/* 10 — The free membership, one line, after the delivery answer. */}
       <FilloPlusStrip />
-
-      {/* 10 — Come back: three real reviews. */}
-      <Reviews />
 
       {/* 11 — Come back: two posts and the Sunday email. */}
       <JournalRow />
