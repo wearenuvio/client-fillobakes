@@ -201,20 +201,29 @@ export function CategoryTiles() {
 
 /** Around the story drawing: bread words in kana, each at its own depth. */
 const STORY_KANA = [
-  { text: "パン", x: "-14%", y: "6%", size: 26, opacity: 0.5, depth: 14, rotate: -8 },
-  { text: "食パン", x: "78%", y: "2%", size: 18, opacity: 0.45, depth: 10, rotate: 6 },
-  { text: "ふわふわ", x: "-10%", y: "72%", size: 20, opacity: 0.55, depth: 18, rotate: 4 },
-  { text: "あんパン", x: "70%", y: "80%", size: 16, opacity: 0.4, depth: 8, rotate: -5 },
-  { text: "焼きたて", x: "84%", y: "40%", size: 14, opacity: 0.45, depth: 12, rotate: 10 },
-  { text: "卵なし", x: "-16%", y: "40%", size: 15, opacity: 0.4, depth: 6, rotate: -12 },
-  { text: "カレーパン", x: "30%", y: "-10%", size: 13, opacity: 0.35, depth: 16, rotate: 3 },
+  // Top band
+  { text: "パン", x: "4%", y: "-6%", size: 22, opacity: 0.5, depth: 14, rotate: -8 },
+  { text: "食パン", x: "40%", y: "-9%", size: 15, opacity: 0.45, depth: 10, rotate: 4 },
+  { text: "カレーパン", x: "70%", y: "-5%", size: 13, opacity: 0.4, depth: 16, rotate: 6 },
+  // Left band
+  { text: "ふわふわ", x: "-12%", y: "18%", size: 18, opacity: 0.55, depth: 18, rotate: -10 },
+  { text: "卵なし", x: "-14%", y: "48%", size: 14, opacity: 0.45, depth: 6, rotate: -4 },
+  { text: "小麦", x: "-8%", y: "76%", size: 16, opacity: 0.4, depth: 12, rotate: 8 },
+  // Right band
+  { text: "焼きたて", x: "96%", y: "14%", size: 15, opacity: 0.5, depth: 12, rotate: 10 },
+  { text: "あんパン", x: "98%", y: "44%", size: 14, opacity: 0.45, depth: 8, rotate: -6 },
+  { text: "牛乳", x: "100%", y: "72%", size: 16, opacity: 0.4, depth: 15, rotate: 5 },
+  // Bottom band
+  { text: "毎朝", x: "8%", y: "102%", size: 15, opacity: 0.45, depth: 9, rotate: -5 },
+  { text: "サンド", x: "44%", y: "105%", size: 14, opacity: 0.4, depth: 13, rotate: 3 },
+  { text: "手作り", x: "76%", y: "101%", size: 15, opacity: 0.5, depth: 11, rotate: -9 },
 ] as const;
 
 export function StorySplit() {
   return (
     <section data-reveal className="bg-peach py-[var(--section-y)]">
       <div className="container-content">
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+        <div className="grid items-center gap-12 lg:grid-cols-[2fr_3fr] lg:gap-16">
           {/* One drawing instead of two stock photographs (client, Sep 2026).
               The photographs were bought crops of somebody else's kitchen and
               read as stock the moment you looked twice; the mb7 cue — rolling
@@ -222,7 +231,7 @@ export function StorySplit() {
               is illustration rather than atmosphere. Boxed at the file's own
               1200:958 ratio so `contain` never crops it, centred against the
               paragraph on desktop and sitting above it on a phone. */}
-          <div className="relative mx-auto aspect-[1200/958] w-[220px] lg:mx-0 lg:w-full lg:max-w-[360px]">
+          <div className="relative mx-auto aspect-[1200/958] w-[220px] lg:mx-0 lg:w-full lg:max-w-[340px]">
             {/* Japanese words for what we bake, scattered around the drawing.
                 Each rides the shared pointer vars at its own depth, so the
                 cloud shifts as one and the nearer words move more. */}
@@ -245,12 +254,12 @@ export function StorySplit() {
             ))}
             <InkArt
               name="rolling-pin-and-flour-bag"
-              width={360}
+              width={300}
               fit="contain"
               opacity={0.9}
               hideOnPhone={false}
-              sizes="(min-width: 1024px) 360px, 220px"
-              className="inset-0"
+              sizes="(min-width: 1024px) 300px, 200px"
+              className="inset-[6%]"
             />
           </div>
 
@@ -435,13 +444,18 @@ export function StandingOrderBand() {
           >
             <defs>
               <filter id="strip-ink" x="-3%" y="-6%" width="106%" height="112%">
-                <feTurbulence type="fractalNoise" baseFrequency="0.02 0.06" numOctaves="2" seed="5" result="noise" />
-                <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.2" xChannelSelector="R" yChannelSelector="G" />
+                <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="7" result="noise" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.7" xChannelSelector="R" yChannelSelector="G" />
               </filter>
             </defs>
             <g filter="url(#strip-ink)">
-              <rect x="2" y="2" width="876" height="296" rx="10" fill="var(--color-card)" stroke="var(--color-accent)" strokeWidth="2.5" vectorEffect="non-scaling-stroke" />
-              <rect x="14" y="14" width="852" height="272" rx="6" fill="none" stroke="var(--color-accent)" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
+              {/* Same build as the small hanko: a solid terracotta block with
+                  the rough edge, then the interior lifted out in cream so the
+                  terracotta reads as a thick stamped band, then the carved
+                  inner line. */}
+              <rect x="1" y="1" width="878" height="298" rx="10" fill="var(--color-accent)" />
+              <rect x="9" y="9" width="862" height="282" rx="6" fill="var(--color-card)" />
+              <rect x="16" y="16" width="848" height="268" rx="4" fill="none" stroke="var(--color-accent)" strokeWidth="1.6" vectorEffect="non-scaling-stroke" />
             </g>
           </svg>
           <ol className="relative grid gap-8 px-8 py-9 sm:grid-cols-3 sm:gap-6 sm:px-10">
