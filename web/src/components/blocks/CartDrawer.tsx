@@ -3,37 +3,34 @@
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Coins, Plus, X } from "lucide-react";
+import { X } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { IconButton } from "@/components/ui/IconButton";
-import { ButtonLink } from "@/components/ui/Button";
+import { Button, ButtonLink } from "@/components/ui/Button";
 import { Price } from "@/components/ui/Price";
 import { KanaLabel } from "@/components/ui/KanaLabel";
 import { QtyStepper } from "@/components/ui/QtyStepper";
-import { EmptyState } from "@/components/ui/EmptyState";
 import { LoafGlyph } from "@/components/ui/LineArt";
-import { FulfilmentSummary } from "@/components/blocks/FulfilmentLane";
 import { useFocusTrap, useLockBodyScroll } from "@/components/ui/overlay";
 import { getProductBySlug } from "@/lib/catalog";
-import { formatINR, formatTimeBandShort, weekdayName } from "@/lib/format";
+import { formatINR } from "@/lib/format";
 import { COMMERCE } from "@/lib/config";
 import { useCartStore, useCartHydrated, computeTotals } from "@/store/cart";
-import { useSessionStore } from "@/store/session";
+import { useSessionStore, useSessionHydrated } from "@/store/session";
 
 /**
- * Cart drawer — DESIGN.md §12.7.
+ * Cart drawer — PAGES-v2 "Cart drawer".
  *
- * Right-side panel, `min(440px, 100vw)`, card ground, rounded on the left
- * corners, `--shadow-overlay`, over a chocolate scrim. Focus trapped, Esc
- * closes, the trigger regains focus on close.
+ * A right-hand sheet on desktop; on a phone it is a bottom sheet at 90vh with
+ * a drag handle, because that is the shape a thumb expects and the shape every
+ * other sheet on this site takes.
  *
- * v2 moves the area and lane question here: it is one compact row above the
- * checkout button ("Deliver to Indiranagar · change"), because that is the
- * first moment it is actually load-bearing. It is not on the home page.
+ * Order of the panel, top to bottom: lines, delivery row, free-delivery meter,
+ * totals, one button. The delivery row is here and nowhere earlier — it is the
+ * first moment where the answer is load-bearing.
  *
- * The money rule (DECISIONS.md §5): the total shown here is the total charged.
- * Delivery is inside it. Free-delivery progress is a 3px paper-200 track with
- * a kiln fill — kiln, never danger, at any level.
+ * The money rule: the total on the button is the total charged. Delivery is
+ * inside it, shown once, never "calculated at checkout".
  */
 
 export function CartDrawer({ onChangeLane }: { onChangeLane?: () => void }) {
@@ -43,10 +40,10 @@ export function CartDrawer({ onChangeLane }: { onChangeLane?: () => void }) {
   const lines = useCartStore((s) => s.lines);
   const hydrated = useCartHydrated();
 
+  const sessionReady = useSessionHydrated();
   const lane = useSessionStore((s) => s.lane);
   const area = useSessionStore((s) => s.area);
-  const date = useSessionStore((s) => s.date);
-  const band = useSessionStore((s) => s.band);
+  const areaStatus = useSessionStore((s) => s.areaStatus);
 
   useLockBodyScroll(isOpen);
   useFocusTrap(panelRef, isOpen, close);
@@ -55,14 +52,8 @@ export function CartDrawer({ onChangeLane }: { onChangeLane?: () => void }) {
 
   const totals = computeTotals(lines, lane);
   const empty = hydrated && lines.length === 0;
-
-  const laneDetail = [
-    date ? weekdayName(date) : null,
-    area,
-    band ? formatTimeBandShort(band) : null,
-  ]
-    .filter(Boolean)
-    .join(" · ");
+  const placed = sessionReady && Boolean(area) && areaStatus === "served";
+  const laneFree = lane === "catch_the_van";
 
   return (
     <div className="fixed inset-0 z-[var(--z-drawer)]">
@@ -73,6 +64,7 @@ export function CartDrawer({ onChangeLane }: { onChangeLane?: () => void }) {
         onClick={close}
         className="absolute inset-0 w-full cursor-default bg-scrim motion-safe:animate-[fade_var(--dur-base)_var(--ease-standard)]"
       />
+
       <div
         ref={panelRef}
         role="dialog"
@@ -80,134 +72,190 @@ export function CartDrawer({ onChangeLane }: { onChangeLane?: () => void }) {
         aria-label="Your order"
         tabIndex={-1}
         className={cn(
-          "absolute inset-y-0 right-0 flex w-[min(440px,100vw)] flex-col bg-card",
-          "rounded-l-xl shadow-overlay outline-none",
-          "motion-safe:animate-[drawer-in_var(--dur-slow)_var(--ease-out)]",
+          "absolute inset-x-0 bottom-0 flex h-[90vh] flex-col bg-card outline-none",
+          "rounded-t-xl shadow-overlay",
+          "motion-safe:animate-[sheet-in_var(--dur-slow)_var(--ease-out)]",
+          // From 640px it becomes the right-hand sheet.
+          "sm:inset-y-0 sm:right-0 sm:left-auto sm:h-auto sm:w-[min(440px,100vw)]",
+          "sm:rounded-t-none sm:rounded-l-xl",
+          "sm:motion-safe:animate-[drawer-in_var(--dur-slow)_var(--ease-out)]",
         )}
       >
-        {/* -------- Header ------------------------------------------------ */}
-        <div className="flex items-start justify-between gap-4 border-b border-line p-6">
+        {/* -------- Drag handle, phone only --------------------------- */}
+        <div className="flex shrink-0 justify-center pt-3 sm:hidden">
+          <span aria-hidden="true" className="h-1 w-10 rounded-pill bg-line" />
+        </div>
+
+        {/* -------- Header -------------------------------------------- */}
+        <div className="flex shrink-0 items-start justify-between gap-4 px-6 pt-4 pb-5 sm:pt-6">
           <div>
             <h2 className="font-display text-[28px] leading-none text-ink">
               Your order
             </h2>
-            <p className="mt-2 text-body-sm text-muted tabular">
-              {totals.count} {totals.count === 1 ? "item" : "items"}
-            </p>
+            {!empty ? (
+              <p className="mt-2 text-body-sm text-muted tabular">
+                {totals.count} {totals.count === 1 ? "item" : "items"}
+              </p>
+            ) : null}
           </div>
-          <IconButton label="Close the box" onClick={close}>
+          <IconButton label="Close your order" onClick={close}>
             <X size={24} strokeWidth={1.5} aria-hidden="true" />
           </IconButton>
         </div>
 
-        {/* -------- Lines -------------------------------------------------- */}
-        <div className="min-h-0 flex-1 overflow-y-auto">
-          {empty ? (
-            <EmptyState
-              title="Nothing in the box yet."
-              body="This week we've got milk bread, custard an pan and three kinds of pastry."
-              glyph={<LoafGlyph size={96} />}
-              action={
-                <ButtonLink href="/shop" variant="secondary" size="md" onClick={close}>
-                  See this week&rsquo;s bake
-                </ButtonLink>
-              }
-            />
-          ) : (
-            <ul className="divide-y divide-line px-6">
-              {lines.map((line) => (
-                <CartLine key={line.slug} slug={line.slug} qty={line.qty} />
-              ))}
-            </ul>
-          )}
-        </div>
-
-        {!empty ? (
+        {empty ? (
+          <EmptyOrder onClose={close} />
+        ) : (
           <>
-            {/* -------- Summary -------------------------------------------- */}
-            <div className="border-t border-line px-6 py-4">
-              <SummaryRow label="Subtotal" value={formatINR(totals.subtotal)} />
-              <SummaryRow
-                label="Delivery"
-                value={totals.delivery === 0 ? "Free" : formatINR(totals.delivery)}
-              />
-              <div className="mt-3 flex items-center gap-2 text-body-sm text-muted">
-                <Coins size={16} strokeWidth={1.5} aria-hidden="true" className="text-crumb-ink" />
-                <span className="tabular">
-                  Earns {totals.coinsEarned} coins
-                </span>
-              </div>
+            {/* -------- Lines ---------------------------------------- */}
+            <div className="min-h-0 flex-1 overflow-y-auto border-t border-line">
+              <ul className="divide-y divide-line px-6">
+                {lines.map((line) => (
+                  <CartLine key={line.slug} slug={line.slug} qty={line.qty} />
+                ))}
+              </ul>
             </div>
 
-            {/* -------- Fulfilment row, directly above the footer ---------- */}
-            <div className="px-6">
-              {lane ? (
-                <FulfilmentSummary
-                  lane={lane}
-                  detail={laneDetail || "Pick a day and a window"}
-                  onChange={onChangeLane}
-                />
-              ) : (
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-line py-3">
-                  <p className="text-body-sm text-ink-2">
-                    Where should this go?
+            {/* -------- Foot ----------------------------------------- */}
+            <div className="shrink-0 border-t border-line bg-paper px-6 pt-4 pb-6">
+              {/* Delivery row */}
+              {placed ? (
+                <div className="flex items-baseline justify-between gap-4">
+                  <p className="min-w-0 text-body-sm text-ink-2">
+                    {laneFree ? "Catch the van in " : "Deliver to "}
+                    <span className="text-ink">{area}</span>
                   </p>
                   <button
                     type="button"
                     onClick={onChangeLane}
-                    className="link-underline text-body-sm font-semibold text-accent"
+                    className="link-underline shrink-0 text-body-sm font-semibold text-accent"
                   >
-                    Set your area
+                    Change
                   </button>
                 </div>
-              )}
-            </div>
-
-            {/* -------- Footer --------------------------------------------- */}
-            <div className="sticky bottom-0 border-t border-line bg-paper p-6">
-              {!totals.freeDeliveryEarned ? (
-                <div className="mb-4">
-                  <div className="h-[3px] w-full rounded-pill bg-well" aria-hidden="true">
-                    <div
-                      className="h-full rounded-pill bg-accent"
-                      style={{
-                        width: `${Math.min(
-                          100,
-                          (totals.subtotal / COMMERCE.freeDeliveryThreshold) * 100,
-                        )}%`,
-                      }}
-                    />
-                  </div>
-                  <p className="mt-2 text-body-sm text-muted tabular">
-                    {formatINR(totals.toFreeDelivery)} more for free delivery
+              ) : (
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <p className="text-body-sm text-ink-2">
+                    Where should we bring it?
                   </p>
+                  <Button variant="secondary" size="sm" onClick={onChangeLane}>
+                    Set area
+                  </Button>
                 </div>
-              ) : null}
+              )}
+
+              {/* Free-delivery meter */}
+              <FreeDeliveryMeter
+                subtotal={totals.subtotal}
+                earned={totals.freeDeliveryEarned}
+                shortfall={totals.toFreeDelivery}
+              />
+
+              {/* Totals */}
+              <dl className="mt-4 border-t border-line pt-4">
+                <SummaryRow label="Items" value={formatINR(totals.subtotal)} />
+                <SummaryRow
+                  label="Delivery"
+                  value={
+                    totals.delivery === 0 ? "Free" : formatINR(totals.delivery)
+                  }
+                />
+                <div className="mt-3 flex items-baseline justify-between gap-4">
+                  <dt className="text-body text-ink">Total</dt>
+                  <dd className="font-display text-[24px] leading-none text-ink tabular">
+                    {formatINR(totals.total)}
+                  </dd>
+                </div>
+              </dl>
 
               <ButtonLink
                 href="/checkout"
                 size="lg"
                 fullWidth
                 onClick={close}
-                className={cn(!lane && "pointer-events-none opacity-50")}
-                aria-disabled={!lane || undefined}
+                className="mt-5"
               >
-                Checkout — {formatINR(totals.total)}
+                Checkout · {formatINR(totals.total)}
               </ButtonLink>
             </div>
           </>
-        ) : null}
+        )}
       </div>
+    </div>
+  );
+}
+
+/**
+ * The meter. A 3px track and one line of copy — and once it is reached the
+ * copy becomes the reward rather than disappearing, so the bar earns its
+ * place instead of blinking out of existence at the finish line.
+ */
+function FreeDeliveryMeter({
+  subtotal,
+  earned,
+  shortfall,
+}: {
+  subtotal: number;
+  earned: boolean;
+  shortfall: number;
+}) {
+  const pct = Math.min(
+    100,
+    Math.round((subtotal / COMMERCE.freeDeliveryThreshold) * 100),
+  );
+
+  return (
+    <div className="mt-4">
+      <div
+        className="h-[3px] w-full overflow-hidden rounded-pill bg-well"
+        aria-hidden="true"
+      >
+        <div
+          className="h-full rounded-pill bg-accent transition-[width] duration-[var(--dur-slow)] ease-[var(--ease-standard)]"
+          style={{ width: earned ? "100%" : `${pct}%` }}
+        />
+      </div>
+      <p className="mt-2 text-body-sm text-muted tabular">
+        {earned
+          ? "Free delivery"
+          : `${formatINR(shortfall)} more for free delivery`}
+      </p>
     </div>
   );
 }
 
 function SummaryRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-baseline gap-3 py-1">
-      <span className="text-body-sm text-ink-2">{label}</span>
-      <span className="dot-leader" aria-hidden="true" />
-      <span className="text-body-sm font-medium text-ink tabular">{value}</span>
+    <div className="flex items-baseline justify-between gap-4 py-1">
+      <dt className="text-body-sm text-ink-2">{label}</dt>
+      <dd className="text-body-sm text-ink tabular">{value}</dd>
+    </div>
+  );
+}
+
+/** Empty: one cutout at half size, one sentence, one button. */
+function EmptyOrder({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-6 pb-12 text-center">
+      <span
+        data-surface="well"
+        className="grid size-32 place-items-center rounded-pill bg-well"
+      >
+        <Image
+          src="/images/products/custard-anpan-v1.png"
+          alt=""
+          width={240}
+          height={240}
+          sizes="128px"
+          className="w-[50%] object-contain cutout-sm"
+        />
+      </span>
+      <p className="mt-6 font-display text-[24px] leading-tight text-ink">
+        Nothing in your order yet.
+      </p>
+      <ButtonLink href="/shop" size="lg" className="mt-6" onClick={onClose}>
+        See the menu
+      </ButtonLink>
     </div>
   );
 }
@@ -222,31 +270,35 @@ function CartLine({ slug, qty }: { slug: string; qty: number }) {
     <li className="flex gap-4 py-4">
       <span
         data-surface="well"
-        className="grid size-18 shrink-0 place-items-center rounded-lg bg-well"
+        className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-lg bg-well"
       >
         {product.image ? (
           <Image
             src={product.image.src}
             alt=""
-            width={144}
-            height={144}
-            sizes="72px"
-            className="w-[70%] object-contain"
+            width={160}
+            height={160}
+            sizes="64px"
+            className={
+              product.image.kind === "cutout"
+                ? "w-[76%] object-contain cutout-sm"
+                : "size-full object-cover"
+            }
           />
         ) : (
-          <LoafGlyph size={40} className="opacity-70" />
+          <LoafGlyph size={36} className="text-muted opacity-70" />
         )}
       </span>
 
       <div className="min-w-0 flex-1">
         <Link
           href={product.href}
-          className="link-underline block truncate font-display text-[19px] text-ink"
+          className="link-underline block truncate font-display text-[19px] leading-tight text-ink"
         >
           {product.name}
         </Link>
-        <KanaLabel kana={product.kana} />
-        <div className="mt-2">
+        <KanaLabel kana={product.kana} className="mt-0.5" />
+        <div className="mt-2.5">
           <QtyStepper
             qty={qty}
             onIncrement={() => increment(slug)}
@@ -256,52 +308,7 @@ function CartLine({ slug, qty }: { slug: string; qty: number }) {
         </div>
       </div>
 
-      <Price amount={product.price * qty} size="sm" className="shrink-0" />
+      <Price amount={product.price * qty} size="sm" className="shrink-0 pt-0.5" />
     </li>
-  );
-}
-
-/**
- * Cross-sell strip (§12.7) — one item, above the summary. A 56px well, a nano
- * label, name, price and a 28px circular plus.
- */
-export function CrossSellStrip({ slug }: { slug: string }) {
-  const add = useCartStore((s) => s.add);
-  const product = getProductBySlug(slug);
-  if (!product) return null;
-
-  return (
-    <div className="flex items-center gap-3 border-t border-line px-6 py-3">
-      <span
-        data-surface="well"
-        className="grid size-14 shrink-0 place-items-center rounded-lg bg-well"
-      >
-        {product.image ? (
-          <Image
-            src={product.image.src}
-            alt=""
-            width={112}
-            height={112}
-            sizes="56px"
-            className="w-[70%] object-contain"
-          />
-        ) : (
-          <LoafGlyph size={32} className="opacity-70" />
-        )}
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className="text-[11px] font-medium tracking-[0.1em] text-muted uppercase">Add a loaf?</p>
-        <p className="truncate text-body-sm font-semibold text-ink">{product.name}</p>
-      </div>
-      <Price amount={product.price} size="sm" />
-      <button
-        type="button"
-        onClick={() => add(product.slug)}
-        aria-label={`Add ${product.name} to the box`}
-        className="relative grid size-8 shrink-0 place-items-center rounded-pill border border-ink text-ink after:absolute after:size-11 after:content-[''] hover:bg-veil"
-      >
-        <Plus size={16} strokeWidth={1.5} aria-hidden="true" />
-      </button>
-    </div>
   );
 }

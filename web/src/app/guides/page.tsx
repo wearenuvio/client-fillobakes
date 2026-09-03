@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { buildMetadata, JsonLd } from "@/lib/seo";
-import { Section } from "@/components/blocks/Section";
-import { Kicker } from "@/components/ui/Rule";
-import { RuleHeading } from "@/components/pages/content/RuleHeading";
 import { Badge } from "@/components/ui/Badge";
+import { InkArt } from "@/components/ui/InkArt";
 import { ButtonLink } from "@/components/ui/Button";
-import { LineArtBleed } from "@/components/ui/LineArt";
-import { Lead } from "@/components/pages/content/Prose";
+import { ContentSection, PageHead } from "@/components/pages/content/PageShell";
 import { GUIDE_BODIES } from "@/components/pages/content/guide-bodies";
 import { getGuides } from "@/lib/content";
 
@@ -21,11 +18,11 @@ export const metadata: Metadata = buildMetadata(PATH, {
 });
 
 /**
- * The guides index — site-content.md, Section: Guides.
+ * The guides index — PAGES-v2 Journal / Guides.
  *
- * Four evergreen definition pages. They are separate from the journal on
- * purpose: a guide is undated and maintained, a journal post is dated and
- * never updated. The index says which is which rather than assuming anyone
+ * The same card as the journal, so the two sections read as one library. A
+ * guide is undated and maintained; the journal is dated and stands as
+ * written, and the index says which is which rather than assuming anyone
  * knows.
  */
 export default function GuidesIndexPage() {
@@ -35,78 +32,83 @@ export default function GuidesIndexPage() {
     <>
       <JsonLd path={PATH} crumbs={[{ name: "Guides", path: PATH }]} />
 
-      <Section surface="paper-50" size="none" className="overflow-hidden pt-[var(--section-y)] pb-[calc(var(--section-y)/2)]">
-        <LineArtBleed glyph="wheat" side="right" size={600} />
-        <div className="relative max-w-[var(--max-narrow)]">
-          <Kicker>Guides</Kicker>
-          <h1 className="mt-4 text-display-lg text-ink-800">
-            What the words mean
-          </h1>
-          <Lead className="mt-6">
-            Four pages that explain the formats we bake. Undated, kept up to
-            date, and linked from every product they describe.
-          </Lead>
-        </div>
-      </Section>
+      <ContentSection
+        surface="paper"
+        size="none"
+        className="overflow-hidden pt-10 pb-8 lg:pt-14"
+      >
+        <InkArt
+          name="shokupan-loaf"
+          width={400}
+          opacity={0.1}
+          className="top-1/2 right-[-70px] hidden -translate-y-1/2 lg:block"
+        />
+        <PageHead
+          script="What the words mean."
+          title="Guides"
+          lead="Four pages that explain the formats we bake. Undated, kept up to date, and linked from every product they describe."
+        />
+      </ContentSection>
 
-      <Section surface="paper-50" size="half">
-        <RuleHeading trailing={`${guides.length}`}>The four</RuleHeading>
-        <ul className="mt-2">
-          {guides.map((guide) => {
+      <ContentSection surface="paper" size="half">
+        <ul className="grid gap-6 sm:grid-cols-2">
+          {guides.map((guide, index) => {
             const body = GUIDE_BODIES[guide.slug];
+            const partial = body?.state === "part-published";
             return (
-              <li key={guide.slug} className="border-b border-b-paper-300">
+              <li key={guide.slug}>
                 <Link
                   href={guide.path}
-                  className="group grid gap-4 py-8 lg:grid-cols-12 lg:gap-12"
+                  className="group flex h-full flex-col overflow-hidden rounded-lg border border-line bg-card transition-[box-shadow,transform] duration-[var(--dur-base)] ease-[var(--ease-standard)] hover:-translate-y-0.5 hover:shadow-lift"
                 >
-                  <div className="lg:col-span-4">
-                    <h3 className="text-display-sm text-ink-800 transition-colors duration-[var(--dur-fast)] group-hover:text-ink-900">
-                      {guide.h1}
-                    </h3>
-                  </div>
-                  <div className="lg:col-span-6">
-                    <p className="max-w-[52ch] text-body text-ink-600">
-                      {body?.standfirst ?? guide.description}
-                    </p>
-                    {body?.state === "part-published" ? (
-                      <Badge variant="warning" className="mt-4">
-                        Part-published
-                      </Badge>
+                  <div className="relative aspect-[16/10] overflow-hidden bg-well">
+                    {body?.image ? (
+                      <Image
+                        src={body.image.src}
+                        alt=""
+                        fill
+                        priority={index < 2}
+                        sizes="(min-width: 640px) 50vw, 100vw"
+                        className="object-cover transition-transform duration-[var(--dur-base)] group-hover:scale-105 motion-reduce:transform-none"
+                      />
+                    ) : null}
+                    {partial ? (
+                      <span className="absolute top-3 left-3">
+                        <Badge variant="outline">In progress</Badge>
+                      </span>
                     ) : null}
                   </div>
-                  <div className="flex items-start lg:col-span-2 lg:justify-end">
-                    <span className="micro inline-flex items-center gap-2 text-kiln">
-                      Read
-                      <ArrowRight
-                        size={16}
-                        strokeWidth={1.5}
-                        aria-hidden="true"
-                        className="transition-transform duration-[var(--dur-fast)] group-hover:translate-x-1"
-                      />
-                    </span>
+                  <div className="flex flex-1 flex-col p-6">
+                    <h2 className="font-display text-[24px] leading-tight text-ink">
+                      {guide.h1}
+                    </h2>
+                    <p className="mt-3 text-body-sm text-ink-2">
+                      {body?.standfirst ?? guide.description}
+                    </p>
                   </div>
                 </Link>
               </li>
             );
           })}
         </ul>
-      </Section>
+      </ContentSection>
 
-      <Section surface="paper-100" size="half">
-        <div className="max-w-[var(--max-narrow)]">
-          <h2 className="text-display-sm text-ink-800">
-            Looking for the dated stuff?
-          </h2>
-          <p className="mt-3 max-w-[46ch] text-body text-ink-600">
-            The journal is where the route, the failures and the timestamps
-            live. A guide is maintained; a journal post stands as written.
-          </p>
-          <ButtonLink href="/journal" variant="secondary" className="mt-6">
+      <ContentSection surface="paper-2" size="half">
+        <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="max-w-[20ch] text-h2 text-ink">
+              Looking for the dated stuff?
+            </h2>
+            <p className="mt-3 max-w-[46ch] text-body-lg text-ink-2">
+              The journal is where the route, the failures and the timestamps
+              live.
+            </p>
+          </div>
+          <ButtonLink href="/journal" variant="secondary" className="shrink-0">
             From the van
           </ButtonLink>
         </div>
-      </Section>
+      </ContentSection>
     </>
   );
 }

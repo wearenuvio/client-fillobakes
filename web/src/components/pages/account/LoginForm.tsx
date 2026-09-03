@@ -1,65 +1,55 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { AlertCircle, Check, MessageCircle } from "lucide-react";
+import { Check } from "lucide-react";
 import { Button, ButtonLink } from "@/components/ui/Button";
-import { OtpField } from "@/components/ui/OtpField";
-import { useToast } from "@/components/ui/Toast";
-import { CONTACT, whatsappHref } from "@/lib/config";
-import { Panel } from "@/components/pages/account/Panel";
 import {
-  formatPhone,
+  OtpBoxes,
+  PhoneInput,
+  formatIndianPhone,
+  type OtpStatus,
+} from "@/components/ui/OtpField";
+import {
   useAccountSession,
   useAccountSessionStore,
 } from "@/components/pages/account/session";
 
 /**
- * Sign in — site-content.md "Screen: Login".
+ * Sign in — PAGES-v2 "Login".
  *
- * The phone number is the account. There is no password and no separate
- * sign-up: a number that has not ordered before creates an account on the
- * first code, and the name is asked after the first order, never before it.
+ * One centred card. The number is the account: there is no password and no
+ * separate sign-up, so a number that has never ordered creates an account on
+ * its first code. The second step replaces the first in place — nothing opens
+ * a new page and the card never jumps.
  *
- * Everything here is mocked with local state and a delay — no network. Any
- * six digits verify; `000000` is the failure path, so the wrong-code, the
- * resend-cooldown, the WhatsApp fallback and the rate-limited states are all
- * reachable without a back end.
+ * Mocked end to end. The code is 1234; anything else takes the wrong-code
+ * path, so both states are reachable without a back end.
  */
 
+const OTP_CODE = "1234";
 const RESEND_SECONDS = 28;
-const WRONG_CODE = "000000";
-const MAX_ATTEMPTS = 3;
-
-type Step = "number" | "code";
 
 export function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
-  const { toast } = useToast();
   const signIn = useAccountSessionStore((s) => s.signIn);
   const { hydrated, signedIn, phone: sessionPhone } = useAccountSession();
 
   const next = params?.get("next") ?? "/account";
 
-  const [step, setStep] = React.useState<Step>("number");
+  const [step, setStep] = React.useState<"number" | "code">("number");
   const [phone, setPhone] = React.useState("");
   const [sending, setSending] = React.useState(false);
-  const [status, setStatus] = React.useState<"idle" | "verifying" | "success" | "error">("idle");
+  const [status, setStatus] = React.useState<OtpStatus>("idle");
   const [error, setError] = React.useState<string | null>(null);
-  const [attempts, setAttempts] = React.useState(0);
   const [resendIn, setResendIn] = React.useState(0);
-  const [sends, setSends] = React.useState(0);
 
-  // The resend cooldown. A real second, not a decorative one.
   React.useEffect(() => {
     if (resendIn <= 0) return;
-    const timer = setTimeout(() => setResendIn((s) => s - 1), 1000);
-    return () => clearTimeout(timer);
+    const timer = window.setTimeout(() => setResendIn((s) => s - 1), 1000);
+    return () => window.clearTimeout(timer);
   }, [resendIn]);
-
-  const rateLimited = attempts >= MAX_ATTEMPTS;
 
   function sendCode() {
     setSending(true);
@@ -67,152 +57,147 @@ export function LoginForm() {
     setStatus("idle");
     window.setTimeout(() => {
       setSending(false);
-      setSends((n) => n + 1);
       setStep("code");
       setResendIn(RESEND_SECONDS);
-      toast({ message: "Sent. Check your messages." });
-    }, 700);
-  }
-
-  function resend() {
-    if (resendIn > 0) {
-      toast({ message: `Hang on ${resendIn} seconds and we'll send another.`, tone: "info" });
-      return;
-    }
-    sendCode();
+    }, 600);
   }
 
   function verify(code: string) {
-    if (rateLimited) return;
     setStatus("verifying");
     setError(null);
     window.setTimeout(() => {
-      if (code === WRONG_CODE) {
-        const nextAttempts = attempts + 1;
-        setAttempts(nextAttempts);
+      if (code !== OTP_CODE) {
         setStatus("error");
-        setError(
-          nextAttempts >= MAX_ATTEMPTS
-            ? "Too many tries. Wait 10 minutes, or WhatsApp us and we'll sign you in."
-            : "That code didn't match. Try again, or we'll send a new one.",
-        );
+        setError("That code didn't match. Try again or resend.");
         return;
       }
       setStatus("success");
       signIn(phone);
       window.setTimeout(() => router.push(next), 400);
-    }, 900);
+    }, 700);
   }
 
+  /* -------- Already signed in ------------------------------------- */
   if (hydrated && signedIn) {
     return (
-      <Panel className="max-w-[var(--max-narrow)]">
-        <p className="flex items-center gap-2 text-body text-ink-800">
-          <Check size={20} strokeWidth={1.5} className="text-success" aria-hidden="true" />
-          You&rsquo;re signed in as <span className="tabular">{formatPhone(sessionPhone)}</span>
+      <Card>
+        <p className="flex items-center gap-2.5 text-body text-ink">
+          <Check
+            size={20}
+            strokeWidth={1.5}
+            className="shrink-0 text-success"
+            aria-hidden="true"
+          />
+          <span>
+            Signed in as{" "}
+            <span className="tabular">{formatIndianPhone(sessionPhone ?? "")}</span>
+          </span>
         </p>
-        <p className="mt-2 text-body-sm text-ink-600">
-          Your orders, your coins and your standing order are all on this number.
+        <p className="mt-3 text-body-sm text-ink-2">
+          Your orders, your coins and your standing order all live on this
+          number.
         </p>
-        <div className="mt-6 flex flex-wrap gap-3">
-          <ButtonLink href="/account">Go to your account</ButtonLink>
-          <ButtonLink href="/logout" variant="secondary">
+        <ButtonLink href="/account" size="lg" fullWidth className="mt-6">
+          Go to your account
+        </ButtonLink>
+        <p className="mt-4 text-center">
+          <ButtonLink href="/logout" variant="ghost" size="sm">
             Sign out
           </ButtonLink>
-        </div>
-      </Panel>
+        </p>
+      </Card>
     );
   }
 
+  /* -------- Step 1: the number ------------------------------------ */
+  if (step === "number") {
+    return (
+      <Card>
+        <h1 className="font-display text-[34px] leading-tight text-ink">
+          Welcome back
+        </h1>
+        <p className="mt-3 text-body text-ink-2">
+          Your number is your account. No password to forget.
+        </p>
+
+        <div className="mt-7">
+          <label htmlFor="login-phone" className="micro mb-2 block text-muted">
+            Mobile number
+          </label>
+          <PhoneInput id="login-phone" value={phone} onChange={setPhone} />
+        </div>
+
+        <Button
+          className="mt-5"
+          size="lg"
+          fullWidth
+          loading={sending}
+          disabled={phone.length !== 10}
+          onClick={sendCode}
+        >
+          Send code
+        </Button>
+
+        <p className="mt-5 text-body-sm text-muted">
+          We&rsquo;ll never call you. Only bread updates.
+        </p>
+      </Card>
+    );
+  }
+
+  /* -------- Step 2: the code -------------------------------------- */
   return (
-    <div className="max-w-[var(--max-narrow)]">
-      {step === "number" ? (
-        <Panel>
-          <p className="text-body-lg text-ink-600">
-            Your number is your account. No password to forget.
-          </p>
-          <OtpField
-            className="mt-6"
-            step="number"
-            phone={phone}
-            onPhoneChange={setPhone}
-            onSendCode={sendCode}
-            sending={sending}
-          />
-          <p className="mt-4 text-caption text-ink-500">
-            We&rsquo;ll send a six-digit code on WhatsApp.
-          </p>
-          <p className="mt-6 border-t border-paper-300 pt-6 text-body-sm text-ink-600">
-            New here? Same thing. Put your number in.
-          </p>
-        </Panel>
-      ) : (
-        <Panel>
-          <h2 className="text-display-sm text-ink-800">Check your messages</h2>
-          <p className="mt-2 text-body text-ink-600">
-            We sent a code on WhatsApp. It lasts ten minutes.
-          </p>
-
-          {rateLimited ? (
-            <div className="mt-6 rounded-md bg-warning-tint p-4">
-              <p className="flex items-start gap-2 text-body-sm text-warning">
-                <AlertCircle size={16} strokeWidth={1.5} className="mt-0.5 shrink-0" aria-hidden="true" />
-                Too many tries. Wait 10 minutes, or WhatsApp us and we&rsquo;ll sign you in.
-              </p>
-              <Button
-                className="mt-4"
-                variant="secondary"
-                size="sm"
-                icon={<MessageCircle size={16} strokeWidth={1.5} />}
-                iconPosition="leading"
-                onClick={() => window.open(whatsappHref("Hi Fillo — I can't sign in. Can you help?"), "_blank")}
-              >
-                Message us on WhatsApp
-              </Button>
-            </div>
-          ) : (
-            <OtpField
-              className="mt-6"
-              step="code"
-              phone={phone}
-              onChangeNumber={() => {
-                setStep("number");
-                setStatus("idle");
-                setError(null);
-              }}
-              onComplete={verify}
-              status={status}
-              error={error}
-              resendIn={resendIn}
-              onResend={resend}
-              whatsappFallback={sends >= MAX_ATTEMPTS}
-              onWhatsappFallback={() =>
-                window.open(whatsappHref("Hi Fillo — please send my sign-in code on WhatsApp."), "_blank")
-              }
-            />
-          )}
-
-          <p className="mt-6 border-t border-paper-300 pt-6 text-caption text-ink-500">
-            Not on WhatsApp? We can send it as an SMS instead —{" "}
-            <button
-              type="button"
-              onClick={() => {
-                setResendIn(RESEND_SECONDS);
-                toast({ message: "Sent as an SMS. Check your messages." });
-              }}
-              className="link-underline text-ink-700"
-            >
-              send an SMS
-            </button>
-            .
-          </p>
-        </Panel>
-      )}
-
-      <p className="mt-6 text-caption text-ink-500">
-        Trouble signing in? <Link href="/contact" className="link-underline text-ink-700">Write to us</Link>, or
-        WhatsApp <span className="tabular">{CONTACT.phone}</span>.
+    <Card>
+      <h1 className="font-display text-[34px] leading-tight text-ink">
+        Check your messages
+      </h1>
+      <p className="mt-3 text-body text-ink-2 tabular">
+        We sent a code to {formatIndianPhone(phone)}.{" "}
+        <button
+          type="button"
+          onClick={() => {
+            setStep("number");
+            setStatus("idle");
+            setError(null);
+          }}
+          className="link-underline font-semibold text-accent"
+        >
+          Change
+        </button>
       </p>
+
+      <OtpBoxes
+        className="mt-7"
+        status={status}
+        onComplete={verify}
+        error={error}
+        autoFocus
+      />
+
+      <div className="mt-5 min-h-9">
+        {resendIn > 0 ? (
+          <p className="text-body-sm text-muted tabular">
+            Resend in {resendIn}s
+          </p>
+        ) : (
+          <Button variant="ghost" size="sm" onClick={sendCode}>
+            Resend code
+          </Button>
+        )}
+      </div>
+
+      <p className="mt-2 text-body-sm text-muted">
+        We&rsquo;ll never call you. Only bread updates.
+      </p>
+    </Card>
+  );
+}
+
+/** The centred card. Nothing else is on this page. */
+function Card({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mx-auto w-full max-w-[420px] rounded-lg border border-line bg-card p-6 sm:p-8">
+      {children}
     </div>
   );
 }

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
-import { Field, Input, Select } from "@/components/ui/Field";
 import { OtpField } from "@/components/ui/OtpField";
 import { useToast } from "@/components/ui/Toast";
 import { getCustomer, getLoyaltyLedger } from "@/lib/mock";
@@ -15,6 +14,7 @@ import {
   formatPhone,
   useAccountSessionStore,
 } from "@/components/pages/account/session";
+import { TextField } from "@/components/pages/content/Form";
 
 /**
  * Settings — site-content "Screen: Settings".
@@ -33,7 +33,6 @@ export function SettingsPanel() {
 
   const [name, setName] = React.useState(customer.name);
   const [email, setEmail] = React.useState(customer.email ?? "");
-  const [language, setLanguage] = React.useState("english");
   const [savingProfile, setSavingProfile] = React.useState(false);
 
   const [phoneOpen, setPhoneOpen] = React.useState(false);
@@ -60,46 +59,25 @@ export function SettingsPanel() {
     <div className="flex flex-col gap-6">
       <Panel as="form" onSubmit={(e: React.FormEvent) => { e.preventDefault(); saveProfile(); }}>
         <PanelHead label="You" />
-        <div className="mt-4 flex flex-col gap-4">
-          <Field
+        <div className="mt-5 flex max-w-[440px] flex-col gap-5">
+          <TextField
+            id="settings-name"
             label="Name"
-            htmlFor="settings-name"
             helper="We ask for this after the first order, never before it."
-          >
-            <Input
-              id="settings-name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              autoComplete="given-name"
-            />
-          </Field>
-
-          <Field
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            autoComplete="given-name"
+          />
+          <TextField
+            id="settings-email"
             label="Email"
-            htmlFor="settings-email"
+            type="email"
             helper="Optional, and only used for your invoice."
-          >
-            <Input
-              id="settings-email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-              placeholder="you@example.com"
-            />
-          </Field>
-
-          <Field label="Language of receipts" htmlFor="settings-language">
-            <Select
-              id="settings-language"
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-            >
-              <option value="english">English</option>
-              <option value="kannada">Kannada</option>
-              <option value="hindi">Hindi</option>
-            </Select>
-          </Field>
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
+            placeholder="you@example.com"
+          />
         </div>
         <Button className="mt-6" type="submit" loading={savingProfile}>
           Save
@@ -108,10 +86,12 @@ export function SettingsPanel() {
 
       <Panel>
         <PanelHead label="Your number" />
-        <p className="mt-4 text-title text-ink-800 tabular">{formatPhone(phone)}</p>
-        <p className="mt-2 max-w-[46ch] text-body-sm text-ink-600">
-          Changing your number moves your orders, coins and standing order with it.
-          We&rsquo;ll send a code to the new one.
+        <p className="mt-4 font-display text-[26px] leading-tight text-ink tabular">
+          {formatPhone(phone)}
+        </p>
+        <p className="mt-2 max-w-[46ch] text-body text-ink-2">
+          Changing your number moves your orders, coins and standing order with
+          it. We send a code to the new one.
         </p>
         <Button
           className="mt-6"
@@ -130,19 +110,19 @@ export function SettingsPanel() {
 
       <Panel>
         <PanelHead label="Delete my account" />
-        <ul className="mt-4 flex max-w-[62ch] list-none flex-col gap-2 text-body text-ink-600">
+        <ul className="mt-4 flex max-w-[58ch] list-none flex-col gap-2 text-body text-ink-2">
           <li>Deleting removes your addresses, your saved stops and your alerts.</li>
           <li className="tabular">
-            Your {pluralise(ledger.balance, "Fillo coin")} go with it and we can&rsquo;t
-            get them back.
+            Your {pluralise(ledger.balance, "Fillo coin")} go with it, and we
+            cannot get them back.
           </li>
           <li>
-            Orders already placed still get delivered, and we keep the invoices as long
-            as the law requires.
+            Orders already placed still get delivered, and we keep the invoices
+            as long as the law requires.
           </li>
           <li>
-            If you have a standing order it&rsquo;s cancelled after the delivery already
-            in the plan.
+            A standing order is cancelled after the delivery already in the
+            plan.
           </li>
         </ul>
         <div className="mt-6">
@@ -231,7 +211,7 @@ export function SettingsPanel() {
                   signOut();
                   toast({
                     message:
-                      "Deleted. Sorry to see you go — the van's still around if you change your mind.",
+                      "Deleted. Sorry to see you go. The van is still around if you change your mind.",
                   });
                   router.push("/");
                 }, 800);
@@ -242,19 +222,24 @@ export function SettingsPanel() {
           </>
         }
       >
-        <Field className="mt-6" label="Type DELETE" htmlFor="delete-confirm">
-          <Input
-            id="delete-confirm"
-            value={confirmWord}
-            onChange={(e) => setConfirmWord(e.target.value)}
-            autoComplete="off"
-            placeholder="DELETE"
-          />
-        </Field>
+        <TextField
+          className="mt-6"
+          id="delete-confirm"
+          label="Type DELETE"
+          value={confirmWord}
+          onChange={(e) => setConfirmWord(e.target.value)}
+          autoComplete="off"
+          placeholder="DELETE"
+        />
         {confirmWord.trim().toUpperCase() === "DELETE" ? (
-          <p className="mt-3 flex items-center gap-2 text-caption text-ink-600">
-            <Check size={16} strokeWidth={1.5} className="text-success" aria-hidden="true" />
-            That&rsquo;s the word.
+          <p className="mt-3 flex items-center gap-2 text-body-sm text-ink-2">
+            <Check
+              size={16}
+              strokeWidth={1.5}
+              className="text-success"
+              aria-hidden="true"
+            />
+            That is the word.
           </p>
         ) : null}
       </Dialog>

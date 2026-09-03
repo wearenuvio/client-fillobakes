@@ -1,35 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Check, MapPin, Truck } from "lucide-react";
-import { buildMetadata, JsonLd, bakeryLd, faqLd } from "@/lib/seo";
-import { Section, SectionHeader } from "@/components/blocks/Section";
-import { Badge } from "@/components/ui/Badge";
-import { ButtonLink } from "@/components/ui/Button";
-import { Kicker } from "@/components/ui/Rule";
-import { Faq } from "@/components/blocks/Faq";
-import { AreaCtaButton, WaitlistCapture } from "@/components/pages/van/AreaCta";
-import { AreaLanePicker } from "@/components/pages/van/AreaCheckPanel";
-import { AreaVanPanel } from "@/components/pages/van/AreaVanPanel";
-import { MapPanel } from "@/components/pages/van/MapPanel";
-import { RouteDiagram } from "@/components/pages/van/RouteDiagram";
-import { NotifyRow } from "@/components/pages/van/NotifyRow";
-import { StopSchedule } from "@/components/pages/van/StopSchedule";
-import { OnBoardList } from "@/components/pages/van/VanModules";
-import {
-  runStartLabel,
-  scheduleRowsForRoute,
-  shortRunDays,
-} from "@/components/pages/van/schedule";
-import { formatTimeBand } from "@/lib/format";
-import {
-  getArea,
-  getAreaSlugs,
-  getAreas,
-  getRoute,
-  getVanState,
-  type Area,
-} from "@/lib/mock";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { buildMetadata, JsonLd, bakeryLd } from "@/lib/seo";
+import { NotifyWhatsApp } from "@/components/pages/van/NotifyWhatsApp";
+import { SetAreaButton } from "@/components/pages/van/SetAreaButton";
+import { clockLabel, nextRunDayFor, windowLabel } from "@/components/pages/van/week";
+import { getArea, getAreaSlugs, getLane, getRoute } from "@/lib/mock";
 
 type Params = { params: Promise<{ area: string }> };
 
@@ -38,410 +15,208 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
-  const { area } = await params;
-  const found = getArea(area);
-  if (!found) return buildMetadata(`/areas/${area}`);
-  return buildMetadata(`/areas/${found.slug}`, {
-    title: `Japanese milk bread in ${found.name} | Fillo Bakes`,
-    description: `${found.answer} ${
-      found.serviceability === "served"
-        ? `Home delivery ₹${found.deliveryFee}, free over ₹${found.freeOver}. Order by 8pm the evening before.`
-        : found.serviceability === "catch_van_only"
-          ? "Catch the van at a stop nearby — no fee, ever."
-          : "Tell us you're there and we'll come sooner."
-    }`,
+  const { area: slug } = await params;
+  const area = getArea(slug);
+  return buildMetadata("/areas", {
+    title: area ? `Bread delivery in ${area.name}` : "Areas",
+    description: area?.answer,
   });
 }
 
 /**
- * A serviceability landing page — the only realistic local-SEO lane this
- * business has, and the answer to a question the old site never asked.
+ * One area — PAGES-v2 "Areas".
  *
- * The answer comes first, in one sentence, above everything else. Then the
- * stop or the window, the cut-off, the menu and one action. "Not yet" is a
- * waitlist with a public position count, never a sorry and never a dead end
- * (site-content, "The three states").
+ * Somebody arrives here from a search having typed their own neighbourhood, so
+ * the page asks their question back at them and answers it in the first line.
+ * Everything after that exists to make the yes actionable, or to make the not
+ * yet worth waiting through.
+ *
+ * The one button remembers the area and the lane before it opens the order
+ * drawer, so the answer is never re-asked in the cart.
  */
 export default async function AreaPage({ params }: Params) {
-  const { area } = await params;
-  const found = getArea(area);
-  if (!found) notFound();
+  const { area: slug } = await params;
+  const area = getArea(slug);
+  if (!area) notFound();
 
-  const path = `/areas/${found.slug}`;
-  const route = found.routeId ? getRoute(found.routeId) : undefined;
-  const notYet = found.serviceability === "not_yet";
-  const vanOnly = found.serviceability === "catch_van_only";
+  const route = area.routeId ? getRoute(area.routeId) : undefined;
+  const served = area.serviceability === "served";
+  const vanOnly = area.serviceability === "catch_van_only";
+  const notYet = area.serviceability === "not_yet";
 
-  const stopsHere = (route?.stops ?? []).filter((s) => s.area === found.name);
-  const stopRows = route
-    ? scheduleRowsForRoute(route).filter((row) =>
-        stopsHere.length > 0 ? stopsHere.some((s) => s.id === row.id) : true,
-      )
-    : [];
-
-  const live = getVanState("live");
-  const isRunning = route ? live.routeId === route.id : false;
-  const van = getVanState(isRunning ? "live" : "off_air");
-  const diagramStops = route
-    ? scheduleRowsForRoute(route).map((r) => ({
-        id: r.id,
-        name: r.name,
-        state: isRunning
-          ? (van.stops.find((s) => s.id === r.id)?.state ?? "upcoming")
-          : ("upcoming" as const),
-      }))
-    : [];
-
-  const windows = found.windows.map((w) => formatTimeBand(w));
-
-  const siblings = getAreas().filter(
-    (a) => a.slug !== found.slug && a.routeId === found.routeId && found.routeId,
-  );
-  const elsewhere = getAreas().filter(
-    (a) => a.slug !== found.slug && a.serviceability !== "not_yet",
-  );
-
-  const faqItems = buildFaq(found, route ? shortRunDays(route.runDays) : null, windows);
+  const nextRunDay = route ? nextRunDayFor(route) : null;
+  const stopsHere = (route?.stops ?? []).filter((s) => s.area === area.name);
+  const vanLane = getLane("catch_the_van");
+  const deliveryLane = getLane("home_delivery");
 
   return (
     <>
       <JsonLd
-        path={path}
+        path={`/areas/${area.slug}`}
         crumbs={[
           { name: "Areas", path: "/areas" },
-          { name: found.name, path },
+          { name: area.name, path: `/areas/${area.slug}` },
         ]}
-        nodes={[bakeryLd([found.name]), faqLd(faqItems)]}
+        nodes={[bakeryLd([area.name])]}
       />
 
-      {/* 1 and 2 · The H1, then the answer immediately. */}
-      <Section surface="paper-50">
-        <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
-          <div className="lg:col-span-7">
-            <Kicker>{found.name} · Bengaluru {found.pincode}</Kicker>
-            <h1 className="mt-4 max-w-[16ch] font-display text-display-lg text-ink-800">
-              Japanese milk bread in {found.name}
-            </h1>
+      <section className="bg-paper pt-8 pb-10 lg:pt-10 lg:pb-12">
+        <div className="container-content">
+          <Link
+            href="/areas"
+            className="link-underline inline-flex min-h-11 items-center gap-2 text-body-sm font-semibold text-accent"
+          >
+            <ArrowLeft size={16} strokeWidth={1.5} aria-hidden="true" />
+            All areas
+          </Link>
 
-            <p
-              className={`mt-8 flex items-start gap-3 rounded-md p-4 text-body-lg ${
-                notYet ? "bg-paper-100" : vanOnly ? "bg-paper-200" : "bg-success-tint"
-              }`}
-            >
-              {notYet ? (
-                <MapPin
-                  size={20}
-                  strokeWidth={1.5}
-                  aria-hidden="true"
-                  className="mt-1.5 shrink-0 text-ink-500"
-                />
-              ) : vanOnly ? (
-                <Truck
-                  size={20}
-                  strokeWidth={1.5}
-                  aria-hidden="true"
-                  className="mt-1.5 shrink-0 text-ink-800"
-                />
-              ) : (
-                <Check
-                  size={20}
-                  strokeWidth={1.5}
-                  aria-hidden="true"
-                  className="mt-1.5 shrink-0 text-success"
-                />
-              )}
-              <span className="text-ink-800">{found.answer}</span>
+          <h1 className="mt-8 max-w-[16ch] text-display-2 text-ink">
+            Do we reach {area.name}?
+          </h1>
+        </div>
+      </section>
+
+      {/* -------- The answer, and the one thing to do about it ---------- */}
+      <section className="bg-paper pb-[var(--section-y)]">
+        <div className="container-content">
+          <div className="max-w-[var(--max-narrow)] rounded-xl border border-line bg-card p-6 sm:p-9">
+            <p className="text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
+              {notYet ? "Not yet" : vanOnly ? "The van only" : "Yes"}
+            </p>
+            <p className="mt-3 max-w-[24ch] font-display text-[clamp(26px,4.4vw,36px)] leading-[1.08] text-ink">
+              {area.answer}
             </p>
 
-            {!notYet && route ? (
+            {notYet ? (
+              <p className="mt-5 max-w-[52ch] text-body text-ink-2">
+                {area.waitlist
+                  ? `${area.waitlist.requests} people here have asked for it. We add a neighbourhood once enough of them have.`
+                  : "We add a neighbourhood once enough people here have asked for it."}
+              </p>
+            ) : (
               <>
-                <p className="mt-4 text-body text-ink-600">
-                  {found.deliveryFee !== null
-                    ? `Home delivery is ₹${found.deliveryFee}, free over ₹${found.freeOver}. Catching the van is free.`
-                    : "Catching the van is free. We don't bring it to doors here yet."}
-                </p>
-                <p className="micro mt-6 text-ink-500">{route.cutoffLabel}</p>
+                <dl className="mt-8 grid gap-6 border-t border-line pt-7 sm:grid-cols-2">
+                  <div>
+                    <dt className="text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
+                      Run days
+                    </dt>
+                    <dd className="mt-1.5 text-body text-ink">
+                      {area.runDaysLabel}
+                      {route ? `, from ${clockLabel(route.firstStopAt)}` : ""}
+                    </dd>
+                  </div>
 
-                <div className="mt-8 flex flex-wrap gap-3">
-                  <AreaCtaButton
-                    area={found.name}
-                    lane={found.lanes.includes("home_delivery") ? "home_delivery" : "catch_the_van"}
-                    stopId={stopsHere[0]?.id ?? null}
-                    label={`Order for ${found.name}`}
-                  />
-                  <ButtonLink href={`/van/${route.slug}`} variant="secondary" size="lg">
-                    See the full route
-                  </ButtonLink>
+                  <div>
+                    <dt className="text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
+                      Catch the van
+                    </dt>
+                    <dd className="mt-1.5 text-body text-ink">
+                      {vanLane?.priceLabel ?? "Free"} · we hold your order on board
+                    </dd>
+                  </div>
+
+                  <div>
+                    <dt className="text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
+                      Home delivery
+                    </dt>
+                    <dd className="mt-1.5 text-body text-ink">
+                      {vanOnly
+                        ? "Not here yet"
+                        : `${deliveryLane?.priceLabel ?? "₹49"} · free over ₹${deliveryLane?.freeOver ?? 499}`}
+                    </dd>
+                  </div>
+
+                  {!vanOnly && area.windows.length > 0 ? (
+                    <div>
+                      <dt className="text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
+                        Windows
+                      </dt>
+                      <dd className="mt-1.5 text-body text-ink">
+                        {area.windows.map(windowLabel).join(", ")}
+                      </dd>
+                    </div>
+                  ) : null}
+                </dl>
+
+                <div className="mt-9">
+                  <SetAreaButton
+                    area={area.name}
+                    status={served ? "served" : "no_run"}
+                    lane={served ? "home_delivery" : "catch_the_van"}
+                    size="lg"
+                  >
+                    Order for {nextRunDay ?? "the next run"}
+                  </SetAreaButton>
+                  <p className="mt-3 text-body-sm text-muted">
+                    {route?.cutoffLabel ?? "Order by 8pm the evening before a run"}.
+                  </p>
                 </div>
               </>
-            ) : null}
+            )}
           </div>
-
-          {/* The tracker widget: text first, map handed in as a child. */}
-          {route ? (
-            <div className="lg:col-span-5">
-              {isRunning ? (
-                // The van is on this route right now, so the widget can answer
-                // "where is it" — text first, the map handed in as a child.
-                <AreaVanPanel
-                  van={van}
-                  stops={diagramStops}
-                  parked={false}
-                  stopId={stopsHere[0]?.id ?? null}
-                  label={`A diagram of the ${route.name}, with the van on its way through ${found.name}.`}
-                />
-              ) : (
-                <>
-                  <p className="micro text-ink-500">Next run</p>
-                  <p className="mt-2 font-display text-display-sm text-ink-800">
-                    {found.nextRunLabel ?? route.runDaysLabel}
-                  </p>
-                  <p className="mt-2 text-body-sm text-ink-600">
-                    {route.name} · {route.runDaysLabel}, from {runStartLabel(route)}.
-                  </p>
-                  <MapPanel
-                    className="mt-6"
-                    caption="The route, drawn. The numbers match the stops listed below."
-                  >
-                    <RouteDiagram
-                      stops={diagramStops}
-                      parked
-                      label={`A diagram of the ${route.name}, with ${route.stops.length} stops in order.`}
-                    />
-                  </MapPanel>
-                </>
-              )}
-            </div>
-          ) : null}
         </div>
-      </Section>
+      </section>
 
-      {/* 3 · The stop, or the window. */}
-      {!notYet && route ? (
-        <Section surface="paper-100">
-          <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
-            <div className="lg:col-span-7">
-              <SectionHeader
-                as="h2"
-                kicker="Where to meet it"
-                heading={
-                  stopRows.length === 1 ? "The stop" : `Stops in ${found.name}`
-                }
-                meta={<p>{route.name}</p>}
-              />
-              <StopSchedule className="mt-8" stops={stopRows} grounded={!isRunning} />
-              {found.laneNote ? (
-                <p className="mt-6 max-w-[62ch] text-body-sm text-ink-600">
-                  Home delivery doesn&rsquo;t reach {found.name} yet. Catch the van
-                  instead — it&rsquo;s free.
-                </p>
-              ) : null}
-            </div>
-
-            <div className="lg:col-span-5">
-              <h2 className="micro text-kiln">Your two lanes</h2>
-              <AreaLanePicker
-                className="mt-6"
-                area={found.name}
-                lanes={found.lanes}
-                stopId={stopsHere[0]?.id ?? null}
-                detail={{
-                  catch_the_van: `${shortRunDays(route.runDays)} · ${
-                    stopsHere[0]?.name ?? route.stops[0]?.name
-                  } · from ${runStartLabel(route)}`,
-                  home_delivery: windows.length
-                    ? `${shortRunDays(route.runDays)} · ${found.name} · ${windows[0]}`
-                    : `${shortRunDays(route.runDays)} · ${found.name}`,
-                }}
-              />
-
-              {windows.length > 0 ? (
-                <>
-                  <h3 className="micro mt-10 text-ink-500">Delivery windows</h3>
-                  <ul className="mt-3 flex flex-wrap gap-2">
-                    {windows.map((w) => (
-                      <li key={w}>
-                        <Badge variant="outline" tabular>
-                          {w}
-                        </Badge>
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              ) : null}
-
-              {found.nextRunLabel ? (
-                <p className="mt-8 text-body-sm text-ink-600">
-                  Next run: {found.nextRunLabel}.
-                </p>
-              ) : null}
-            </div>
-          </div>
-        </Section>
-      ) : null}
-
-      {/* The waitlist — a lane, not an error. */}
-      {notYet ? (
-        <Section surface="paper-100">
-          <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
-            <div className="lg:col-span-7">
-              <WaitlistCapture
-                area={found.name}
-                requests={found.waitlist?.requests ?? null}
-                position={found.waitlist?.position ?? null}
-                thresholdTbc={Boolean(found.waitlist?.thresholdTbc)}
-              />
-              <p className="mt-6 max-w-[62ch] text-body-sm text-ink-600">
-                We plan routes by demand, so the count above is the whole
-                mechanism — not a marketing number. The founders drive by it.
-              </p>
-            </div>
-            <div className="lg:col-span-5">
-              <h2 className="micro text-kiln">Where the van does go</h2>
-              <ul className="mt-6 divide-y divide-paper-300 border-y border-y-paper-300">
-                {elsewhere.map((a) => (
-                  <li key={a.slug} className="flex flex-wrap items-baseline gap-x-4 gap-y-1 py-3">
-                    <Link
-                      href={`/areas/${a.slug}`}
-                      className="link-underline min-w-0 flex-1 basis-32 text-body text-ink-800"
-                    >
-                      {a.name}
-                    </Link>
-                    <span className="shrink-0 font-mono text-caption text-ink-500 tabular">
-                      {a.runDaysLabel ? shortRunDaysFromLabel(a) : "—"}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-8">
-                <ButtonLink href="/van" variant="secondary" size="md">
-                  See this week&rsquo;s runs
-                </ButtonLink>
-              </div>
-            </div>
-          </div>
-        </Section>
-      ) : null}
-
-      {/* 5 · This week's menu for this route. */}
-      {!notYet ? (
-        <Section surface="paper-50">
-          <SectionHeader
-            as="h2"
-            kicker="This week"
-            heading={`What comes to ${found.name}`}
-            lead="The van loads what the kitchen bakes that morning. Sold out stays on the list."
-          />
-          <OnBoardList
-            className="mt-10"
-            items={live.onBoard}
-            grounded={!isRunning}
-            cutoffLine={route?.cutoffLabel}
-          />
-          <div className="mt-10">
-            <ButtonLink href="/shop" size="md">
-              See this week&rsquo;s bake
-            </ButtonLink>
-          </div>
-        </Section>
-      ) : null}
-
-      <Section surface="paper-100">
-        <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
-          <div className="lg:col-span-7">
-            <SectionHeader as="h2" kicker="Asked here" heading={`${found.name} questions`} />
-            <Faq className="mt-8" items={faqItems} />
-          </div>
-
-          {/* 8 · The other areas on this route — what makes the cluster work. */}
-          <div className="lg:col-span-5">
-            <h2 className="micro text-kiln">
-              {siblings.length > 0 ? "Also on this route" : "Other areas"}
+      {/* -------- Where it actually stops ------------------------------- */}
+      {stopsHere.length > 0 && route ? (
+        <section
+          data-reveal
+          className="border-y border-line bg-paper-2 py-[var(--section-y)]"
+        >
+          <div className="container-content">
+            <p className="text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
+              {route.name}
+            </p>
+            <h2 className="mt-3 max-w-[18ch] text-h2 text-ink">
+              Where it pulls up in {area.name}.
             </h2>
-            <ul className="mt-6 divide-y divide-paper-300 border-y border-y-paper-300">
-              {(siblings.length > 0 ? siblings : elsewhere).map((a) => (
-                <li key={a.slug} className="flex flex-wrap items-baseline gap-x-4 gap-y-1 py-3">
-                  <Link
-                    href={`/areas/${a.slug}`}
-                    className="link-underline min-w-0 flex-1 basis-32 text-body text-ink-800"
-                  >
-                    {a.name}
-                  </Link>
-                  <span className="shrink-0 font-mono text-caption text-ink-500 tabular">
-                    {a.pincode}
+
+            <ul className="mt-8 max-w-[var(--max-narrow)] divide-y divide-line border-y border-line">
+              {stopsHere.map((stop) => (
+                <li
+                  key={stop.id}
+                  className="flex flex-col gap-1 py-5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-8"
+                >
+                  <span className="min-w-0">
+                    <span className="block font-display text-[21px] leading-tight text-ink">
+                      {stop.name}
+                    </span>
+                    <span className="mt-0.5 block text-body-sm text-muted">
+                      {stop.descriptor}
+                    </span>
+                  </span>
+                  <span className="shrink-0 text-body-sm text-ink-2 tabular">
+                    {stop.bandLabel}
                   </span>
                 </li>
               ))}
             </ul>
-            {route ? (
-              <div className="mt-8">
-                <ButtonLink href={`/van/${route.slug}`} variant="ghost" size="md">
-                  {route.name} →
-                </ButtonLink>
-              </div>
-            ) : null}
-          </div>
-        </div>
-      </Section>
 
-      <Section surface="paper-50">
-        <NotifyRow area={found.name} />
-      </Section>
+            <Link
+              href={`/van/${route.slug}`}
+              className="link-underline mt-6 inline-flex min-h-11 items-center gap-2 text-body-sm font-semibold text-accent"
+            >
+              See the whole route
+              <ArrowRight size={16} strokeWidth={1.5} aria-hidden="true" />
+            </Link>
+          </div>
+        </section>
+      ) : null}
+
+      {/* -------- Not yet: the only thing left to do -------------------- */}
+      {notYet ? (
+        <section data-reveal className="bg-paper pb-[var(--section-y)]">
+          <div className="container-content">
+            <NotifyWhatsApp
+              className="max-w-[var(--max-narrow)]"
+              heading={`We will tell you the week we reach ${area.name}.`}
+              body="One WhatsApp, once, when the route opens. Nothing before that."
+              cta="Tell me"
+              confirmSuffix={`the week we reach ${area.name}`}
+            />
+          </div>
+        </section>
+      ) : null}
     </>
   );
-}
-
-/** The run-day summary for a sibling area, without re-deriving its route. */
-function shortRunDaysFromLabel(area: Area): string {
-  const route = area.routeId ? getRoute(area.routeId) : undefined;
-  return route ? shortRunDays(route.runDays) : "—";
-}
-
-/** Every answer is derived from the fixture — nothing here is written twice. */
-function buildFaq(
-  area: Area,
-  runDays: string | null,
-  windows: string[],
-): { question: string; answer: string }[] {
-  if (area.serviceability === "not_yet") {
-    return [
-      {
-        question: `Do you deliver to ${area.name}?`,
-        answer: `Not yet. The van hasn't reached ${area.name}. We add stops where enough people ask, so the waitlist above is the fastest way to change that.`,
-      },
-      {
-        question: "How do you decide where to go next?",
-        answer:
-          "By demand. Every request is counted against the area, and when an area has enough of them it becomes a run. The founders have not fixed the threshold yet.",
-      },
-      {
-        question: "Can I still buy bread?",
-        answer:
-          "Yes, at any stop on any route. You do not need an order to buy at the hatch — walk up and buy what is on board.",
-      },
-    ];
-  }
-
-  const lanes =
-    area.deliveryFee !== null
-      ? `Both: catch the van at a stop for free, or home delivery for ₹${area.deliveryFee}, free over ₹${area.freeOver}.`
-      : "Catch the van at a stop. It is free, and we do not bring it to doors here yet.";
-
-  return [
-    {
-      question: `Do you deliver to ${area.name}?`,
-      answer: `${area.answer} ${lanes}`,
-    },
-    {
-      question: `When does the van come to ${area.name}?`,
-      answer: `${area.runDaysLabel ?? runDays ?? "On its route days"}.${
-        windows.length ? ` Delivery windows are ${windows.join(", ")}.` : ""
-      } The van stays at a stop until the racks are empty.`,
-    },
-    {
-      question: "When do orders close?",
-      answer:
-        "8pm the evening before a run. After that the dough is in and the van is loaded to the order list.",
-    },
-  ];
 }

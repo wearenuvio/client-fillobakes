@@ -1,17 +1,18 @@
 import { COMMERCE, CONTACT } from "@/lib/config";
 
 /**
- * The fifteen questions — site-content.md, Page: FAQ.
+ * The questions — PAGES-v2 FAQ, sourced from src-content/site-content.md.
  *
- * One array, three groups, used twice: the accordion renders it and
- * `faqLd()` serialises the identical strings into FAQPage JSON-LD, so the
- * markup and the page can never disagree. That is why every answer is a plain
- * string with an optional link beside it rather than free JSX.
+ * One array, four groups, used twice: the accordion renders it and `faqLd()`
+ * serialises the identical strings into FAQPage JSON-LD, so the rich result
+ * can never describe a page that no longer says that. Which is why every
+ * answer is a plain string with an optional link beside it rather than JSX.
  *
- * The FAQ is one of the few places the voice allows humour (voice rule 1:
- * humour where they are bored, plainness where they pay). Every TBC in the
- * source copy is answered honestly here — we say what is not settled instead
- * of rounding it into a confident number (DECISIONS §10).
+ * Every number here is live from `COMMERCE`. Nothing hedges: DESIGN-v2 §4
+ * forbids a "still being confirmed" string from reaching a customer, so where
+ * a figure was open it is now stated at the agreed default, and where a fact
+ * is genuinely unmeasured — how long bread keeps in a Bengaluru June, how
+ * long a rider waits — the sentence is written so it does not need a number.
  */
 
 export type QA = {
@@ -24,13 +25,36 @@ export type QaGroup = { id: string; title: string; items: QA[] };
 
 export const FAQ_GROUPS: QaGroup[] = [
   {
+    id: "ordering",
+    title: "Ordering",
+    items: [
+      {
+        question: "How late can I order?",
+        answer:
+          "8pm the evening before a run. Order by Thursday 8pm for Saturday's run, because that is when the dough goes in. Past it, the next available run is pre-selected for you, and the closed date stays visible with the rule beside it rather than disappearing.",
+      },
+      {
+        question: "How do I pay?",
+        answer:
+          "UPI first, then cards, netbanking and wallets, all through Razorpay. We never see or store your card details. Cash at the door is available on a first order for a small surcharge, shown before you commit.",
+        link: { href: "/policies/payment", label: "Payment and security" },
+      },
+      {
+        question: "Can I get a refund?",
+        answer:
+          "Everything is baked for the day it is made, so we cannot take returns. If a box arrives damaged, wrong, or genuinely not right, message us within 24 hours with a photo and we will sort it. Every time. Refunds go back through Razorpay and take 7 to 10 working days, which is the bank's pace rather than ours.",
+        link: { href: "/policies/refund", label: "The refunds policy" },
+      },
+    ],
+  },
+  {
     id: "delivery-and-the-van",
     title: "Delivery and the van",
     items: [
       {
         question: "Do you deliver to my area?",
         answer:
-          "Set your area in the chip at the top of any page. If we reach you, it shows your route days, your windows and the delivery fee before you add anything to a box. If we don't, leave your number — we plan routes by demand, and a cluster of requests in one place is the thing that moves the van.",
+          "Set your area in the cart and we will tell you the route days, the windows and the fee before you pay for anything. If we do not reach you yet, leave your number. We plan routes by demand, and a cluster of requests in one place is the thing that moves the van.",
         link: { href: "/areas", label: "Check your area" },
       },
       {
@@ -40,30 +64,25 @@ export const FAQ_GROUPS: QaGroup[] = [
         link: { href: "/van", label: "See where the van is" },
       },
       {
-        question: "Can I just walk up to the van?",
-        answer:
-          "Yes. If it's on your street you don't need an order. Come to the hatch and buy what's there. UPI and card both work. What's on board is what's on board, and the popular things go early.",
-      },
-      {
         question: "When does the van come to me?",
         answer:
-          "Each route has its own run days, and your area decides your route. Set your area once and the header carries it from then on: place, mode, next slot. Some routes run three times a week, one runs daily. On the days your route isn't running, the schedule is the thing to look at, not the map.",
+          "Each route has its own run days, and your area decides your route. Some routes run three times a week, one runs daily. On the days your route is not running, the schedule is the thing to look at rather than the map.",
         link: { href: "/van", label: "The run schedule" },
       },
       {
-        question: "How late can I order?",
-        answer:
-          "8pm the evening before a run. Order by Thursday 8pm for Saturday's run. That is when the dough goes in. The exact hour is still being confirmed with the kitchen, so treat 8pm as the working rule rather than a contract. Past it, the next available run is pre-selected for you and the closed date is shown greyed with the rule beside it, not hidden.",
-      },
-      {
         question: "What does delivery cost?",
-        answer: `Two lanes. Catching the van at a stop is free. Home delivery is ₹${COMMERCE.deliveryFee}, free over ₹${COMMERCE.freeDeliveryThreshold} — that threshold is the one number on this page the founders have not signed off yet. The fee is inside the total from the first screen. If the number on the button ever differs from the number you're charged, tell us — that's a bug, not a policy.`,
+        answer: `Two lanes. Catching the van at a stop is free. Home delivery is ₹${COMMERCE.deliveryFee}, and free over ₹${COMMERCE.freeDeliveryThreshold}. The fee is inside the total from the first screen, never added afterwards. If the number on the button ever differs from the number you are charged, tell us. That is a bug, not a policy.`,
         link: { href: "/policies/shipping", label: "The delivery policy" },
       },
       {
-        question: "What if I'm not home?",
+        question: "Can I just walk up to the van?",
         answer:
-          "We call once and wait. How long we wait is not a number we have measured yet, so we are not going to print one. You can tell us at checkout where to leave it. Bread left outside in Bengaluru in June is bread we wouldn't want to eat, so we'd rather you picked a window when someone's in.",
+          "Yes. If it is on your street you do not need an order. Come to the hatch and buy what is there. UPI and card both work. What is on board is what is on board, and the popular things go early.",
+      },
+      {
+        question: "What if I am not home?",
+        answer:
+          "We call once and wait. You can tell us at checkout where to leave it. Bread left outside in Bengaluru in June is bread we would not want to eat, so we would rather you picked a window when someone is in.",
       },
     ],
   },
@@ -80,46 +99,46 @@ export const FAQ_GROUPS: QaGroup[] = [
       {
         question: "Is it vegan?",
         answer:
-          "No. The breads and most of the fillings contain dairy — milk and butter are what make a milk bread a milk bread. Eggless and vegetarian, not vegan.",
+          "No. The breads and most of the fillings contain dairy, because milk and butter are what make a milk bread a milk bread. Eggless and vegetarian, not vegan.",
       },
       {
         question: "What about nuts?",
         answer:
-          "Pistachio An Pan contains pistachio. Every product page carries a fixed allergen block with three lines: what it contains, what it does not, and what else the kitchen handles. That third line is not published yet — we will not describe a shared kitchen until the founders have confirmed exactly what shares it.",
+          "Pistachio An Pan contains pistachio. Every product page lists what that bake contains and what it does not, so you can check before you order rather than after.",
       },
       {
         question: "How long does it keep?",
         answer:
-          "We do not have a tested answer per format in Bengaluru conditions yet, and a guess about food safety is worse than a gap. The short version we can already say: bread is best on day one, good on day two, and excellent as French toast on day three.",
+          "Bread is best on the day it arrives, good the next day, and excellent as French toast the day after that. Keep it wrapped at room temperature rather than in the fridge, which dries a milk loaf faster than the counter does.",
         link: { href: "/guides/how-to-store-shokupan", label: "How to keep milk bread" },
       },
       {
         question: "Do you use preservatives?",
         answer:
-          "No. That's also why the answer to the previous question is measured in days, not weeks.",
+          "No. That is also why the answer to the previous question is measured in days rather than weeks.",
       },
     ],
   },
   {
-    id: "money",
-    title: "Money",
+    id: "standing-order-and-fillo-plus",
+    title: "Standing Order and Fillo+",
     items: [
-      {
-        question: "How do I pay?",
-        answer:
-          "UPI first, then cards, netbanking and wallets, all through Razorpay. We never see or store your card details. Cash at the door is available on a first order for a small surcharge and only under a cap — both figures are still being confirmed, so the checkout will tell you the real ones before you commit. Prepaid keeps the van light.",
-        link: { href: "/policies/payment", label: "Payment and security" },
-      },
-      {
-        question: "Can I get a refund?",
-        answer:
-          "Everything is baked for the day it's made, so we can't take returns. But if a box arrives damaged, wrong, or genuinely not right, message us within 24 hours with a photo and we'll sort it. Every time. Refunds go back through Razorpay and take 7 to 10 working days, which is the bank's pace, not ours.",
-        link: { href: "/policies/refund", label: "The refunds policy" },
-      },
       {
         question: "What is Fillo+, and is it the same as the Standing Order?",
         answer: `No. Fillo+ is a free membership tied to your phone number. It earns you ${COMMERCE.coinsPerHundred} coins per ₹${COMMERCE.coinsBasis} spent, and ${COMMERCE.coinsRedeemThreshold} coins is ₹${COMMERCE.coinsRedeemValue} off. The Standing Order is a weekly bread subscription that rides your route's run. It earns coins too. You can have either, or both.`,
         link: { href: "/fillo-plus", label: "What Fillo+ is" },
+      },
+      {
+        question: "Can I skip a week?",
+        answer:
+          "Yes, until 8pm the evening before the run. You are not charged for a skipped week, and the one after it is unaffected.",
+        link: { href: "/account/subscription", label: "Manage your standing order" },
+      },
+      {
+        question: "How do I cancel a standing order?",
+        answer:
+          "One tap, from your account. No phone call. Your last delivery is the one already in the plan, and you keep your coins. If it is a break rather than an ending, pause it instead and nothing is charged while you are away.",
+        link: { href: "/standing-order", label: "How the Standing Order works" },
       },
     ],
   },
@@ -138,7 +157,7 @@ export const SHOKUPAN_FAQ: QA[] = [
   {
     question: "Is your shokupan eggless?",
     answer:
-      "Yes, and so is everything else we bake. Egg is usually what gives a milk loaf its softness, so removing it meant finding that softness somewhere else — in hydration and in time.",
+      "Yes, and so is everything else we bake. Egg is usually what gives a milk loaf its softness, so removing it meant finding that softness somewhere else, in hydration and in time.",
     link: { href: "/journal/why-eggless", label: "Why eggless" },
   },
   {
@@ -150,13 +169,13 @@ export const SHOKUPAN_FAQ: QA[] = [
   {
     question: "How should I eat it?",
     answer:
-      "Tear it, don't slice it — it gives up in soft sheets. On day two, toast it. On day three, French toast. It holds a shape under butter, jam or a sandwich filling without going to pieces, which is the whole point of the loaf.",
+      "Tear it, do not slice it. It gives up in soft sheets. On day two, toast it. On day three, French toast. It holds a shape under butter, jam or a sandwich filling without going to pieces, which is the whole point of the loaf.",
     link: { href: "/guides/how-to-store-shokupan", label: "How to keep it" },
   },
 ];
 
 export const FAQ_FOOT = {
-  heading: "Still stuck?",
-  body: "If the answer isn't here, WhatsApp us. We reply faster than we update this page.",
+  heading: "Still wondering?",
+  body: "If the answer is not here, message us. We reply faster than we update this page.",
   whatsapp: CONTACT.phone,
 } as const;

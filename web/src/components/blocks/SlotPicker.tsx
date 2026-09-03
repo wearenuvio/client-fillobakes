@@ -1,28 +1,26 @@
 "use client";
 
-import { Check, Clock } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { slotChipParts, formatTimeBandShort } from "@/lib/format";
 
 /**
- * SlotPicker — DESIGN.md §12.8. The checkout's most important control.
+ * SlotPicker — PAGES-v2 checkout block 3.
  *
- * Two rows of chips: dates on a snapping scroll rail, then time bands in a
- * 2-col (mobile) / 4-col (desktop) grid.
+ * A rail of date chips, then the windows for the chosen day. A day that
+ * cannot take an order is not hidden and is not crossed out: it stays in the
+ * rail, greyed, with the reason set in small type directly beneath it, so the
+ * rule is legible rather than mysterious.
  *
- * The cut-off rule is stated, not implied: a day whose 8pm cut-off has passed
- * renders unavailable with the rule spelled out, and a same-day band closing
- * within 60 minutes raises the warning bar above the time row. There is never
- * a countdown — DECISIONS.md §5 allows a timer only when it is wired to a real
- * constraint, and this one is a date, not a clock.
+ * On the van lane there is only ever one window — the stop's own band — so
+ * the row renders a single wide chip rather than a grid of four with three
+ * dead cells.
  */
 
 export type SlotDate = {
   /** ISO date, e.g. "2026-10-03". */
   date: string;
   available: boolean;
-  isToday?: boolean;
-  /** Stated when unavailable: "Closed 8pm Thursday". */
+  /** Set under a disabled chip: "Orders closed" or "No run". */
   reason?: string;
 };
 
@@ -30,8 +28,6 @@ export type SlotBand = {
   /** 24h band, e.g. "16:00-18:00". */
   band: string;
   available: boolean;
-  /** Renders "n LEFT" under the label in warning ink. */
-  left?: number | null;
 };
 
 export function SlotPicker({
@@ -41,10 +37,8 @@ export function SlotPicker({
   selectedBand,
   onSelectDate,
   onSelectBand,
-  /** "Orders close Thursday 8pm" — shown once, in body colour, as a fact. */
-  cutoffNote,
-  /** Raises the warning bar above the time row (§12.8). */
-  cutoffWarning,
+  /** "Order by 8pm for next-day delivery." — one line, stated once. */
+  note,
   className,
 }: {
   dates: SlotDate[];
@@ -53,87 +47,83 @@ export function SlotPicker({
   selectedBand: string | null;
   onSelectDate: (date: string) => void;
   onSelectBand: (band: string) => void;
-  cutoffNote?: React.ReactNode;
-  cutoffWarning?: React.ReactNode;
+  note?: React.ReactNode;
   className?: string;
 }) {
+  const single = bands.length === 1;
+
   return (
     <div className={className}>
-      {/* -------- Date chips ------------------------------------------- */}
+      {/* -------- Days ------------------------------------------------- */}
       <div
         role="radiogroup"
         aria-label="Choose a day"
-        className="scroll-rail -mx-[var(--gutter)] gap-2 px-[var(--gutter)] py-1"
+        className="scroll-rail -mx-[var(--gutter)] gap-2.5 px-[var(--gutter)] pt-1 pb-2"
       >
         {dates.map((slot) => {
           const parts = slotChipParts(slot.date);
           const selected = slot.date === selectedDate;
           return (
-            <button
-              key={slot.date}
-              type="button"
-              role="radio"
-              aria-checked={selected}
-              aria-disabled={!slot.available || undefined}
-              tabIndex={!slot.available ? -1 : selected || !selectedDate ? 0 : -1}
-              onClick={() => slot.available && onSelectDate(slot.date)}
-              title={!slot.available ? slot.reason : undefined}
-              className={cn(
-                "relative flex h-19 w-16 flex-col items-center justify-center gap-0.5 rounded-sm",
-                "transition-colors duration-[var(--dur-fast)]",
-                selected
-                  ? "border-0 bg-ink-800 text-paper-0"
-                  : slot.available
-                    ? "border border-paper-300 bg-paper-0 text-ink-800 hover:border-ink-600"
-                    : "border border-paper-300 bg-paper-200 text-ink-400",
-              )}
-            >
-              <span className="nano">
-                {slot.isToday ? (
-                  <span className={selected ? "text-crumb" : "text-kiln"}>TODAY</span>
-                ) : (
-                  parts.weekday
+            <div key={slot.date} className="flex w-17 flex-col items-center">
+              <button
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                aria-disabled={!slot.available || undefined}
+                tabIndex={!slot.available ? -1 : selected || !selectedDate ? 0 : -1}
+                onClick={() => slot.available && onSelectDate(slot.date)}
+                className={cn(
+                  "flex h-20 w-17 flex-col items-center justify-center gap-0.5 rounded-lg border",
+                  "transition-[border-color,background-color,transform] duration-[var(--dur-fast)]",
+                  selected
+                    ? "border-accent bg-accent text-on-accent"
+                    : slot.available
+                      ? "border-line bg-card text-ink hover:border-ink"
+                      : "cursor-not-allowed border-line bg-paper-2 text-muted",
                 )}
-              </span>
-              <span className="font-display text-title-lg tabular">{parts.day}</span>
-              <span className="nano">{parts.month}</span>
-
-              {selected ? (
-                <Check
-                  size={16}
-                  strokeWidth={1.5}
-                  aria-hidden="true"
-                  className="absolute top-1 right-1"
-                />
-              ) : null}
-              {!slot.available ? (
+              >
                 <span
-                  aria-hidden="true"
-                  className="absolute inset-0 bg-[linear-gradient(to_top_right,transparent_calc(50%-0.5px),var(--color-paper-400)_50%,transparent_calc(50%+0.5px))]"
-                />
-              ) : null}
-            </button>
+                  className={cn(
+                    "text-[11px] font-medium tracking-[0.12em] uppercase",
+                    selected ? "text-on-accent/80" : "text-muted",
+                  )}
+                >
+                  {parts.weekday}
+                </span>
+                <span className="font-display text-[22px] leading-none tabular">
+                  {parts.day}
+                </span>
+                <span
+                  className={cn(
+                    "text-[11px] font-medium tracking-[0.12em] uppercase",
+                    selected ? "text-on-accent/80" : "text-muted",
+                  )}
+                >
+                  {parts.month}
+                </span>
+              </button>
+              {/* The reason sits under the chip, never inside it. The wrapper
+                  holds two lines' height whether or not it has any, so every
+                  chip in the rail keeps the same baseline. */}
+              <span className="mt-1.5 h-8 text-center text-[11px] leading-4 text-balance text-muted">
+                {!slot.available ? slot.reason : null}
+              </span>
+            </div>
           );
         })}
       </div>
 
-      {/* -------- Cut-off notice, above the time row -------------------- */}
-      {cutoffWarning ? (
-        <p className="mt-4 flex items-center gap-2 rounded-sm bg-warning-tint px-3 py-2 text-body-sm text-warning">
-          <Clock size={16} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
-          {cutoffWarning}
-        </p>
-      ) : null}
-
-      {/* -------- Time bands -------------------------------------------- */}
+      {/* -------- Windows ---------------------------------------------- */}
       <div
         role="radiogroup"
         aria-label="Choose a window"
-        className="mt-4 grid grid-cols-2 gap-2 md:grid-cols-4"
+        className={cn(
+          "mt-4 grid gap-2.5",
+          single ? "grid-cols-1" : "grid-cols-2 md:grid-cols-4",
+        )}
       >
         {bands.map((slot) => {
           const selected = slot.band === selectedBand;
-          const low = typeof slot.left === "number" && slot.left > 0 && slot.left <= 3;
           return (
             <button
               key={slot.band}
@@ -144,35 +134,27 @@ export function SlotPicker({
               tabIndex={!slot.available ? -1 : selected || !selectedBand ? 0 : -1}
               onClick={() => slot.available && onSelectBand(slot.band)}
               className={cn(
-                "relative flex min-h-11 flex-col items-center justify-center rounded-sm px-2 py-2",
-                "transition-colors duration-[var(--dur-fast)]",
+                "flex min-h-12 items-center justify-center rounded-md border px-3 text-body-sm",
+                "transition-[border-color,background-color] duration-[var(--dur-fast)]",
                 selected
-                  ? "border-0 bg-ink-800 text-paper-0"
+                  ? "border-accent bg-accent text-on-accent"
                   : slot.available
-                    ? "border border-paper-300 bg-paper-0 text-ink-800 hover:border-ink-600"
-                    : "border border-paper-300 bg-paper-200 text-ink-400",
+                    ? "border-line bg-card text-ink hover:border-ink"
+                    : "cursor-not-allowed border-line bg-paper-2 text-muted",
               )}
             >
-              <span className="text-body-sm tabular">{formatTimeBandShort(slot.band)}</span>
-              {low && slot.available ? (
-                <span className={cn("nano", selected ? "text-crumb" : "text-warning")}>
-                  {slot.left} LEFT
-                </span>
-              ) : null}
+              <span className="tabular">{formatTimeBandShort(slot.band)}</span>
               {!slot.available ? (
-                <span
-                  aria-hidden="true"
-                  className="absolute inset-0 bg-[linear-gradient(to_top_right,transparent_calc(50%-0.5px),var(--color-paper-400)_50%,transparent_calc(50%+0.5px))]"
-                />
+                <span className="ml-2 text-[11px] tracking-[0.08em] uppercase">
+                  Full
+                </span>
               ) : null}
             </button>
           );
         })}
       </div>
 
-      {cutoffNote ? (
-        <p className="mt-4 text-caption text-ink-500">{cutoffNote}</p>
-      ) : null}
+      {note ? <p className="mt-4 text-body-sm text-muted">{note}</p> : null}
     </div>
   );
 }

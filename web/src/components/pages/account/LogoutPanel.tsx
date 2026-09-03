@@ -23,18 +23,18 @@ export function LogoutPanel() {
 
   return (
     <>
-      <h1 className="mt-4 text-display-lg text-ink-800">
+      <h1 className="text-display-2 text-ink">
         {signedOut ? "Signed out" : "Sign out"}
       </h1>
 
       <Panel className="mt-10 max-w-[var(--max-narrow)]">
         {signedOut ? (
           <>
-            <p className="flex items-center gap-2 text-body text-ink-800">
+            <p className="flex items-center gap-2 text-body text-ink">
               <Check size={20} strokeWidth={1.5} className="text-success" aria-hidden="true" />
               You&rsquo;re signed out.
             </p>
-            <p className="mt-2 text-body-sm text-ink-600">
+            <p className="mt-2 text-body-sm text-ink-2">
               Your area and your slot are still set, so the van still knows where to
               meet you.
             </p>
@@ -47,8 +47,8 @@ export function LogoutPanel() {
           </>
         ) : (
           <>
-            <p className="text-body text-ink-800">Sign out of this browser?</p>
-            <p className="mt-2 text-body-sm text-ink-600">
+            <p className="text-body text-ink">Sign out of this browser?</p>
+            <p className="mt-2 text-body-sm text-ink-2">
               Your orders, coins and standing order stay on your number. Your area
               stays set too.
             </p>

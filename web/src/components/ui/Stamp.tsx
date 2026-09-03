@@ -1,12 +1,24 @@
+import Image from "next/image";
 import { cn } from "@/lib/cn";
 
 /**
  * Seal — DESIGN-v2 §2. The brand device, and the only circle in the system.
  *
- * 88px round, a 1.5px ink hairline, two lines of 10px caps inside, a wheat
- * line mark between them, tilted −8° so it reads as pressed on rather than
- * placed. Used once on the home hero and once on a product page. Never twice
- * in one viewport, never over the busy part of a photograph.
+ * The ring is now the drawn one: `stamp-ring.png`, a double hairline with four
+ * wheat ears at the quarters, from the hand-drawn set. The two lines of caps
+ * are set in HTML inside its empty centre — real text, so it is selectable,
+ * translatable and crisp at any pixel ratio — and the whole thing is tilted −8°
+ * so it reads as pressed on rather than placed.
+ *
+ * Sizing: the drawn ring eats roughly a quarter of the diameter, so the usable
+ * chord across the middle is about 62% of the width. The type is therefore
+ * scaled off `size` rather than fixed, which keeps a longer claim inside the
+ * ring instead of spilling over it. That also means the seal wants a little
+ * more room than the 88px the spec assumed for a plain CSS circle — 112px on
+ * the hero, 96px inset into a product well.
+ *
+ * Used once on the home hero and once on a product page. Never twice in one
+ * viewport, never over the busy part of a photograph.
  *
  * `RingSeal` keeps its name and its API for the routes that still import it,
  * but it is now the same object drawn with its text on a circular path.
@@ -14,20 +26,23 @@ import { cn } from "@/lib/cn";
 
 export function Stamp({
   lines = ["100% eggless", "baked daily"],
-  size = 88,
+  size = 112,
   tone = "ink",
   className,
 }: {
   /** Two short lines. The seal is not a sentence. */
   lines?: [string, string] | string[];
-  /** 88px on a hero, 64px inset into a product well. */
+  /** 112px on a hero, 96px inset into a product well. */
   size?: number;
   tone?: "ink" | "on-choc";
   className?: string;
 }) {
-  const small = size <= 68;
   const ink = tone === "on-choc" ? "text-on-choc" : "text-ink";
-  const rule = tone === "on-choc" ? "bg-on-choc/40" : "bg-ink/25";
+  const rule = tone === "on-choc" ? "bg-on-choc/45" : "bg-ink/30";
+  const src =
+    tone === "on-choc"
+      ? "/images/lineart/stamp-ring-light.png"
+      : "/images/lineart/stamp-ring.png";
 
   return (
     <span
@@ -35,38 +50,38 @@ export function Stamp({
       aria-label={lines.join(", ")}
       style={{ width: size, height: size }}
       className={cn(
-        "inline-grid shrink-0 -rotate-8 place-items-center rounded-pill",
-        "border-[1.5px] border-current",
+        "relative inline-grid shrink-0 -rotate-8 place-items-center",
         ink,
         className,
       )}
     >
-      <span className="flex flex-col items-center gap-1 px-2 text-center">
+      <Image
+        src={src}
+        alt=""
+        aria-hidden="true"
+        width={1187}
+        height={1189}
+        sizes={`${size}px`}
+        draggable={false}
+        className="pointer-events-none absolute inset-0 size-full select-none"
+      />
+
+      <span
+        className="relative flex flex-col items-center gap-[0.35em] text-center uppercase"
+        style={{
+          width: size * 0.62,
+          fontSize: size * 0.078,
+          lineHeight: 1.15,
+          letterSpacing: "0.05em",
+        }}
+      >
+        <span>{lines[0]}</span>
         <span
-          className={cn(
-            "uppercase",
-            small
-              ? "text-[8px] leading-[1.25] tracking-[0.1em]"
-              : "text-[10px] leading-[1.25] tracking-[0.11em]",
-          )}
-        >
-          {lines[0]}
-        </span>
-        <span aria-hidden="true" className="flex items-center gap-1">
-          <span className={cn("h-px w-3", rule)} />
-          <WheatMark size={small ? 9 : 11} />
-          <span className={cn("h-px w-3", rule)} />
-        </span>
-        <span
-          className={cn(
-            "uppercase",
-            small
-              ? "text-[8px] leading-[1.25] tracking-[0.1em]"
-              : "text-[10px] leading-[1.25] tracking-[0.11em]",
-          )}
-        >
-          {lines[1]}
-        </span>
+          aria-hidden="true"
+          className={cn("h-px w-[1.6em]", rule)}
+          style={{ opacity: 0.9 }}
+        />
+        <span>{lines[1]}</span>
       </span>
     </span>
   );

@@ -2,14 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { buildMetadata, JsonLd, articleLd } from "@/lib/seo";
-import { Section } from "@/components/blocks/Section";
-import { Rule } from "@/components/ui/Rule";
-import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/Button";
 import { ArticleHeader } from "@/components/pages/content/ArticleHeader";
 import { Prose } from "@/components/pages/content/Prose";
 import { EditorialImage } from "@/components/pages/content/EditorialImage";
 import { RelatedProducts } from "@/components/pages/content/RelatedProducts";
+import { ContentSection, Eyebrow } from "@/components/pages/content/PageShell";
 import { GUIDE_BODIES } from "@/components/pages/content/guide-bodies";
 import { getGuide, getGuides } from "@/lib/content";
 
@@ -25,12 +23,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 }
 
 /**
- * A guide — site-content.md, Section: Guides.
- *
- * Long-form at `--max-prose`, one photograph, and the SKUs the guide explains
- * underneath it. Guides are undated and maintained, which the meta row says
- * out loud, because the difference from a journal post is the entire reason
- * these are two sections and not one.
+ * A guide — undated and maintained, which is the entire reason guides and the
+ * journal are two sections rather than one. The meta row says so out loud.
  */
 export default async function GuidePage({ params }: Params) {
   const { slug } = await params;
@@ -55,79 +49,68 @@ export default async function GuidePage({ params }: Params) {
         ]}
       />
 
-      <Section surface="paper-50" size="none" className="pt-[var(--section-y)] pb-[calc(var(--section-y)/2)]">
+      <ContentSection surface="paper" size="none" className="pt-10 pb-8 lg:pt-14">
         <ArticleHeader
           kicker="Guide"
           title={guide.h1}
           standfirst={body.standfirst}
           backHref="/guides"
           backLabel="All guides"
-          meta={[
-            body.state === "maintained" ? "Undated · maintained" : "Undated · part-published",
-            "Fillo Bakes, Bengaluru",
-          ]}
+          meta={["Undated, kept up to date", "Fillo Bakes, Bengaluru"]}
         />
+      </ContentSection>
 
-        {body.state === "part-published" && body.stateNote ? (
-          <div className="mt-10 max-w-[var(--max-narrow)] border-y border-y-paper-300 py-5">
-            <Badge variant="warning">Part-published</Badge>
-            <p className="mt-3 max-w-[62ch] text-body-sm text-ink-600">
-              {body.stateNote}
-            </p>
-          </div>
-        ) : null}
-      </Section>
-
-      <Section surface="paper-50" size="half">
-        <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
-          <div className="lg:col-span-7">
-            <Prose>{body.body}</Prose>
-
-            <Rule tone="strong" className="mt-16" />
-            <p className="micro mt-6 text-ink-500">Read next</p>
-            <ul className="mt-3 space-y-1">
+      <ContentSection surface="paper" size="half">
+        <div className="grid gap-12 lg:grid-cols-12 lg:gap-14">
+          {/* The rail mirrors the policies' contents column, so the library
+              and the small print are visibly the same object. */}
+          <nav
+            aria-label="Read next"
+            className="order-2 lg:order-1 lg:col-span-4 lg:sticky lg:top-24 lg:self-start"
+          >
+            <Eyebrow>Read next</Eyebrow>
+            <ul className="mt-4 divide-y divide-line border-y border-line">
               {body.related.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="link-underline inline-flex min-h-11 items-center text-body text-kiln"
+                    className="link-underline flex min-h-11 items-center py-2 text-body-sm font-medium text-accent"
                   >
                     {item.label}
                   </Link>
                 </li>
               ))}
             </ul>
-          </div>
+          </nav>
 
-          <aside className="lg:col-span-5">
+          <div className="order-1 lg:order-2 lg:col-span-8">
             <EditorialImage
               src={body.image.src}
               alt={body.image.alt}
-              ratio="4 / 5"
-              sizes="(min-width: 1024px) 40vw, 100vw"
+              ratio="16 / 9"
+              sizes="(min-width: 1024px) 700px, 100vw"
               priority
               caption={body.image.caption}
               credit={body.image.credit}
-              className="lg:sticky lg:top-24"
             />
-          </aside>
-        </div>
-      </Section>
 
-      <Section surface="paper-100">
-        <RelatedProducts
-          slugs={body.productSlugs}
-          heading="What this guide is about"
-        />
-        <div className="mt-10 flex flex-wrap gap-3">
-          <ButtonLink href="/shop" size="lg">
-            See this week&rsquo;s bake
-          </ButtonLink>
-          <ButtonLink href="/guides" variant="secondary" size="lg">
-            The other guides
-          </ButtonLink>
+            <article className="mt-10">
+              <Prose>{body.body}</Prose>
+            </article>
+          </div>
         </div>
-      </Section>
+      </ContentSection>
+
+      <ContentSection surface="paper-2">
+        <RelatedProducts
+          slugs={body.productSlugs.slice(0, 3)}
+          eyebrow="Pairs well with"
+          heading="What this guide is about."
+        />
+        <ButtonLink href="/shop" size="lg" className="mt-10">
+          See the menu
+        </ButtonLink>
+      </ContentSection>
     </>
   );
 }

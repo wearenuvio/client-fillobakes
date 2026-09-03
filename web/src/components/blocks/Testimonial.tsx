@@ -4,15 +4,13 @@ import { Star } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 /**
- * Testimonial — DESIGN.md §12.13.
+ * Testimonial — DESIGN-v2 §2.
  *
- * No card, no quote-mark graphic, no star row above the quote. The quote is
- * display type on paper-100, capped at 46ch; the attribution and the rating sit
- * below it, in that order.
+ * A big serif italic quote, then the name and area, then five small gold
+ * stars. No card, no quote-mark graphic, no rating above the quote — the
+ * words come first and the badge of trust comes after them.
  *
- * The avatar frame is one of the four sanctioned uses of `--radius-blob`.
- * `star` is the ONLY permitted filled icon in the whole system, and it is
- * filled with `--color-crumb`.
+ * `star` is the only filled icon in the system, and it is filled with gold.
  */
 
 export type TestimonialData = {
@@ -36,7 +34,7 @@ export function Testimonial({
 
   return (
     <figure className={cn("max-w-[46ch]", className)}>
-      <blockquote className="font-display text-display-sm text-ink-800">
+      <blockquote className="font-display text-[clamp(22px,2.6vw,28px)] leading-snug text-ink italic">
         {quote}
       </blockquote>
 
@@ -47,20 +45,20 @@ export function Testimonial({
             alt=""
             width={96}
             height={96}
-            className="size-12 shrink-0 rounded-blob object-cover"
+            className="size-12 shrink-0 rounded-pill object-cover"
           />
         ) : (
           <span
             aria-hidden="true"
-            className="grid size-12 shrink-0 place-items-center rounded-blob bg-paper-200 font-display text-title-lg text-ink-800"
+            className="grid size-12 shrink-0 place-items-center rounded-pill bg-well font-display text-[22px] text-ink"
           >
             {initial}
           </span>
         )}
 
         <span className="min-w-0">
-          <span className="block text-body-sm font-semibold text-ink-800">{name}</span>
-          <span className="micro block text-ink-500">{meta}</span>
+          <span className="block text-body-sm font-semibold text-ink">{name}</span>
+          <span className="block text-body-sm text-muted">{meta}</span>
           {typeof rating === "number" ? (
             <Rating value={rating} className="mt-1" />
           ) : null}
@@ -91,7 +89,7 @@ export function Rating({
           size={14}
           strokeWidth={1.5}
           aria-hidden="true"
-          className={i < value ? "fill-crumb text-crumb" : "fill-paper-300 text-paper-300"}
+          className={i < value ? "fill-gold text-gold" : "fill-line text-line"}
         />
       ))}
     </span>
@@ -122,9 +120,9 @@ export function TestimonialRail({
 
       <div className="scroll-rail gap-12">{children}</div>
 
-      <div className="mt-8 h-px w-full bg-paper-300" aria-hidden="true">
+      <div className="mt-8 h-px w-full bg-line" aria-hidden="true">
         <div
-          className="h-full bg-kiln"
+          className="h-full bg-accent"
           style={{ width: `${Math.min(100, Math.max(0, progress * 100))}%` }}
         />
       </div>

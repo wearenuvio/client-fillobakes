@@ -3,37 +3,36 @@
 import * as React from "react";
 import { AlertCircle, MessageCircle } from "lucide-react";
 import { Button, ButtonLink } from "@/components/ui/Button";
-import { Switch } from "@/components/ui/Field";
 import { useToast } from "@/components/ui/Toast";
-import { cn } from "@/lib/cn";
 import { CONTACT, whatsappHref } from "@/lib/config";
 import { getAlertPreferences, getAllStops } from "@/lib/mock";
-import { getProductBySlug } from "@/lib/catalog";
-import { Panel, PanelHead } from "@/components/pages/account/Panel";
+import { Panel, PanelHead, Notice } from "@/components/pages/account/Panel";
 import { formatPhone } from "@/components/pages/account/session";
+import {
+  SwitchRow,
+  PillChoice,
+  SelectField,
+} from "@/components/pages/content/Form";
 import type { AlertsState } from "@/components/pages/account/states";
 
 /**
- * Alerts — site-content "Screen: Alerts".
+ * Alerts — PAGES-v2 Account, "Alerts".
  *
- * The screen that stops people muting the brand. Order updates are on and
- * locked, and the page says why rather than hiding the toggle. The cap is
- * stated on the page, not in a policy.
+ * The screen that stops people muting the brand. Order updates stay on and
+ * say why rather than hiding the switch; the cap is on the page, not in a
+ * policy; and the way out is a link at the bottom rather than a maze.
  */
 
-type Prefs = Record<string, boolean>;
+const TRIGGERS = [
+  { id: "leaves_the_kitchen", label: "Leaves the kitchen" },
+  { id: "two_stops_away", label: "Two stops away" },
+  { id: "arrives", label: "Arrives" },
+] as const;
 
-const CHANNELS: { id: string; label: string; note?: string }[] = [
+const CHANNELS = [
   { id: "whatsapp", label: "WhatsApp" },
-  { id: "browser_push", label: "Browser push", note: "Not available in a Safari tab" },
   { id: "email", label: "Email" },
-];
-
-const TRIGGERS: { id: string; label: string }[] = [
-  { id: "leaves_the_kitchen", label: "When it leaves the kitchen" },
-  { id: "two_stops_away", label: "When it's 2 stops away" },
-  { id: "arrives", label: "When it arrives" },
-];
+] as const;
 
 export function AlertsPrefs({ state = "default" }: { state?: AlertsState }) {
   const prefs = getAlertPreferences();
@@ -48,31 +47,23 @@ export function AlertsPrefs({ state = "default" }: { state?: AlertsState }) {
   const allPaused = state === "all_paused";
   const blocked = state === "blocked";
 
-  const [values, setValues] = React.useState<Prefs>(() =>
-    Object.fromEntries(
-      prefs.toggles.map((t) => [t.key, allPaused ? t.locked : t.value]),
-    ),
+  const [values, setValues] = React.useState<Record<string, boolean>>(() =>
+    Object.fromEntries(prefs.toggles.map((t) => [t.key, allPaused ? t.locked : t.value])),
   );
-  const [channel, setChannel] = React.useState(prefs.channel);
+  const [channel, setChannel] = React.useState<string>(prefs.channel);
   const [stopId, setStopId] = React.useState(raw.vanAlerts.stopId);
-  const [trigger, setTrigger] = React.useState(raw.vanAlerts.trigger);
+  const [trigger, setTrigger] = React.useState<string>(raw.vanAlerts.trigger);
   const [paused, setPaused] = React.useState(allPaused);
 
-  function toggle(key: string, label: string, next: boolean) {
-    setValues((current) => ({ ...current, [key]: next }));
-    toast({ message: next ? `${label} is on.` : `${label} is off.` });
-  }
+  const vanAlertsOn = !paused && (values.van_near_me ?? false);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-5 lg:gap-6">
       {blocked ? (
-        <div className="rounded-md bg-warning-tint p-4 sm:p-6">
-          <p className="flex items-start gap-2 text-body text-warning">
-            <AlertCircle size={20} strokeWidth={1.5} className="mt-0.5 shrink-0" aria-hidden="true" />
-            We can&rsquo;t reach you — it looks like our number is blocked. Unblock{" "}
-            <span className="tabular">{CONTACT.phone}</span>, or switch to SMS.
-          </p>
-          <div className="mt-4">
+        <Notice
+          tone="attention"
+          icon={<AlertCircle size={20} strokeWidth={1.5} />}
+          actions={
             <Button
               size="sm"
               variant="secondary"
@@ -83,16 +74,16 @@ export function AlertsPrefs({ state = "default" }: { state?: AlertsState }) {
             >
               Switch to email
             </Button>
-          </div>
-        </div>
+          }
+        >
+          We cannot reach you. It looks like our number is blocked. Unblock{" "}
+          <span className="tabular">{CONTACT.phone}</span>, or switch to email.
+        </Notice>
       ) : null}
 
       {paused ? (
-        <div className="rounded-md bg-paper-200 p-4 sm:p-6">
-          <p className="text-body text-ink-800">
-            Everything but order updates is paused for {raw.pauseAll.durationWeeks} weeks.
-          </p>
-          <div className="mt-4">
+        <Notice
+          actions={
             <Button
               size="sm"
               variant="secondary"
@@ -103,165 +94,100 @@ export function AlertsPrefs({ state = "default" }: { state?: AlertsState }) {
             >
               Turn them back on
             </Button>
-          </div>
-        </div>
+          }
+        >
+          Everything but order updates is paused for {raw.pauseAll.durationWeeks}{" "}
+          weeks.
+        </Notice>
       ) : null}
 
+      {/* ---- What we send ---------------------------------------------- */}
       <Panel>
         <PanelHead label="What we send" />
-        <ul className="mt-2 divide-y divide-paper-300">
+        <div className="mt-2 divide-y divide-line">
           {prefs.toggles.map((item) => (
-            <li key={item.key}>
-              <Switch
-                id={`alert-${item.key}`}
-                label={item.label}
-                helper={item.helper}
-                locked={item.locked}
-                lockedCopy={item.lockedCopy}
-                checked={item.locked ? true : paused ? false : (values[item.key] ?? false)}
-                onCheckedChange={(next) => toggle(item.key, item.label, next)}
-              />
-            </li>
+            <SwitchRow
+              key={item.key}
+              id={`alert-${item.key}`}
+              label={item.label}
+              helper={item.helper}
+              locked={item.locked}
+              lockedCopy={item.lockedCopy}
+              checked={item.locked ? true : paused ? false : (values[item.key] ?? false)}
+              onCheckedChange={(next) => {
+                setValues((current) => ({ ...current, [item.key]: next }));
+                toast({ message: next ? `${item.label} is on.` : `${item.label} is off.` });
+              }}
+            />
           ))}
-        </ul>
-        <p className="mt-4 border-t border-paper-300 pt-4 text-body-sm text-ink-800">
+        </div>
+        <p className="mt-4 border-t border-line pt-4 text-body-sm text-ink-2">
           {raw.cap}
         </p>
       </Panel>
 
-      {/* Van alerts: per stop, per trigger. */}
-      <Panel>
-        <PanelHead label="Van alerts" />
-        <p className="mt-3 text-body-sm text-ink-600">
-          One nudge, for one stop, on one trigger. Proximity is a stop count, never a
-          countdown.
-        </p>
-
-        <p className="micro mt-6 text-ink-500">The stop</p>
-        <ul className="mt-3 flex flex-col gap-2">
-          {stops.slice(0, 4).map((stop) => (
-            <li key={stop.id}>
-              <button
-                type="button"
-                onClick={() => {
-                  setStopId(stop.id);
-                  toast({ message: `Van alerts set for ${stop.name}.` });
-                }}
-                className={cn(
-                  "flex min-h-11 w-full items-start justify-between gap-3 rounded-md border p-3 text-left",
-                  "transition-colors duration-[var(--dur-fast)]",
-                  stop.id === stopId
-                    ? "border-ink-800 bg-paper-100"
-                    : "border-paper-400 bg-paper-0 hover:border-ink-600",
-                )}
-              >
-                <span className="min-w-0">
-                  <span className="block text-body-sm text-ink-800">{stop.name}</span>
-                  <span className="mt-0.5 block text-caption text-ink-500">
-                    {stop.descriptor} · {stop.runDaysLabel}
-                  </span>
-                </span>
-              </button>
-            </li>
-          ))}
-        </ul>
-
-        <p className="micro mt-6 text-ink-500">The trigger</p>
-        <div role="radiogroup" aria-label="Van alert trigger" className="mt-3 flex flex-wrap gap-2">
-          {TRIGGERS.map((option) => (
-            <button
-              key={option.id}
-              type="button"
-              role="radio"
-              aria-checked={option.id === trigger}
-              onClick={() => {
-                setTrigger(option.id);
-                toast({ message: `We'll ping you ${option.label.toLowerCase()}.` });
-              }}
-              className={cn(
-                "h-11 rounded-sm border px-4 text-body-sm transition-colors",
-                "duration-[var(--dur-fast)]",
-                option.id === trigger
-                  ? "border-ink-800 bg-ink-800 text-paper-0"
-                  : "border-paper-400 bg-paper-0 text-ink-800 hover:border-ink-600",
-              )}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
-      </Panel>
-
-      {/* Channel */}
-      <Panel>
-        <PanelHead label="How we reach you" />
-        <p className="mt-3 text-body-sm text-ink-600 tabular">
-          On <span className="text-ink-800">{formatPhone(prefs.number)}</span>.
-        </p>
-        <div role="radiogroup" aria-label="Channel" className="mt-4 flex flex-wrap gap-2">
-          {CHANNELS.map((option) => (
-            <span key={option.id} className="flex flex-col">
-              <button
-                type="button"
-                role="radio"
-                aria-checked={option.id === channel}
-                onClick={() => {
-                  setChannel(option.id);
-                  toast({ message: `We'll use ${option.label} from now on.` });
-                }}
-                className={cn(
-                  "h-11 rounded-sm border px-4 text-body-sm transition-colors",
-                  "duration-[var(--dur-fast)]",
-                  option.id === channel
-                    ? "border-ink-800 bg-ink-800 text-paper-0"
-                    : "border-paper-400 bg-paper-0 text-ink-800 hover:border-ink-600",
-                )}
-              >
-                {option.label}
-              </button>
-              {option.note ? (
-                <span className="nano mt-1 text-ink-500">{option.note}</span>
-              ) : null}
-            </span>
-          ))}
-        </div>
-      </Panel>
-
-      {/* Watched items */}
-      {prefs.watchedForRestock.length ? (
+      {/* ---- Van alerts, only while they are on ------------------------- */}
+      {vanAlertsOn ? (
         <Panel>
-          <PanelHead label="Waiting on" />
-          <ul className="mt-3 flex flex-col gap-2">
-            {prefs.watchedForRestock.map((slug) => {
-              const product = getProductBySlug(slug);
-              return (
-                <li key={slug} className="flex items-center justify-between gap-4">
-                  <span className="text-body-sm text-ink-800">
-                    {product?.name ?? slug}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      toast({ message: `We'll stop watching ${product?.name ?? slug}.` })
-                    }
-                    className="link-underline text-body-sm text-ink-700 hover:text-ink-900"
-                  >
-                    Stop watching
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-          <p className="mt-4 text-caption text-ink-500">
-            One message when it&rsquo;s back. Nothing else.
+          <PanelHead label="Van alerts" />
+          <p className="mt-3 max-w-[46ch] text-body-sm text-muted">
+            One nudge, one stop, one trigger. Proximity is a stop count, never a
+            countdown.
           </p>
+          <SelectField
+            id="alert-stop"
+            label="The stop"
+            className="mt-5 max-w-[420px]"
+            value={stopId}
+            onChange={(e) => {
+              setStopId(e.target.value);
+              const next = stops.find((s) => s.id === e.target.value);
+              toast({ message: `Van alerts set for ${next?.name ?? "your stop"}.` });
+            }}
+          >
+            {stops.slice(0, 6).map((stop) => (
+              <option key={stop.id} value={stop.id}>
+                {stop.name} · {stop.runDaysLabel}
+              </option>
+            ))}
+          </SelectField>
+          <PillChoice
+            className="mt-6"
+            label="The trigger"
+            value={trigger}
+            options={TRIGGERS.map((t) => ({ id: t.id as string, label: t.label }))}
+            onChange={(next) => {
+              setTrigger(next);
+              const label = TRIGGERS.find((t) => t.id === next)?.label ?? "";
+              toast({ message: `We will ping you when it ${label.toLowerCase()}.` });
+            }}
+          />
         </Panel>
       ) : null}
 
-      {/* The two escapes */}
+      {/* ---- How we reach you ------------------------------------------- */}
+      <Panel>
+        <PanelHead label="How we reach you" />
+        <p className="mt-3 text-body-sm text-muted">
+          On <span className="text-ink tabular">{formatPhone(prefs.number)}</span>.
+        </p>
+        <PillChoice
+          className="mt-5"
+          label="Channel"
+          value={channel}
+          options={CHANNELS.map((c) => ({ id: c.id as string, label: c.label }))}
+          onChange={(next) => {
+            setChannel(next);
+            const label = CHANNELS.find((c) => c.id === next)?.label ?? "";
+            toast({ message: `We will use ${label} from now on.` });
+          }}
+        />
+      </Panel>
+
+      {/* ---- The way out ------------------------------------------------ */}
       <Panel>
         <PanelHead label="Too much?" />
-        <div className="mt-4 flex flex-col gap-3">
+        <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3">
           <button
             type="button"
             disabled={paused}
@@ -269,7 +195,7 @@ export function AlertsPrefs({ state = "default" }: { state?: AlertsState }) {
               setPaused(true);
               toast({ message: "Paused for two weeks. Order updates keep coming." });
             }}
-            className="link-underline self-start text-body-sm text-ink-700 hover:text-ink-900 disabled:text-ink-400"
+            className="link-underline text-body-sm font-semibold text-accent disabled:text-muted"
           >
             {raw.pauseAll.label}
           </button>
@@ -279,30 +205,26 @@ export function AlertsPrefs({ state = "default" }: { state?: AlertsState }) {
               setValues((current) =>
                 Object.fromEntries(Object.keys(current).map((k) => [k, false])),
               );
-              toast({
-                message: "Everything else is off. You'll still get order updates.",
-              });
+              toast({ message: "Everything else is off. Order updates keep coming." });
             }}
-            className="link-underline self-start text-body-sm text-ink-700 hover:text-ink-900"
+            className="link-underline text-body-sm text-ink-2 hover:text-ink"
           >
             Turn everything off
           </button>
         </div>
-        <p className="mt-4 text-caption text-ink-500">
-          You&rsquo;ll still get order updates. We have to be able to tell you where your
-          bread is.
+        <p className="mt-4 max-w-[46ch] text-body-sm text-muted">
+          You will still get order updates. We have to be able to tell you where
+          your bread is.
         </p>
-        <div className="mt-6">
-          <ButtonLink
-            href={whatsappHref("Hi Fillo — about the messages you send me.")}
-            variant="ghost"
-            size="sm"
-            icon={<MessageCircle size={16} strokeWidth={1.5} />}
-            iconPosition="leading"
-          >
-            Talk to a person instead
-          </ButtonLink>
-        </div>
+        <ButtonLink
+          href={whatsappHref("Hi Fillo — about the messages you send me.")}
+          variant="secondary"
+          className="mt-6"
+          icon={<MessageCircle size={16} strokeWidth={1.5} />}
+          iconPosition="leading"
+        >
+          Talk to a person
+        </ButtonLink>
       </Panel>
     </div>
   );

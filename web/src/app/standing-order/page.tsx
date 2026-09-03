@@ -1,460 +1,250 @@
 import type { Metadata } from "next";
-import { Calendar, Check, MessageCircle, Pause, Repeat, SkipForward } from "lucide-react";
-import { buildMetadata, JsonLd } from "@/lib/seo";
-import { Section, SectionHeader } from "@/components/blocks/Section";
-import { Faq } from "@/components/blocks/Faq";
+import { CalendarOff, PauseCircle, RefreshCw, Unlock } from "lucide-react";
+import { buildMetadata, JsonLd, faqLd } from "@/lib/seo";
 import { SubscriptionPlanCard } from "@/components/blocks/SubscriptionPlanCard";
+import { Faq } from "@/components/blocks/Faq";
 import { ButtonLink } from "@/components/ui/Button";
-import { Kicker } from "@/components/ui/Rule";
-import { LineArtBleed } from "@/components/ui/LineArt";
-import { TbcNote, TwoProducts } from "@/components/pages/van/Tbc";
-import { formatINR } from "@/lib/format";
-import { COMMERCE, SUBSCRIPTION_NAME } from "@/lib/config";
-import { getSubscription, isTbc, TBC } from "@/lib/mock";
+import { AnPanGlyph, VanGlyph, WheatGlyph } from "@/components/ui/LineArt";
+import { cutoutVariants, cutoutFor } from "@/lib/images";
+import { SUBSCRIPTION_NAME } from "@/lib/config";
 
 const PATH = "/standing-order";
 
 export const metadata: Metadata = buildMetadata(PATH);
 
-/** The two mock plans. Both prices are estimates and are labelled as such. */
+/**
+ * The Standing Order — PAGES-v2 "Standing Order".
+ *
+ * A weekly commitment is only ever sold on how easily it is escaped, so the
+ * promises row sits directly under the plans rather than in the small print,
+ * and the four things a subscriber is most afraid of are answered before the
+ * FAQ has to be opened.
+ *
+ * Three plans, one recommendation, one button at the bottom. Choosing between
+ * three is a decision; choosing between seven is a task somebody postpones.
+ */
+
 const PLANS = [
   {
-    id: "standing_loaf",
-    name: "1 Milk Shokupan",
-    cadence: "Every Saturday",
-    listPrice: 200,
-    weeklyPrice: 180,
-    saving: "₹20 a week",
+    id: "loaf",
+    name: "The Loaf",
+    cadence: "One shokupan, every week.",
+    price: 200,
+    contents: ["milk-shokupan"],
     benefits: [
-      "One loaf, every run day, at your stop or your door",
-      "Coins on every delivery",
-      "Skip any week until 8pm the evening before",
-      "First refusal on new bakes",
+      "One 400g milk shokupan, baked the morning it reaches you",
+      "Your route's run day, every week",
+      "Swap the loaf for any other bread whenever you like",
     ],
   },
   {
-    id: "standing_pair",
-    name: "1 loaf + 1 rotating bake",
-    cadence: "Every Saturday",
-    listPrice: 359,
-    weeklyPrice: 310,
-    saving: "₹49 a week",
+    id: "loaf-and-buns",
+    name: "Loaf and buns",
+    cadence: "A loaf, and something sweet.",
+    price: 499,
+    contents: ["milk-shokupan", "custard-an-pan", "strawberry-an-pan"],
     benefits: [
-      "A loaf plus whatever the kitchen is proudest of that week",
-      "Coins on every delivery",
-      "Swap the rotating item, or skip the week",
-      "First refusal on new bakes",
+      "One milk shokupan and two an pan of your choosing",
+      "Change what is inside up to the night before",
+      "Free delivery every week, whatever the basket comes to",
+    ],
+  },
+  {
+    id: "family",
+    name: "The Family",
+    cadence: "Enough for a full week.",
+    price: 899,
+    contents: ["milk-shokupan", "custard-an-pan", "fruit-sando"],
+    benefits: [
+      "Two loaves, four buns and one fruit sando",
+      "Split the delivery across two days if you would rather",
+      "Free delivery, and first refusal on the weekly specials",
     ],
   },
 ] as const;
 
 const STEPS = [
   {
-    title: "Pick your loaf",
-    body: "One item, or a few. Change it whenever.",
+    glyph: AnPanGlyph,
+    title: "Choose your bread",
+    body: "Start from a plan, then swap anything in it for something you like better.",
   },
   {
-    title: "We put you on your route's list",
-    body: "Your area decides the run day. Indiranagar is Saturdays.",
+    glyph: VanGlyph,
+    title: "Choose your day and stop",
+    body: "Your route's run day, to your door or to the van at a stop near you.",
   },
   {
-    title: "We message you Wednesday",
-    body: "What's coming, what it costs, and a skip button. One tap and that week is off.",
+    glyph: WheatGlyph,
+    title: "We bake it fresh, every week",
+    body: "Nothing is baked ahead. Your loaf goes in the oven the morning it reaches you.",
   },
-  {
-    title: "The van brings it Saturday",
-    body: "Same stop, same window, every week.",
-  },
-];
+] as const;
 
-const FAQ_ITEMS = [
-  {
-    question: "Can I skip a week?",
-    answer:
-      "Yes, until 8pm the evening before the run. You aren't charged for a skipped week.",
-  },
-  {
-    question: "Can I pause?",
-    answer:
-      "Yes. Pick a return date. Nothing is charged while you're paused and we message you the day before it restarts.",
-  },
-  {
-    question: "How do I cancel?",
-    answer:
-      "One tap, from your account. No phone call. Your last delivery is the one already in the plan.",
-  },
-  {
-    question: "Can I change the day?",
-    answer:
-      "Yes, to any day the van serves your area. It applies from the following run.",
-  },
-  {
-    question: "Can I change what's in it?",
-    answer: "Yes, from the next uncut delivery.",
-  },
-  {
-    question: "What if you can't bake my loaf?",
-    answer:
-      "We message you and offer a swap or a skip. You aren't charged either way.",
-  },
-  {
-    question: "What if my payment fails?",
-    answer:
-      "We tell you and give you a link to retry. If it isn't resolved by the cutoff we skip that week. We never silently cancel.",
-  },
-  {
-    question: "What if the route changes?",
-    answer: "We tell you before the cutoff, with the new time.",
-  },
-];
+const PROMISES = [
+  { icon: CalendarOff, label: "Skip any week" },
+  { icon: PauseCircle, label: "Pause any time" },
+  { icon: RefreshCw, label: "Change what's inside" },
+  { icon: Unlock, label: "No lock-in" },
+] as const;
 
-/**
- * The Standing Order — the weekly bread, pitched as a product with its own
- * price, cadence and exits.
- *
- * The reassurance sits high on purpose: a subscription to a weekly run has to
- * be trivially escapable or nobody starts one (§12.18). Skip, pause and cancel
- * are stated before the price, never behind a retention flow, and never in
- * danger red — skipping a week is not a destructive act.
- *
- * It is never pitched on a first visit; this page is the destination, and the
- * order-#2 confirmation is the invitation.
- */
+const FAQ = [
+  {
+    question: "What if I am away for a week?",
+    answer:
+      "Skip it. One tap on your plan card up to 8pm the evening before, and you are not charged for that week.",
+  },
+  {
+    question: "Can I change what is in the box?",
+    answer:
+      "Yes, every week if you want to. Open your plan, swap a bun for another one, and the price updates before you confirm.",
+  },
+  {
+    question: "When do you take the money?",
+    answer:
+      "The evening before each delivery, once the order is locked. There is no upfront payment and nothing is taken for a week you have skipped.",
+  },
+  {
+    question: "How do I stop?",
+    answer:
+      "Cancel from your plan card. It takes one tap, there is no notice period, and we will offer you a pause first in case that is really what you meant.",
+  },
+] as const;
+
+function contentsFor(slugs: readonly string[]) {
+  return slugs.map((slug) => ({
+    slug,
+    name: slug,
+    src: cutoutVariants(slug).v1 ?? cutoutFor(slug),
+  }));
+}
+
 export default function StandingOrderPage() {
-  const subscription = getSubscription();
-  const priceIsEstimate =
-    isTbc(TBC.subscriptionPrices) || /^est/i.test(subscription.plan.priceConfidence);
-  const messages = subscription.weeklyMessages ?? [];
-
   return (
     <>
-      <JsonLd path={PATH} crumbs={[{ name: SUBSCRIPTION_NAME, path: PATH }]} />
+      <JsonLd
+        path={PATH}
+        crumbs={[{ name: SUBSCRIPTION_NAME, path: PATH }]}
+        nodes={[faqLd(FAQ.map((f) => ({ question: f.question, answer: f.answer })))]}
+      />
 
-      <Section surface="paper-50" className="overflow-hidden">
-        <LineArtBleed glyph="loaf" side="right" size={680} />
-        <div className="relative grid gap-12 lg:grid-cols-12 lg:gap-8">
-          <div className="lg:col-span-7">
-            <Kicker>{SUBSCRIPTION_NAME}</Kicker>
-            <h1 className="mt-4 max-w-[14ch] font-display text-display-xl text-ink-800">
-              Bread, standing. Every Saturday.
-            </h1>
-            <p className="mt-6 max-w-[46ch] text-body-lg text-ink-600">
-              Put your loaf on the van&rsquo;s list and stop thinking about it.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <ButtonLink
-                href="/account/subscription/setup"
-                size="lg"
-                icon={<Repeat size={20} strokeWidth={1.5} />}
-                iconPosition="leading"
-              >
-                Set up a standing order
-              </ButtonLink>
-              <ButtonLink href="/shop" variant="secondary" size="lg">
-                See this week&rsquo;s bake
-              </ButtonLink>
-            </div>
-            <p className="mt-4 text-body-sm text-ink-500">
-              You put your number in inside the builder, not before it.
-            </p>
-          </div>
-
-          {/* The objection, answered above the fold rather than buried. */}
-          <div className="lg:col-span-5">
-            <div className="rounded-lg border border-paper-300 bg-paper-0 p-6">
-              <h2 className="text-title font-sans font-semibold text-ink-800">
-                Getting out is one tap
-              </h2>
-              <ul className="mt-4 space-y-3">
-                {[
-                  "Skip any week",
-                  "Pause anytime",
-                  "Cancel in one tap",
-                  "We message you every Wednesday with what's coming",
-                ].map((line) => (
-                  <li key={line} className="flex items-start gap-2">
-                    <Check
-                      size={16}
-                      strokeWidth={1.5}
-                      aria-hidden="true"
-                      className="mt-1 shrink-0 text-success"
-                    />
-                    <span className="text-body-sm text-ink-600">{line}</span>
-                  </li>
-                ))}
-              </ul>
-              <p className="micro mt-6 text-ink-500">
-                ORDERS CLOSE {COMMERCE.cutoffLabel.toUpperCase()}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <TwoProducts className="relative mt-16" />
-      </Section>
-
-      <Section surface="paper-100">
-        <SectionHeader
-          as="h2"
-          kicker="Four steps"
-          heading="How it works"
-          lead="Nothing here happens without a message first."
+      {/* -------- Hero ------------------------------------------------- */}
+      <section className="relative overflow-hidden bg-peach pt-12 pb-14 lg:pt-16 lg:pb-20">
+        <WheatGlyph
+          size={520}
+          className="pointer-events-none absolute -top-24 -right-24 text-ink opacity-[0.07]"
         />
-        <ol className="mt-12 grid gap-8 md:grid-cols-2 xl:grid-cols-4">
-          {STEPS.map((step, i) => (
-            <li key={step.title} className="border-t border-t-paper-400 pt-5">
-              <span className="micro text-kiln tabular">Step {i + 1}</span>
-              <h3 className="mt-3 text-title font-sans font-semibold text-ink-800">
-                {step.title}
-              </h3>
-              <p className="mt-2 text-body-sm text-ink-600">{step.body}</p>
-            </li>
-          ))}
-        </ol>
-      </Section>
-
-      <Section surface="paper-50">
-        <SectionHeader
-          as="h2"
-          kicker="Price"
-          heading="What it costs"
-          lead="The per-delivery price, the standing price, and what you actually save in rupees."
-        />
-
-        {/* No "most popular" claim — there is no data behind one (DECISIONS
-            §10). "Start here" is a recommendation we can stand behind: the
-            single loaf is the smaller commitment. */}
-        <div className="mt-12 grid gap-6 lg:grid-cols-2">
-          {PLANS.map((plan, index) => (
-            <SubscriptionPlanCard
-              key={plan.id}
-              planName={plan.name}
-              cadence={plan.cadence}
-              price={plan.weeklyPrice}
-              benefits={[...plan.benefits]}
-              state={index === 0 ? "recommended" : "default"}
-              badge={index === 0 ? "Start here" : undefined}
-              priceNote={
-                priceIsEstimate
-                  ? `Estimate — derived from retail, not founder-set. ${formatINR(
-                      plan.listPrice,
-                    )} per delivery, so you save ${plan.saving}.`
-                  : undefined
-              }
-              action={
-                <ButtonLink href="/account/subscription/setup" size="md" fullWidth>
-                  Set up a standing order
-                </ButtonLink>
-              }
-            />
-          ))}
-        </div>
-
-        <div className="mt-10 max-w-[var(--max-narrow)]">
-          <table className="w-full border-y border-y-paper-300 text-left">
-            <caption className="sr-only">
-              Per-delivery price against the standing-order price
-            </caption>
-            <thead>
-              <tr className="border-b border-b-paper-300">
-                <th scope="col" className="micro py-3 pr-4 font-normal text-ink-500">
-                  Plan
-                </th>
-                <th scope="col" className="micro py-3 pr-4 font-normal text-ink-500">
-                  Per delivery
-                </th>
-                <th scope="col" className="micro py-3 pr-4 font-normal text-ink-500">
-                  Standing order
-                </th>
-                <th scope="col" className="micro py-3 font-normal text-ink-500">
-                  You save
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-paper-300">
-              {PLANS.map((plan) => (
-                <tr key={plan.id}>
-                  <th scope="row" className="py-4 pr-4 text-body-sm font-semibold text-ink-800">
-                    {plan.name}
-                  </th>
-                  <td className="py-4 pr-4 font-mono text-body-sm text-ink-600 tabular">
-                    {formatINR(plan.listPrice)}
-                  </td>
-                  <td className="py-4 pr-4 font-mono text-body-sm text-ink-800 tabular">
-                    {formatINR(plan.weeklyPrice)}
-                    <span className="text-ink-500"> / week</span>
-                  </td>
-                  <td className="py-4 font-mono text-body-sm text-kiln tabular">
-                    {plan.saving}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <TbcNote className="mt-4">
-            Both prices are our design, derived from live retail prices. The
-            founders set the final numbers.
-          </TbcNote>
-        </div>
-      </Section>
-
-      <Section surface="paper-100">
-        <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
-          <div className="lg:col-span-6">
-            <h2 className="micro text-kiln">What&rsquo;s included</h2>
-            <p className="mt-6 max-w-[62ch] text-body-lg text-ink-600">
-              Your items, every run day, at your stop or your door. Coins on
-              every delivery. First refusal on new bakes.
-            </p>
-          </div>
-          <div className="lg:col-span-6">
-            <h2 className="micro text-kiln">What you can change</h2>
-            <ul className="mt-6 divide-y divide-paper-300 border-y border-y-paper-300">
-              {[
-                "What's in it",
-                "Which day",
-                "How often — weekly or fortnightly",
-                "Your stop or address",
-                "Skip a week",
-                "Pause",
-                "Cancel",
-              ].map((line) => (
-                <li key={line} className="py-3 text-body-sm text-ink-600">
-                  {line}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </Section>
-
-      {/* The weekly message loop — the whole product, really. */}
-      <Section surface="dark" size="lg">
-        <Kicker tone="crumb">The week</Kicker>
-        <h2 className="mt-4 max-w-[18ch] font-display text-display-lg text-paper-0">
-          Four messages, and one of them has a skip button
-        </h2>
-        <ol className="mt-12 grid gap-8 md:grid-cols-2 xl:grid-cols-4">
-          {messages.map((message) => (
-            <li
-              key={message.when}
-              className="border-t border-t-[var(--hairline-dark-color)] pt-5"
-            >
-              <span className="micro text-crumb">{message.when}</span>
-              {message.template ? (
-                <>
-                  <p className="mt-3 flex items-start gap-2 text-body text-paper-0">
-                    <MessageCircle
-                      size={16}
-                      strokeWidth={1.5}
-                      aria-hidden="true"
-                      className="mt-1.5 shrink-0 text-crumb"
-                    />
-                    <span>{message.template}</span>
-                  </p>
-                  {message.buttons ? (
-                    <p className="mt-3 flex flex-wrap gap-2">
-                      {message.buttons.map((button) => (
-                        <span
-                          key={button}
-                          className="nano inline-flex h-7 items-center rounded-sm border border-[var(--hairline-dark-color)] px-3 text-paper-0"
-                        >
-                          {button}
-                        </span>
-                      ))}
-                    </p>
-                  ) : null}
-                </>
-              ) : (
-                <p className="mt-3 text-body text-ink-400">{message.note}</p>
-              )}
-            </li>
-          ))}
-        </ol>
-      </Section>
-
-      <Section surface="paper-50">
-        <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
-          <div className="lg:col-span-5">
-            <SectionHeader as="h2" kicker="No retention flow" heading="Skip, pause, stop" />
-            <ul className="mt-8 space-y-6">
-              <li className="flex items-start gap-3">
-                <SkipForward
-                  size={20}
-                  strokeWidth={1.5}
-                  aria-hidden="true"
-                  className="mt-1 shrink-0 text-ink-600"
-                />
-                <span>
-                  <span className="block text-body font-semibold text-ink-800">
-                    Skip this week
-                  </span>
-                  <span className="mt-1 block text-body-sm text-ink-600">
-                    {String(subscription.actions.skipCopy)}
-                  </span>
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <Pause
-                  size={20}
-                  strokeWidth={1.5}
-                  aria-hidden="true"
-                  className="mt-1 shrink-0 text-ink-600"
-                />
-                <span>
-                  <span className="block text-body font-semibold text-ink-800">Pause</span>
-                  <span className="mt-1 block text-body-sm text-ink-600">
-                    Two weeks, a month, or until you say. No interstitial, no
-                    discount offer, one screen.
-                  </span>
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <Calendar
-                  size={20}
-                  strokeWidth={1.5}
-                  aria-hidden="true"
-                  className="mt-1 shrink-0 text-ink-600"
-                />
-                <span>
-                  <span className="block text-body font-semibold text-ink-800">Cancel</span>
-                  <span className="mt-1 block text-body-sm text-ink-600">
-                    {String(subscription.actions.cancelCopy)}
-                  </span>
-                </span>
-              </li>
-            </ul>
-            <p className="micro mt-8 text-warning">
-              CHANGES FOR THIS SATURDAY CLOSE THURSDAY 8PM
-            </p>
-          </div>
-
-          <div className="lg:col-span-7">
-            <SectionHeader as="h2" kicker="Questions" heading="Before you start" />
-            <Faq className="mt-8" items={FAQ_ITEMS} />
-          </div>
-        </div>
-      </Section>
-
-      <Section surface="paper-100">
-        <div className="flex flex-col items-start gap-6">
-          <h2 className="max-w-[18ch] font-display text-display-md text-ink-800">
-            Put one loaf on the list and see how it goes
-          </h2>
-          <p className="max-w-[62ch] text-body text-ink-600">
-            Nothing is charged until the cutoff, and the first Wednesday message
-            has a skip button in it.
+        <div className="container-content relative">
+          <p className="script">Your bread, every week.</p>
+          <h1 className="mt-2 text-display-2 text-ink">The Standing Order</h1>
+          <p className="mt-5 max-w-[46ch] text-body-lg text-ink-2">
+            Pick a plan, pick a day. Skip any week, pause any time.
           </p>
+        </div>
+      </section>
+
+      {/* -------- Plans ------------------------------------------------ */}
+      <section className="bg-paper py-[var(--section-y)]">
+        <div className="container-content">
+          <div className="grid gap-5 md:grid-cols-3 md:gap-6">
+            {PLANS.map((plan, i) => (
+              <SubscriptionPlanCard
+                key={plan.id}
+                planName={plan.name}
+                cadence={plan.cadence}
+                price={plan.price}
+                contents={contentsFor(plan.contents)}
+                benefits={[...plan.benefits]}
+                state={i === 1 ? "recommended" : "default"}
+                badge={i === 1 ? "Start here" : undefined}
+                action={
+                  <ButtonLink
+                    href={`/account/subscription/setup?plan=${plan.id}`}
+                    variant="secondary"
+                    size="md"
+                    fullWidth
+                  >
+                    Choose {plan.name}
+                  </ButtonLink>
+                }
+              />
+            ))}
+          </div>
+
+          {/* -------- Promises, right under the price ------------------- */}
+          <ul className="mt-8 grid grid-cols-2 gap-x-6 gap-y-4 rounded-xl border border-line bg-paper-2 px-6 py-6 lg:grid-cols-4 lg:px-8">
+            {PROMISES.map(({ icon: Icon, label }) => (
+              <li key={label} className="flex items-start gap-3">
+                <Icon
+                  size={20}
+                  strokeWidth={1.5}
+                  aria-hidden="true"
+                  className="mt-0.5 shrink-0 text-accent"
+                />
+                <span className="text-body-sm leading-snug text-ink-2">{label}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* -------- How it works ----------------------------------------- */}
+      <section
+        data-reveal
+        className="border-y border-line bg-paper-2 py-[var(--section-y)]"
+      >
+        <div className="container-content">
+          <p className="text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
+            How it works
+          </p>
+          <h2 className="mt-3 max-w-[18ch] text-h2 text-ink">
+            Three decisions, once.
+          </h2>
+
+          <ol className="mt-10 grid gap-8 md:grid-cols-3 md:gap-6">
+            {STEPS.map(({ glyph: Glyph, title, body }, i) => (
+              <li key={title}>
+                <span className="grid size-20 place-items-center rounded-pill border border-line bg-card">
+                  <Glyph size={50} strokeWidth={1.5} className="text-accent" />
+                </span>
+                <p className="mt-5 text-[12px] font-medium tracking-[0.12em] text-muted uppercase tabular">
+                  Step {i + 1}
+                </p>
+                <h3 className="mt-1.5 font-display text-[24px] leading-tight text-ink">
+                  {title}
+                </h3>
+                <p className="mt-2 max-w-[36ch] text-body-sm text-ink-2">{body}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* -------- FAQ --------------------------------------------------- */}
+      <section data-reveal className="bg-paper py-[var(--section-y)]">
+        <div className="container-content">
+          <h2 className="max-w-[18ch] text-h2 text-ink">
+            The four things people ask.
+          </h2>
+          <Faq className="mt-8" items={FAQ.map((f) => ({ ...f }))} />
+        </div>
+      </section>
+
+      {/* -------- One way out of the page ------------------------------ */}
+      <section className="bg-peach py-[var(--section-y)]">
+        <div className="container-content">
+          <h2 className="max-w-[16ch] text-h2 text-ink">
+            Start with one loaf. Change it whenever.
+          </h2>
           <ButtonLink
-            href="/account/subscription/setup"
+            href="/account/subscription/setup?plan=loaf"
             size="lg"
-            icon={<Repeat size={20} strokeWidth={1.5} />}
-            iconPosition="leading"
+            className="mt-8"
           >
-            Set up a standing order
+            Start with The Loaf
           </ButtonLink>
         </div>
-      </Section>
+      </section>
     </>
   );
 }

@@ -3,8 +3,6 @@ import { buildMetadata, JsonLd } from "@/lib/seo";
 import { AccountPage } from "@/components/pages/account/AccountPage";
 import { Rewards } from "@/components/pages/account/Rewards";
 import { REWARDS_STATES, pickState } from "@/components/pages/account/states";
-import { getLoyaltyLedger } from "@/lib/mock";
-import { pluralise } from "@/lib/format";
 
 const PATH = "/account/rewards";
 
@@ -15,14 +13,6 @@ type Search = { searchParams: Promise<Record<string, string | string[] | undefin
 export default async function RewardsPage({ searchParams }: Search) {
   const params = await searchParams;
   const state = pickState(REWARDS_STATES, params.state, "default");
-  const ledger = getLoyaltyLedger();
-
-  const balance =
-    state === "empty" || state === "not_member"
-      ? 0
-      : state === "redeemable" || state === "armed"
-        ? 30
-        : ledger.balance;
 
   return (
     <>
@@ -34,9 +24,9 @@ export default async function RewardsPage({ searchParams }: Search) {
         ]}
       />
       <AccountPage
-        h1={pluralise(balance, "coin")}
+        h1="Fillo coins"
         kicker="Fillo+"
-        lead="Two coins for every ₹100. Twenty-five coins is ₹25 off. They never expire, and that is the whole scheme."
+        lead="Two coins for every ₹100. Twenty-five coins is ₹25 off, and they never expire."
       >
         <Rewards state={state} />
       </AccountPage>

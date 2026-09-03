@@ -7,10 +7,10 @@ import { IconButton } from "@/components/ui/IconButton";
 import { useFocusTrap, useLockBodyScroll } from "@/components/ui/overlay";
 
 /**
- * Dialog — DESIGN.md §12.23.
+ * Dialog — DESIGN-v2 §1 and §2.
  *
- * 520px, `--radius-lg`, paper-0, `--shadow-overlay`, padding `--space-8`.
- * Scrim fades in over `--dur-base`; the panel scales 0.97 → 1 over
+ * 520px on the card ground at a 10px radius, over a chocolate-tinted scrim.
+ * The scrim fades over `--dur-base`; the panel scales 0.97 → 1 over
  * `--dur-slow`. Focus trapped, Esc closes, scroll locked, focus returns.
  *
  * Below 640px it becomes a bottom sheet: full width, `--radius-lg` on the top
@@ -74,7 +74,7 @@ export function Dialog({
           aria-labelledby={labelledBy ?? (title ? titleId : undefined)}
           tabIndex={-1}
           className={cn(
-            "relative w-full bg-paper-0 shadow-overlay outline-none",
+            "relative w-full bg-card shadow-overlay outline-none",
             "p-6 sm:p-8",
             "max-h-[92vh] overflow-y-auto",
             sheet
@@ -92,12 +92,15 @@ export function Dialog({
           </div>
 
           {title ? (
-            <h2 id={titleId} className="pr-10 text-display-sm">
+            <h2
+              id={titleId}
+              className="pr-10 font-display text-[26px] leading-tight text-ink"
+            >
               {title}
             </h2>
           ) : null}
           {description ? (
-            <p className="mt-3 text-body text-ink-600">{description}</p>
+            <p className="mt-3 max-w-[48ch] text-body text-ink-2">{description}</p>
           ) : null}
 
           {children ? <div className={cn(title && "mt-6")}>{children}</div> : null}
@@ -110,7 +113,7 @@ export function Dialog({
             <div
               className={cn(
                 "sticky bottom-0 z-1 mt-8 flex flex-wrap items-center justify-end gap-3",
-                "border-t border-paper-300 bg-paper-0",
+                "border-t border-line bg-card",
                 "-mx-6 -mb-6 px-6 py-4 sm:-mx-8 sm:-mb-8 sm:px-8",
               )}
             >

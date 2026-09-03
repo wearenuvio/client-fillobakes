@@ -11,7 +11,7 @@ export const metadata: Metadata = buildMetadata(PATH);
  * Payment and security — carried over with two edits (site-content.md).
  *
  *  1. UPI goes first in the list of accepted methods, because it is the
- *     primary button at checkout (§12.34) and the list should match the page.
+ *     primary button at checkout and the list should match the page.
  *  2. The KYC and Razorpay-onboarding checklist is gone. It was an internal
  *     note published by accident and it never belonged on a customer page.
  */
@@ -28,7 +28,7 @@ export default function PaymentPolicyPage() {
       <PolicyLayout
         current={PATH}
         title="Payment and security"
-        updated="3 October 2026"
+        updated="3 September 2026"
         lead="Payments are processed by Razorpay. We never see or store your card details, and the total you are shown is the total you are charged."
         sections={[
           {
@@ -38,17 +38,15 @@ export default function PaymentPolicyPage() {
               <>
                 <ul>
                   <li>
-                    <strong>UPI</strong> &mdash; the primary method, and the
-                    default button at checkout.
+                    <strong>UPI</strong>, the primary method and the default
+                    button at checkout.
                   </li>
                   <li>Debit and credit cards.</li>
                   <li>Netbanking.</li>
                   <li>Wallets supported by Razorpay.</li>
                   <li>
-                    Cash at the door, on a first order only, under a cap and
-                    with a small surcharge. Both figures are still being
-                    confirmed and the checkout shows the real ones before you
-                    commit.
+                    Cash at the door, on a first order only, for ₹30 extra and
+                    not on orders above ₹500.
                   </li>
                 </ul>
                 <p>
@@ -67,7 +65,7 @@ export default function PaymentPolicyPage() {
                 UPI credentials are handled by Razorpay and never reach our
                 servers. What we keep is your order, your phone number as your
                 account identifier, and the delivery area we need in order to
-                route the van &mdash; see{" "}
+                route the van. See{" "}
                 <Link href="/policies/privacy">Privacy</Link>.
               </p>
             ),
@@ -92,9 +90,9 @@ export default function PaymentPolicyPage() {
               <p>
                 Nothing is charged on a failed payment. If money has left your
                 account and the order has not appeared, it is almost always a
-                bank hold that reverses on its own within a few working days
-                &mdash; message us with the order ID and the time, and we will
-                chase it with Razorpay and hold your box in the meantime.
+                bank hold that reverses on its own within a few working days.
+                Message us with the order ID and the time, and we will chase it
+                with Razorpay and hold your box in the meantime.
               </p>
             ),
           },

@@ -26,7 +26,7 @@ export default async function AddressesPage({ searchParams }: Search) {
       <AccountPage
         h1="Addresses"
         kicker="Your account"
-        lead="Save a place and we'll tell you which day the van reaches it."
+        lead="Save a place and we tell you which day the van reaches it."
       >
         <AddressBook state={state} />
       </AccountPage>

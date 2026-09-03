@@ -4,15 +4,14 @@ import * as React from "react";
 import { Check, Gift } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { Button, ButtonLink } from "@/components/ui/Button";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { Field, Input } from "@/components/ui/Field";
 import { WheatGlyph } from "@/components/ui/LineArt";
 import { Price } from "@/components/ui/Price";
 import { useToast } from "@/components/ui/Toast";
 import { cn } from "@/lib/cn";
 import { formatINR, formatLongDate } from "@/lib/format";
-import { getGiftCards, isTbc } from "@/lib/mock";
+import { getGiftCards } from "@/lib/mock";
 import { Panel, PanelHead } from "@/components/pages/account/Panel";
+import { TextField } from "@/components/pages/content/Form";
 import type { GiftCardState } from "@/components/pages/account/states";
 
 /**
@@ -43,7 +42,7 @@ type Received = {
   receivedAt: string;
 };
 
-const TABS = ["Cards I bought", "Cards I've been given"] as const;
+const TABS = ["Cards I bought", "Cards sent to me"] as const;
 
 export function GiftCards({ state = "default" }: { state?: GiftCardState }) {
   const data = getGiftCards();
@@ -109,24 +108,23 @@ export function GiftCards({ state = "default" }: { state?: GiftCardState }) {
       {/* Add a card */}
       <Panel>
         <PanelHead label="Add a card" />
-        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
-          <Field
-            className="sm:max-w-[320px]"
+        <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start">
+          <TextField
+            className="sm:max-w-[320px] [&_input]:tabular"
+            id="gift-code"
             label="Gift card code"
-            htmlFor="gift-code"
             error={error}
             helper={added ?? "It comes off your next order automatically."}
+            value={code}
+            onChange={(e) => setCode(e.target.value.toUpperCase())}
+            placeholder="FILLO-0000-0000"
+          />
+          <Button
+            className="shrink-0 sm:mt-[30px]"
+            loading={busy}
+            disabled={!code.trim()}
+            onClick={addCode}
           >
-            <Input
-              id="gift-code"
-              value={code}
-              onChange={(e) => setCode(e.target.value.toUpperCase())}
-              placeholder="FILLO-0000-0000"
-              className="font-mono tabular"
-              invalid={Boolean(error)}
-            />
-          </Field>
-          <Button className="shrink-0" loading={busy} disabled={!code.trim()} onClick={addCode}>
             Add this card
           </Button>
         </div>
@@ -144,10 +142,11 @@ export function GiftCards({ state = "default" }: { state?: GiftCardState }) {
               aria-selected={active}
               onClick={() => setTab(option)}
               className={cn(
-                "micro h-11 rounded-sm px-4 transition-colors duration-[var(--dur-fast)]",
+                "h-11 rounded-pill border px-4 text-body-sm whitespace-nowrap",
+                "transition-colors duration-[var(--dur-base)]",
                 active
-                  ? "bg-ink-800 text-paper-0"
-                  : "border border-paper-300 text-ink-600 hover:text-ink-800",
+                  ? "border-accent bg-accent font-semibold text-on-accent"
+                  : "border-line bg-card text-ink-2 hover:border-ink",
               )}
             >
               {option}
@@ -158,8 +157,7 @@ export function GiftCards({ state = "default" }: { state?: GiftCardState }) {
 
       {tab === TABS[0] ? (
         bought.length === 0 ? (
-          <EmptyState
-            glyph={<WheatGlyph size={96} />}
+          <GiftEmpty
             title={data.states.emptyBought}
             body="A gift card is bread on a day they choose, which is the only kind of gift a bakery can post."
             action={<ButtonLink href="/gift-cards">Send a gift card</ButtonLink>}
@@ -170,7 +168,7 @@ export function GiftCards({ state = "default" }: { state?: GiftCardState }) {
               <li key={card.code}>
                 <Panel as="div" className="flex h-full flex-col">
                   <div className="flex flex-wrap items-start justify-between gap-3">
-                    <p className="flex items-center gap-2 text-title text-ink-800">
+                    <p className="flex items-center gap-2 font-display text-[22px] leading-snug text-ink">
                       <Gift size={20} strokeWidth={1.5} aria-hidden="true" />
                       For {card.recipientName}
                     </p>
@@ -178,30 +176,30 @@ export function GiftCards({ state = "default" }: { state?: GiftCardState }) {
                       {card.statusLabel}
                     </Badge>
                   </div>
-                  <p className="mt-3 font-mono text-caption text-ink-500 tabular">
+                  <p className="mt-3 text-body-sm text-muted tabular">
                     {card.code}
                   </p>
                   <p className="mt-4 flex items-baseline gap-3">
                     <Price amount={card.amount} size="lg" />
                     {card.balance !== card.amount ? (
-                      <span className="text-body-sm text-ink-600 tabular">
+                      <span className="text-body-sm text-ink-2 tabular">
                         {card.balance === 0
                           ? "nothing left"
                           : `${formatINR(card.balance)} left`}
                       </span>
                     ) : null}
                   </p>
-                  <p className="mt-3 flex-1 text-body-sm text-ink-600 tabular">
+                  <p className="mt-3 flex-1 text-body-sm text-ink-2 tabular">
                     {card.status === "scheduled" ? "Goes out" : "Sent"}{" "}
                     {formatLongDate(card.deliverOn)}. &ldquo;{card.message}&rdquo;
                   </p>
-                  <div className="mt-5 border-t border-paper-300 pt-4">
+                  <div className="mt-5 border-t border-line pt-4">
                     <button
                       type="button"
                       onClick={() =>
                         toast({ message: `Sent again to ${card.recipientName} on WhatsApp.` })
                       }
-                      className="link-underline text-body-sm text-ink-700 hover:text-ink-900"
+                      className="link-underline text-body-sm font-semibold text-accent"
                     >
                       Resend
                     </button>
@@ -212,8 +210,7 @@ export function GiftCards({ state = "default" }: { state?: GiftCardState }) {
           </ul>
         )
       ) : received.length === 0 ? (
-        <EmptyState
-          glyph={<WheatGlyph size={96} />}
+        <GiftEmpty
           title={data.states.emptyReceived}
           body="Add a code above and the balance lands here."
         />
@@ -223,25 +220,25 @@ export function GiftCards({ state = "default" }: { state?: GiftCardState }) {
             <li key={card.code}>
               <Panel as="div" className="flex h-full flex-col">
                 <div className="flex flex-wrap items-start justify-between gap-3">
-                  <p className="text-title text-ink-800">From {card.fromName}</p>
+                  <p className="font-display text-[22px] leading-snug text-ink">From {card.fromName}</p>
                   <Badge variant={card.balance > 0 ? "success" : "muted"}>
                     {card.statusLabel}
                   </Badge>
                 </div>
-                <p className="mt-3 font-mono text-caption text-ink-500 tabular">
+                <p className="mt-3 text-body-sm text-muted tabular">
                   {card.code}
                 </p>
                 <p className="mt-4 flex items-baseline gap-3">
                   <Price amount={card.balance} size="lg" />
-                  <span className="text-body-sm text-ink-600 tabular">
+                  <span className="text-body-sm text-ink-2 tabular">
                     {card.balanceLabel}
                   </span>
                 </p>
-                <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-paper-300 pt-4">
+                <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-line pt-4">
                   <ButtonLink href="/shop" size="sm" variant="secondary">
                     Use it at checkout
                   </ButtonLink>
-                  <span className="flex items-center gap-1.5 text-caption text-ink-500">
+                  <span className="flex items-center gap-1.5 text-body-sm text-muted">
                     <Check size={16} strokeWidth={1.5} className="text-success" aria-hidden="true" />
                     Comes off automatically
                   </span>
@@ -252,11 +249,30 @@ export function GiftCards({ state = "default" }: { state?: GiftCardState }) {
         </ul>
       )}
 
-      <p className="text-caption text-ink-500">
-        {isTbc(data.expiryTbc)
-          ? "Whether these expire is still being decided. Until it is, we will not print a date we cannot honour."
-          : null}
+      <p className="text-body-sm text-muted">
+        A balance never expires, and it comes off your next order on its own.
       </p>
+    </div>
+  );
+}
+
+function GiftEmpty({
+  title,
+  body,
+  action,
+}: {
+  title: React.ReactNode;
+  body: React.ReactNode;
+  action?: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-lg border border-line bg-card px-6 py-16 text-center">
+      <span aria-hidden="true" className="mx-auto mb-6 block w-fit opacity-20">
+        <WheatGlyph size={88} />
+      </span>
+      <p className="font-display text-[26px] leading-tight text-ink">{title}</p>
+      <p className="mx-auto mt-2 max-w-[40ch] text-body text-ink-2">{body}</p>
+      {action ? <div className="mt-7">{action}</div> : null}
     </div>
   );
 }

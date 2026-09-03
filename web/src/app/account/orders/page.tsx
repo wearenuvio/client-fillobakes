@@ -26,7 +26,7 @@ export default async function AccountOrdersPage({ searchParams }: Search) {
       <AccountPage
         h1="Orders"
         kicker="Your account"
-        lead="Everything you've ordered, newest first. Every one of them can go back in the box in a tap."
+        lead="Everything you have ordered, newest first. Any of them goes back in your order in one tap."
       >
         <OrdersList state={state} />
       </AccountPage>

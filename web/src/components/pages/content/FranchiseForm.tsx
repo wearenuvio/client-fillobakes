@@ -3,9 +3,15 @@
 import * as React from "react";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { Field, Input, Select, Textarea, Checkbox } from "@/components/ui/Field";
 import { useToast } from "@/components/ui/Toast";
 import { CONTACT } from "@/lib/config";
+import {
+  TextField,
+  TextAreaField,
+  SelectField,
+  CheckRow,
+  FieldLabel,
+} from "@/components/pages/content/Form";
 import { useMockSubmit, isPhone, isEmail } from "@/components/pages/content/useMockSubmit";
 
 /**
@@ -79,11 +85,11 @@ export function FranchiseForm() {
       if (!v.name.trim()) found.name = "We need this one.";
       if (!v.phone.trim()) found.phone = "We need this one.";
       else if (!isPhone(v.phone))
-        found.phone = "That doesn't look like a 10-digit number.";
+        found.phone = "That does not look like a 10-digit number.";
       if (!v.email.trim()) found.email = "We need this one.";
       else if (!isEmail(v.email)) found.email = "That address is missing something.";
       if (!v.city.trim()) found.city = "We need this one.";
-      if (!v.investment) found.investment = "Pick the band you're closest to.";
+      if (!v.investment) found.investment = "Pick the band you are closest to.";
       if (f.length === 0) found.formats = "Pick at least one.";
       return found;
     },
@@ -125,22 +131,23 @@ export function FranchiseForm() {
 
   if (status === "sent") {
     return (
-      <div className="border-y border-y-paper-300 py-10">
-        <p className="flex items-center gap-3 text-title font-sans font-semibold text-ink-800">
-          <Check size={20} strokeWidth={1.5} className="text-success" aria-hidden="true" />
+      <div className="rounded-lg border border-line bg-card p-6 lg:p-8">
+        <p className="flex items-center gap-3 font-display text-[26px] leading-tight text-ink">
+          <Check
+            size={22}
+            strokeWidth={1.5}
+            className="shrink-0 text-success"
+            aria-hidden="true"
+          />
           Enquiry noted.
         </p>
-        <p className="mt-3 max-w-[46ch] text-body text-ink-600">
-          One of the two founders reads these. We have not set a promised
-          turnaround yet, so we are not going to print one — but you will hear
-          from a person, and the first conversation is a call, not a deck.
+        <p className="mt-3 max-w-[46ch] text-body text-ink-2">
+          A founder reads these, not a form inbox. You will hear from a person,
+          and the first conversation is a call rather than a deck.
         </p>
-        <p className="mt-6 text-body-sm text-ink-500">
+        <p className="mt-6 text-body-sm text-muted">
           Faster, if you would rather:{" "}
-          <a
-            href={`mailto:${CONTACT.email}`}
-            className="link-underline text-kiln"
-          >
+          <a href={`mailto:${CONTACT.email}`} className="link-underline font-medium text-accent">
             {CONTACT.email}
           </a>
           {" · "}
@@ -151,19 +158,19 @@ export function FranchiseForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className="max-w-[var(--max-narrow)]">
+    <form onSubmit={onSubmit} noValidate>
       <fieldset className="border-0 p-0">
-        <legend className="micro text-kiln">The qualifying part</legend>
+        <legend className="text-[12px] font-medium tracking-[0.12em] text-accent uppercase">
+          The qualifying part
+        </legend>
 
-        <Field
-          label="What you would want to run"
-          className="mt-6"
-          error={touched.formats ? errors.formats : undefined}
-        >
-          <div className="mt-1 grid gap-1 sm:grid-cols-2">
+        <div className="mt-6">
+          <FieldLabel>What you would want to run</FieldLabel>
+          <div className="grid gap-1 sm:grid-cols-2">
             {FORMATS.map((format) => (
-              <Checkbox
+              <CheckRow
                 key={format}
+                id={`fr-format-${format.slice(0, 8).replace(/\W/g, "")}`}
                 name="formats"
                 value={format}
                 label={format}
@@ -173,150 +180,116 @@ export function FranchiseForm() {
               />
             ))}
           </div>
-        </Field>
+          {touched.formats && errors.formats ? (
+            <p role="alert" className="mt-2 text-body-sm text-accent">
+              {errors.formats}
+            </p>
+          ) : null}
+        </div>
 
-        <div className="mt-6 grid gap-6 sm:grid-cols-2">
-          <Field
+        <div className="mt-6 grid gap-5 sm:grid-cols-2">
+          <SelectField
+            id="fr-investment"
+            name="investment"
             label="Investment you can commit"
-            htmlFor="fr-investment"
+            value={values.investment}
             error={touched.investment ? errors.investment : undefined}
+            onChange={(e) => set("investment", e.target.value)}
+            onBlur={() => blur("investment")}
           >
-            <Select
-              id="fr-investment"
-              name="investment"
-              value={values.investment}
-              invalid={Boolean(touched.investment && errors.investment)}
-              onChange={(e) => set("investment", e.target.value)}
-              onBlur={() => blur("investment")}
-            >
-              <option value="">Pick a band</option>
-              {INVESTMENT_BANDS.map((band) => (
-                <option key={band} value={band}>
-                  {band}
-                </option>
-              ))}
-            </Select>
-          </Field>
+            <option value="">Pick a band</option>
+            {INVESTMENT_BANDS.map((band) => (
+              <option key={band} value={band}>
+                {band}
+              </option>
+            ))}
+          </SelectField>
 
-          <Field label="Where you are with food" htmlFor="fr-experience">
-            <Select
-              id="fr-experience"
-              name="experience"
-              value={values.experience}
-              onChange={(e) => set("experience", e.target.value)}
-            >
-              {EXPERIENCE.map((level) => (
-                <option key={level} value={level}>
-                  {level}
-                </option>
-              ))}
-            </Select>
-          </Field>
+          <SelectField
+            id="fr-experience"
+            name="experience"
+            label="Where you are with food"
+            value={values.experience}
+            onChange={(e) => set("experience", e.target.value)}
+          >
+            {EXPERIENCE.map((level) => (
+              <option key={level} value={level}>
+                {level}
+              </option>
+            ))}
+          </SelectField>
         </div>
       </fieldset>
 
       <fieldset className="mt-12 border-0 p-0">
-        <legend className="micro text-kiln">How to reach you</legend>
+        <legend className="text-[12px] font-medium tracking-[0.12em] text-accent uppercase">
+          How to reach you
+        </legend>
 
-        <div className="mt-6 grid gap-6 sm:grid-cols-2">
-          <Field
+        <div className="mt-6 grid gap-5 sm:grid-cols-2">
+          <TextField
+            id="fr-name"
+            name="name"
             label="Your name"
-            htmlFor="fr-name"
+            autoComplete="name"
+            value={values.name}
             error={touched.name ? errors.name : undefined}
-          >
-            <Input
-              id="fr-name"
-              name="name"
-              autoComplete="name"
-              value={values.name}
-              invalid={Boolean(touched.name && errors.name)}
-              onChange={(e) => set("name", e.target.value)}
-              onBlur={() => blur("name")}
-            />
-          </Field>
-
-          <Field
+            onChange={(e) => set("name", e.target.value)}
+            onBlur={() => blur("name")}
+          />
+          <TextField
+            id="fr-city"
+            name="city"
             label="City you would run it in"
-            htmlFor="fr-city"
+            autoComplete="address-level2"
+            placeholder="Bengaluru"
+            value={values.city}
             error={touched.city ? errors.city : undefined}
-          >
-            <Input
-              id="fr-city"
-              name="city"
-              autoComplete="address-level2"
-              placeholder="Bengaluru"
-              value={values.city}
-              invalid={Boolean(touched.city && errors.city)}
-              onChange={(e) => set("city", e.target.value)}
-              onBlur={() => blur("city")}
-            />
-          </Field>
-
-          <Field
+            onChange={(e) => set("city", e.target.value)}
+            onBlur={() => blur("city")}
+          />
+          <TextField
+            id="fr-phone"
+            name="phone"
             label="Phone"
-            htmlFor="fr-phone"
+            type="tel"
+            inputMode="numeric"
+            autoComplete="tel-national"
+            prefix="+91"
+            placeholder="98765 43210"
+            value={values.phone}
             error={touched.phone ? errors.phone : undefined}
-          >
-            <Input
-              id="fr-phone"
-              name="phone"
-              type="tel"
-              inputMode="numeric"
-              autoComplete="tel-national"
-              prefix="+91"
-              placeholder="98765 43210"
-              className="font-mono"
-              value={values.phone}
-              invalid={Boolean(touched.phone && errors.phone)}
-              onChange={(e) => set("phone", e.target.value)}
-              onBlur={() => blur("phone")}
-            />
-          </Field>
-
-          <Field
+            onChange={(e) => set("phone", e.target.value)}
+            onBlur={() => blur("phone")}
+          />
+          <TextField
+            id="fr-email"
+            name="email"
             label="Email"
-            htmlFor="fr-email"
+            type="email"
+            autoComplete="email"
+            value={values.email}
             error={touched.email ? errors.email : undefined}
-          >
-            <Input
-              id="fr-email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              value={values.email}
-              invalid={Boolean(touched.email && errors.email)}
-              onChange={(e) => set("email", e.target.value)}
-              onBlur={() => blur("email")}
-            />
-          </Field>
+            onChange={(e) => set("email", e.target.value)}
+            onBlur={() => blur("email")}
+          />
         </div>
 
-        <Field
+        <TextAreaField
+          id="fr-note"
+          name="note"
           label="Anything else"
-          htmlFor="fr-note"
-          className="mt-6"
+          className="mt-5"
+          rows={4}
           helper="Optional. The neighbourhood you have in mind is the useful part."
-        >
-          <Textarea
-            id="fr-note"
-            name="note"
-            rows={4}
-            value={values.note}
-            onChange={(e) => set("note", e.target.value)}
-          />
-        </Field>
+          value={values.note}
+          onChange={(e) => set("note", e.target.value)}
+        />
       </fieldset>
 
-      <div className="mt-8">
-        <Button type="submit" size="lg" loading={status === "sending"}>
-          Send enquiry
-        </Button>
-        <p className="mt-4 max-w-[62ch] text-caption text-ink-500">
-          We read every one. We have not measured a reply time yet, so we are
-          not going to promise one here. Nothing on this front end is sent
-          anywhere — it is a mock.
-        </p>
-      </div>
+      <Button type="submit" size="lg" className="mt-8" loading={status === "sending"}>
+        Send enquiry
+      </Button>
     </form>
   );
 }

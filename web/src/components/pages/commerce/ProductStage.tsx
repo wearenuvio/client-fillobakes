@@ -35,7 +35,10 @@ export function ProductGalleryV2({
 
   return (
     <div>
-      <div className="relative aspect-square overflow-hidden rounded-xl bg-well">
+      {/* The same square well, the same 10px radius and the same ground as a
+          ProductCard, so the page reads as the card opened up rather than as a
+          second treatment of the same object. */}
+      <div className="relative aspect-square overflow-hidden rounded-lg bg-well">
         {active ? (
           <Image
             key={active.src}
@@ -46,9 +49,9 @@ export function ProductGalleryV2({
             sizes="(min-width: 1024px) 46vw, 92vw"
             className={cn(
               active.kind === "cutout"
-                ? "scale-[0.8] object-contain cutout"
+                ? "scale-[0.78] object-contain cutout"
                 : "object-cover",
-              soldOut && "opacity-70 grayscale-[.6]",
+              soldOut && "opacity-80 grayscale-[.5]",
             )}
           />
         ) : (
@@ -59,11 +62,13 @@ export function ProductGalleryV2({
 
         <Stamp
           lines={["baked this", "morning"]}
-          size={78}
+          size={96}
           className="absolute right-4 bottom-4 sm:right-6 sm:bottom-6"
         />
       </div>
 
+      {/* Thumbs: one fixed square each, so a tall lifestyle frame and a wide
+          cutout still make the same button. */}
       {images.length > 1 ? (
         <ul className="mt-4 flex gap-3">
           {images.map((image, i) => (
@@ -74,25 +79,25 @@ export function ProductGalleryV2({
                 aria-label={`View image ${i + 1} of ${images.length}`}
                 aria-current={i === index ? "true" : undefined}
                 className={cn(
-                  "grid size-20 place-items-center overflow-hidden rounded-lg border bg-well",
+                  "grid size-20 shrink-0 place-items-center overflow-hidden rounded-lg border bg-well",
                   "transition-colors duration-[var(--dur-base)]",
-                  i === index
-                    ? "border-ink"
-                    : "border-line hover:border-muted",
+                  "focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:outline-none",
+                  i === index ? "border-ink" : "border-line hover:border-muted",
                 )}
               >
-                <Image
-                  src={image.src}
-                  alt=""
-                  width={160}
-                  height={160}
-                  sizes="80px"
-                  className={cn(
-                    image.kind === "cutout"
-                      ? "w-[78%] object-contain"
-                      : "size-full object-cover",
-                  )}
-                />
+                <span className="relative block size-full">
+                  <Image
+                    src={image.src}
+                    alt=""
+                    fill
+                    sizes="80px"
+                    className={cn(
+                      image.kind === "cutout"
+                        ? "scale-[0.78] object-contain"
+                        : "object-cover",
+                    )}
+                  />
+                </span>
               </button>
             </li>
           ))}

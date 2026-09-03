@@ -2,18 +2,16 @@ import * as React from "react";
 import { cn } from "@/lib/cn";
 
 /**
- * Long-form typography — DESIGN.md §3.1, §3.2 and §8.
+ * Long-form typography — DESIGN-v2 §1.
  *
- * The system has no typography plugin on purpose: prose here is the same
- * token scale as the rest of the site, addressed through descendant variants
- * so an editorial body can be written as plain JSX and still obey the law.
+ * There is no typography plugin here on purpose: an editorial body is written
+ * as plain JSX and picks up the same token scale as the rest of the site
+ * through descendant variants.
  *
- *  - Measure is capped at `--max-prose` (68ch); §3.2.3 asks for ~62ch of
- *    body, which is what `--text-body-lg` lands on inside that container.
- *  - Headings stay display weight 400 (§3.2.1). An h3 drops to the sans
- *    register rather than shrinking the display face below 24px (§3.2.2).
- *  - Links inside long-form copy are the one place kiln is allowed to carry
- *    running text (§2.4), with the underline growing from the left (§9).
+ *  - Measure caps at 68ch, which lands body-lg on roughly 62 characters.
+ *  - Headings are the display serif at weight 400. An h3 steps into the sans
+ *    rather than shrinking the serif below 24px.
+ *  - Terracotta is the only link colour, and the underline grows from the left.
  */
 export function Prose({
   className,
@@ -24,17 +22,17 @@ export function Prose({
     <div
       {...rest}
       className={cn(
-        "max-w-[var(--max-prose)] text-body-lg text-ink-600",
+        "max-w-[var(--max-prose)] text-body-lg text-ink-2",
         "[&>*:first-child]:mt-0",
         "[&_p]:mt-6",
-        "[&_h2]:mt-14 [&_h2]:mb-0 [&_h2]:text-display-sm [&_h2]:text-ink-800",
-        "[&_h3]:mt-10 [&_h3]:mb-0 [&_h3]:font-sans [&_h3]:text-title-lg [&_h3]:font-semibold [&_h3]:text-ink-800",
+        "[&_h2]:mt-14 [&_h2]:mb-0 [&_h2]:font-display [&_h2]:text-[clamp(26px,3vw,34px)] [&_h2]:leading-tight [&_h2]:text-ink",
+        "[&_h3]:mt-10 [&_h3]:mb-0 [&_h3]:font-sans [&_h3]:text-[18px] [&_h3]:font-semibold [&_h3]:text-ink",
         "[&_h2+p]:mt-4 [&_h3+p]:mt-3",
         "[&_ul]:mt-6 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5",
         "[&_ol]:mt-6 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5",
-        "[&_li]:marker:text-paper-400",
-        "[&_strong]:font-semibold [&_strong]:text-ink-800",
-        "[&_a]:text-kiln [&_a]:link-underline",
+        "[&_li]:marker:text-line",
+        "[&_strong]:font-semibold [&_strong]:text-ink",
+        "[&_a]:text-accent [&_a]:font-medium [&_a]:link-underline",
         className,
       )}
     >
@@ -44,8 +42,8 @@ export function Prose({
 }
 
 /**
- * The lead paragraph. `--text-body-lg` capped at 46ch (§3.2.3), sitting above
- * the body rather than inside it so the measure change is deliberate.
+ * The standfirst. One size up from the body, capped short, sitting above the
+ * article rather than inside it so the measure change is deliberate.
  */
 export function Lead({
   className,
@@ -55,7 +53,7 @@ export function Lead({
   return (
     <p
       {...rest}
-      className={cn("max-w-[46ch] text-body-lg text-ink-600", className)}
+      className={cn("max-w-[46ch] text-body-lg text-ink-2", className)}
     >
       {children}
     </p>
@@ -64,7 +62,7 @@ export function Lead({
 
 /**
  * A pull quote — the one display-face interruption a long article gets.
- * Hairline above and below, never a card, never a quote-mark graphic (§12.13).
+ * Hairline above and below, never a card, never a quote-mark graphic.
  */
 export function PullQuote({
   className,
@@ -74,33 +72,24 @@ export function PullQuote({
   return (
     <figure
       {...rest}
-      className={cn(
-        "my-12 max-w-[46ch] border-y border-y-paper-300 py-8",
-        className,
-      )}
+      className={cn("my-12 max-w-[42ch] border-y border-line py-8", className)}
     >
-      <blockquote className="font-display text-display-sm text-ink-800">
+      <blockquote className="font-display text-[clamp(24px,3vw,30px)] leading-snug text-ink italic">
         {children}
       </blockquote>
     </figure>
   );
 }
 
-/**
- * A footnote — the humour container (§1.1.3). One per section, `*`-prefixed,
- * caption size, ink-500, directly beneath the claim it escorts.
- */
+/** A footnote: caption size, muted, directly beneath the claim it escorts. */
 export function Footnote({
   className,
   children,
   ...rest
 }: React.HTMLAttributes<HTMLParagraphElement>) {
   return (
-    <p
-      {...rest}
-      className={cn("mt-3 max-w-[62ch] text-caption text-ink-500", className)}
-    >
-      <span aria-hidden="true">*</span> {children}
+    <p {...rest} className={cn("mt-3 max-w-[58ch] text-body-sm text-muted", className)}>
+      {children}
     </p>
   );
 }

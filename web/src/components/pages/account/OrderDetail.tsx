@@ -1,37 +1,31 @@
 "use client";
 
 import * as React from "react";
-import { AlertCircle, Check, MessageCircle, Star } from "lucide-react";
+import { Check, MapPin, MessageCircle, Star, Truck } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { Button, ButtonLink } from "@/components/ui/Button";
-import { Checkbox, Field, Input, Textarea } from "@/components/ui/Field";
 import { Dialog } from "@/components/ui/Dialog";
 import { Price } from "@/components/ui/Price";
 import { useToast } from "@/components/ui/Toast";
-import { TrackerCard } from "@/components/blocks/TrackerCard";
-import { FulfilmentSummary } from "@/components/blocks/FulfilmentLane";
+import { BakeStrip } from "@/components/blocks/BakeStrip";
 import { cn } from "@/lib/cn";
 import { formatINR, formatTimeOfDay } from "@/lib/format";
-import { getAddress, getVanState, type Order } from "@/lib/mock";
+import { getAddress, type Order } from "@/lib/mock";
 import { whatsappHref } from "@/lib/config";
 import { Panel, PanelHead, MetaRow } from "@/components/pages/account/Panel";
 import { ItemThumbs } from "@/components/pages/account/ItemThumbs";
 import { ReorderButton } from "@/components/pages/account/AddAgain";
-import {
-  extrasOf,
-  moneyExtras,
-  whereLabel,
-} from "@/components/pages/account/orderData";
-import { statusSpec } from "@/components/pages/account/orderStatus";
-import { OrderTimeline } from "@/components/pages/account/OrderTimeline";
+import { TextAreaField, CheckRow } from "@/components/pages/content/Form";
+import { extrasOf, moneyExtras, whereLabel } from "@/components/pages/account/orderData";
+import { bakeStripFour, statusSpec } from "@/components/pages/account/orderStatus";
 
 /**
- * Order detail — site-content "Screen: Order detail".
+ * Order detail — PAGES-v2 Account, "Orders … Detail".
  *
- * Everything on /order/[id], plus the invoice, the payment method and a way
- * to tell us something went wrong. The five-step strip carries real
- * timestamps only: a step that has not happened has no clock, because a
- * fabricated bake strip is worse than no bake strip.
+ * The status sentence, the four-step bake status, where it is going, what it
+ * cost, and one way back into the box. Every clock on the strip is a real one
+ * from the fixture: a step that has not happened carries an em dash rather
+ * than a guess.
  */
 export function OrderDetail({ order }: { order: Order }) {
   // The fixture's status vocabulary is wider than lib/mock's OrderStatus union
@@ -56,33 +50,48 @@ export function OrderDetail({ order }: { order: Order }) {
   const delivered = status === "delivered" || status === "collected";
   const closed = ["cancelled", "refunded"].includes(status) || cancelled;
   const reportOpen = extras.reportWindowOpen !== false;
+  const steps = React.useMemo(() => bakeStripFour(order.bakeStrip), [order.bakeStrip]);
 
   const windows = address?.availableWindows ?? ["16:00-18:00", "18:00-20:00"];
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* ---------------------------------------------------------------- */}
+    <div className="flex flex-col gap-5 lg:gap-6">
+      {/* ---- Where it stands ------------------------------------------- */}
       <Panel>
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <p className="micro text-ink-500 tabular">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-[12px] font-medium tracking-[0.12em] text-muted uppercase tabular">
             {order.fulfilment.dateLabel}
           </p>
           <Badge variant={cancelled ? "muted" : spec.tone}>
             {cancelled ? "Cancelled" : spec.label}
           </Badge>
         </div>
-        <p className="mt-4 text-display-sm text-ink-800">
+
+        <p className="mt-4 max-w-[34ch] font-display text-[26px] leading-tight text-ink">
           {cancelled
-            ? "Cancelled. Nothing further will be charged, and the refund is with Razorpay — 7 to 10 working days."
+            ? "Cancelled. Nothing further will be charged."
             : order.statusSentence}
         </p>
+
         {changedTo ? (
-          <p className="mt-4 flex items-start gap-2 rounded-md bg-success-tint p-3 text-body-sm text-success">
-            <Check size={16} strokeWidth={1.5} className="mt-0.5 shrink-0" aria-hidden="true" />
-            Changed. {changedTo}. Same total.
+          <p className="mt-4 flex items-start gap-2 text-body-sm text-ink-2">
+            <Check
+              size={16}
+              strokeWidth={1.5}
+              aria-hidden="true"
+              className="mt-1 shrink-0 text-success"
+            />
+            <span>Changed to {changedTo}. Same total.</span>
           </p>
         ) : null}
-        {spec.cta && !closed ? (
+
+        {status === "out" && !cancelled ? (
+          <ButtonLink href="/van" className="mt-6" icon={<Truck size={16} strokeWidth={1.5} />} iconPosition="leading">
+            Track the van
+          </ButtonLink>
+        ) : null}
+
+        {spec.cta && !closed && status !== "out" ? (
           <div className="mt-6">
             {spec.cta.href ? (
               <ButtonLink href={spec.cta.href}>{spec.cta.label}</ButtonLink>
@@ -100,34 +109,36 @@ export function OrderDetail({ order }: { order: Order }) {
         ) : null}
       </Panel>
 
-      {/* ---- The bake strip. Real timestamps, nulls stay unticked. -------- */}
+      {/* ---- Bake status ------------------------------------------------ */}
       <Panel>
-        <PanelHead label="What happened, and when" />
-        <OrderTimeline className="mt-4" steps={order.bakeStrip} />
-        <p className="nano mt-4 border-t border-paper-300 pt-4 text-ink-500">
+        <PanelHead label="Bake status" />
+        {/* No active cell: "NOW" in a step that has not started would be a
+            guess, and the status sentence above already says where it is. */}
+        <BakeStrip className="mt-4" steps={steps} columns={4} />
+        <p className="mt-4 text-body-sm text-muted">
           Every time here is a real one from the kitchen. A step with no time has
           not happened yet.
         </p>
       </Panel>
 
-      {/* ---- The tracker, embedded where the customer will actually look -- */}
-      {status === "out" && !cancelled ? (
-        <TrackerCard van={getVanState("live")} />
-      ) : null}
-
-      {/* ---- Where and when ---------------------------------------------- */}
+      {/* ---- Where and when --------------------------------------------- */}
       <Panel>
         <PanelHead label="Where and when" />
-        <FulfilmentSummary
-          className="mt-2"
-          lane={order.fulfilment.lane}
-          detail={`${order.fulfilment.dateLabel} · ${whereLabel(order)}${
-            order.fulfilment.windowLabel ? ` · ${order.fulfilment.windowLabel}` : ""
-          }`}
-        />
+        <p className="mt-4 flex items-start gap-3 text-body text-ink">
+          <MapPin
+            size={18}
+            strokeWidth={1.5}
+            aria-hidden="true"
+            className="mt-1 shrink-0 text-accent"
+          />
+          <span className="tabular">
+            {order.fulfilment.laneLabel} · {whereLabel(order)}
+            {order.fulfilment.windowLabel ? ` · ${order.fulfilment.windowLabel}` : ""}
+          </span>
+        </p>
         {address ? (
-          <address className="mt-4 text-body-sm text-ink-600 not-italic">
-            {address.label} · {address.blockAndFlat}, {address.society}
+          <address className="mt-3 pl-[30px] text-body-sm text-ink-2 not-italic">
+            {address.blockAndFlat}, {address.society}
             <br />
             {address.landmark ? `${address.landmark}, ` : ""}
             {address.area} {address.pincode}
@@ -135,19 +146,19 @@ export function OrderDetail({ order }: { order: Order }) {
         ) : null}
       </Panel>
 
-      {/* ---- Items and money --------------------------------------------- */}
+      {/* ---- Items and money -------------------------------------------- */}
       <Panel>
         <PanelHead
           label="Your order"
-          trailing={<ItemThumbs items={order.items} size={40} />}
+          trailing={<ItemThumbs items={order.items} size={40} max={3} />}
         />
-        <ul className="mt-4 divide-y divide-paper-300 border-y border-paper-300">
+        <ul className="mt-4 divide-y divide-line border-y border-line">
           {order.items.map((item) => (
             <li key={item.slug} className="flex items-baseline gap-4 py-3">
-              <span className="min-w-0 flex-1 text-body text-ink-800">
+              <span className="min-w-0 flex-1 text-body text-ink">
                 <span className="tabular">{item.qty}</span> × {item.name}
                 {item.variant ? (
-                  <span className="text-ink-500"> · {item.variant}</span>
+                  <span className="text-muted"> · {item.variant}</span>
                 ) : null}
               </span>
               <Price amount={item.lineTotal} size="sm" />
@@ -156,7 +167,7 @@ export function OrderDetail({ order }: { order: Order }) {
         </ul>
 
         <div className="mt-4">
-          <MetaRow label="Subtotal" value={formatINR(order.money.subtotal)} />
+          <MetaRow label="Items" value={formatINR(order.money.subtotal)} />
           {money.discount.amount ? (
             <MetaRow
               label={money.discount.label ?? "Discount"}
@@ -167,132 +178,125 @@ export function OrderDetail({ order }: { order: Order }) {
             label="Delivery"
             value={
               order.money.delivery === null
-                ? "TBC"
+                ? null
                 : order.money.delivery === 0
-                  ? (order.money.deliveryLabel ?? "Free")
+                  ? "Free"
                   : formatINR(order.money.delivery)
             }
           />
-          <MetaRow label={`Tax ${order.money.taxRateLabel}`} value={formatINR(order.money.tax)} />
-          <div className="mt-2 flex items-baseline justify-between gap-3 border-t border-paper-300 pt-4">
-            <span className="text-title text-ink-800">Total</span>
+          <div className="mt-2 flex items-baseline justify-between gap-3 border-t border-line pt-4">
+            <span className="font-display text-[22px] text-ink">Total</span>
             <Price amount={order.money.total} size="lg" />
           </div>
           {money.refunded ? (
-            <p className="mt-3 text-caption text-ink-500 tabular">
-              Refunded {formatINR(money.refunded)} to your UPI app — reference{" "}
+            <p className="mt-3 text-body-sm text-muted tabular">
+              Refunded {formatINR(money.refunded)} to your UPI app, reference{" "}
               {money.refundReference}.
             </p>
           ) : null}
         </div>
       </Panel>
 
-      {/* ---- Payment and invoice ----------------------------------------- */}
+      {/* ---- Payment and invoice ---------------------------------------- */}
       <Panel id="invoice">
         <PanelHead label="Payment and invoice" />
         <div className="mt-2">
           <MetaRow label="Paid with" value={order.payment.methodLabel} />
-          <MetaRow label="Processor" value={order.payment.processor} />
-          <MetaRow label="Reference" value={order.payment.reference ?? "—"} />
+          <MetaRow label="Reference" value={order.payment.reference} />
           <MetaRow
             label="Paid at"
-            value={order.payment.paidAt ? formatTimeOfDay(order.payment.paidAt) : "—"}
+            value={order.payment.paidAt ? formatTimeOfDay(order.payment.paidAt) : null}
           />
           <MetaRow label="Invoice" value={order.id} />
         </div>
-        <p className="mt-4 text-caption text-ink-500">
-          Your invoice goes out on WhatsApp with the order confirmation. Ask us and
-          we&rsquo;ll send it again.
+        <p className="mt-4 text-body-sm text-muted">
+          Your invoice goes out on WhatsApp with the confirmation. Ask and we send
+          it again.
         </p>
       </Panel>
 
-      {/* ---- Actions, gated by the cutoff -------------------------------- */}
+      {/* ---- What you can still do -------------------------------------- */}
       <Panel>
-        <PanelHead label="Change this order" />
+        <PanelHead label={delivered ? "How was it" : "Change this order"} />
         {closed ? (
-          <p className="mt-4 text-body text-ink-600">
+          <p className="mt-4 text-body text-ink-2">
             This order is closed. Nothing further will be charged.
           </p>
         ) : delivered ? (
           <>
-            <div className="mt-4 flex flex-wrap items-center gap-3">
-              <RateRow rated={rated} onRate={(n) => {
+            <RateRow
+              className="mt-3"
+              rated={rated}
+              onRate={(n) => {
                 setRated(n);
-                toast({ message: "Thanks. That helps us more than you'd think." });
-              }} />
-            </div>
-            <div className="mt-6 flex flex-wrap gap-3">
+                toast({ message: "Thanks. That helps us more than you would think." });
+              }}
+            />
+            <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
               <ReorderButton
                 items={order.items.map((i) => ({ slug: i.slug, qty: i.qty }))}
                 variant="primary"
               />
               {reportOpen ? (
-                <Button variant="secondary" onClick={() => setProblemOpen(true)}>
-                  Something wrong?
-                </Button>
+                <button
+                  type="button"
+                  onClick={() => setProblemOpen(true)}
+                  className="link-underline text-body-sm font-semibold text-accent"
+                >
+                  Something wrong
+                </button>
               ) : null}
             </div>
             {!reportOpen ? (
-              <p className="mt-4 text-caption text-ink-500">
+              <p className="mt-4 text-body-sm text-muted">
                 {extras.reportWindowCopy ??
-                  "The 24-hour window for reporting a problem has passed, but message us anyway — we'd rather know."}
+                  "The 24-hour window for reporting a problem has passed. Message us anyway, we would rather know."}
               </p>
             ) : null}
           </>
         ) : order.canChange ? (
           <>
-            <div className="mt-4 flex flex-wrap gap-3">
+            <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
               <Button variant="secondary" onClick={() => setChangeOpen(true)}>
                 Change window
               </Button>
-              <ButtonLink href="/account/addresses" variant="secondary">
-                Change stop or address
-              </ButtonLink>
-              <Button variant="ghost" onClick={() => setCancelOpen(true)}>
+              <button
+                type="button"
+                onClick={() => setCancelOpen(true)}
+                className="link-underline text-body-sm text-ink-2 hover:text-ink"
+              >
                 Cancel this order
-              </Button>
+              </button>
             </div>
-            <p className="mt-4 text-caption text-ink-500">
+            <p className="mt-4 text-body-sm text-muted">
               Free until Thursday 8pm. After that the dough is already in.
             </p>
           </>
         ) : (
           <>
-            <p className="mt-4 text-body text-ink-600">
+            <p className="mt-4 max-w-[46ch] text-body text-ink-2">
               {order.changeClosedCopy ??
-                "Too late to change this one — the dough's in. Message us and we'll do what we can."}
+                "Too late to change this one, the dough is in. Message us and we will do what we can."}
             </p>
-            <div className="mt-6">
-              <ButtonLink
-                href={whatsappHref(`Hi Fillo — question about order ${order.id}.`)}
-                variant="secondary"
-                icon={<MessageCircle size={16} strokeWidth={1.5} />}
-                iconPosition="leading"
-              >
-                WhatsApp us
-              </ButtonLink>
-            </div>
+            <ButtonLink
+              href={whatsappHref(`Hi Fillo — question about order ${order.id}.`)}
+              variant="secondary"
+              className="mt-6"
+              icon={<MessageCircle size={16} strokeWidth={1.5} />}
+              iconPosition="leading"
+            >
+              Message us
+            </ButtonLink>
           </>
         )}
       </Panel>
 
-      <p className="text-caption text-ink-500">
-        Something not right?{" "}
-        <a
-          href={whatsappHref(`Hi Fillo — question about order ${order.id}.`)}
-          className="link-underline text-ink-700"
-        >
-          Report a problem on WhatsApp
-        </a>
-        . We read these ourselves.
-      </p>
-
-      {/* ---- Dialogs ------------------------------------------------------ */}
+      {/* ---- Dialogs ----------------------------------------------------- */}
       <Dialog
         open={changeOpen}
         onClose={() => setChangeOpen(false)}
         title="Change your window"
-        description="Pick another window on the same run. The total does not change."
+        description="Another window on the same run. The total does not change."
       >
         <ul className="mt-6 grid grid-cols-2 gap-3">
           {windows.map((band) => (
@@ -300,14 +304,15 @@ export function OrderDetail({ order }: { order: Order }) {
               <button
                 type="button"
                 onClick={() => {
-                  setChangedTo(`${order.fulfilment.dateLabel}, ${band.replace("-", " to ")}`);
+                  const label = `${order.fulfilment.dateLabel}, ${band.replace("-", " to ")}`;
+                  setChangedTo(label);
                   setChangeOpen(false);
-                  toast({ message: `Changed. ${order.fulfilment.dateLabel}, ${band}. Same total.` });
+                  toast({ message: `Changed to ${label}. Same total.` });
                 }}
                 className={cn(
-                  "flex h-11 w-full items-center justify-center rounded-sm border",
-                  "border-paper-400 bg-paper-0 text-body-sm text-ink-800 tabular",
-                  "hover:border-ink-600",
+                  "flex h-12 w-full items-center justify-center rounded-md border border-line",
+                  "bg-card text-body-sm text-ink tabular transition-colors",
+                  "duration-[var(--dur-fast)] hover:border-ink",
                 )}
               >
                 {band}
@@ -321,7 +326,7 @@ export function OrderDetail({ order }: { order: Order }) {
         open={cancelOpen}
         onClose={() => setCancelOpen(false)}
         title="Cancel this order?"
-        description="Nothing further will be charged, and the refund is with Razorpay — 7 to 10 working days."
+        description="Nothing further will be charged. The refund goes back through Razorpay and takes 7 to 10 working days."
         footer={
           <>
             <Button variant="ghost" onClick={() => setCancelOpen(false)}>
@@ -332,10 +337,7 @@ export function OrderDetail({ order }: { order: Order }) {
               onClick={() => {
                 setCancelled(true);
                 setCancelOpen(false);
-                toast({
-                  message:
-                    "Cancelled. Nothing further will be charged, and the refund is with Razorpay — 7 to 10 working days.",
-                });
+                toast({ message: "Cancelled. Nothing further will be charged." });
               }}
             >
               Cancel this order
@@ -356,34 +358,38 @@ export function OrderDetail({ order }: { order: Order }) {
 function RateRow({
   rated,
   onRate,
+  className,
 }: {
   rated: number | null;
   onRate: (n: number) => void;
+  className?: string;
 }) {
   return (
-    <div className="flex items-center gap-3">
-      <span className="micro text-ink-500">Rate this</span>
-      <div className="flex items-center gap-1">
-        {[1, 2, 3, 4, 5].map((n) => (
-          <button
-            key={n}
-            type="button"
-            onClick={() => onRate(n)}
-            aria-label={`${n} out of 5`}
-            aria-pressed={rated === n}
-            className="grid size-11 place-items-center"
-          >
-            <Star
-              size={20}
-              strokeWidth={1.5}
-              className={cn(
-                rated !== null && n <= rated ? "fill-crumb text-crumb" : "text-paper-400",
-              )}
-              aria-hidden="true"
-            />
-          </button>
-        ))}
-      </div>
+    <div className={cn("flex items-center gap-2", className)}>
+      {[1, 2, 3, 4, 5].map((n) => (
+        <button
+          key={n}
+          type="button"
+          onClick={() => onRate(n)}
+          aria-label={`${n} out of 5`}
+          aria-pressed={rated === n}
+          className="grid size-11 place-items-center"
+        >
+          <Star
+            size={22}
+            strokeWidth={1.5}
+            aria-hidden="true"
+            className={cn(
+              rated !== null && n <= rated
+                ? "fill-gold text-gold"
+                : "text-line",
+            )}
+          />
+        </button>
+      ))}
+      {rated !== null ? (
+        <span className="ml-2 text-body-sm text-muted">Thanks.</span>
+      ) : null}
     </div>
   );
 }
@@ -406,7 +412,7 @@ function ProblemDialog({
       open={open}
       onClose={onClose}
       title="Tell us what went wrong"
-      description="We can't take returns — everything is baked for the day it's made. But if this arrived damaged, wrong, or just not right, tell us and we'll sort it. Every time."
+      description="We cannot take returns, because everything is baked for the day it is made. If this arrived damaged, wrong, or just not right, we will sort it."
       footer={
         sent ? (
           <Button onClick={onClose}>Close</Button>
@@ -419,7 +425,7 @@ function ProblemDialog({
               onClick={() => {
                 setSent(true);
                 toast({
-                  message: "Got it. We read these ourselves and we'll reply on WhatsApp today.",
+                  message: "Got it. We read these ourselves and reply on WhatsApp today.",
                 });
               }}
             >
@@ -430,17 +436,25 @@ function ProblemDialog({
       }
     >
       {sent ? (
-        <p className="mt-6 flex items-start gap-2 text-body text-success">
-          <Check size={20} strokeWidth={1.5} className="mt-0.5 shrink-0" aria-hidden="true" />
-          Got it. We read these ourselves and we&rsquo;ll reply on WhatsApp today.
+        <p className="mt-6 flex items-start gap-2 text-body text-ink">
+          <Check
+            size={20}
+            strokeWidth={1.5}
+            aria-hidden="true"
+            className="mt-1 shrink-0 text-success"
+          />
+          Got it. We read these ourselves and reply on WhatsApp today.
         </p>
       ) : (
-        <div className="mt-6 flex flex-col gap-4">
+        <div className="mt-6 flex flex-col gap-5">
           <fieldset className="border-0 p-0">
-            <legend className="micro mb-2 text-ink-600">Which items</legend>
+            <legend className="mb-1 text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
+              Which items
+            </legend>
             {order.items.map((item) => (
-              <Checkbox
+              <CheckRow
                 key={item.slug}
+                id={`problem-${item.slug}`}
                 label={item.name}
                 checked={picked.includes(item.slug)}
                 onChange={(e) =>
@@ -454,23 +468,12 @@ function ProblemDialog({
             ))}
           </fieldset>
 
-          <Field
-            label="Photos (up to three)"
-            htmlFor="problem-photos"
-            helper="A photo tells us more than a paragraph."
-          >
-            <Input id="problem-photos" type="file" accept="image/*" multiple />
-          </Field>
-
-          <Field label="What happened" htmlFor="problem-note">
-            <Textarea id="problem-note" placeholder="As much or as little as you like." />
-          </Field>
-
-          <p className="flex items-start gap-2 text-caption text-ink-500">
-            <AlertCircle size={16} strokeWidth={1.5} className="mt-px shrink-0" aria-hidden="true" />
-            Order {order.id}, {order.fulfilment.dateLabel}. We&rsquo;ll have all of that
-            already.
-          </p>
+          <TextAreaField
+            id="problem-note"
+            label="What happened"
+            placeholder="As much or as little as you like."
+            helper={`A photo helps — send it when we reply. We already have order ${order.id}, ${order.fulfilment.dateLabel}.`}
+          />
         </div>
       )}
     </Dialog>

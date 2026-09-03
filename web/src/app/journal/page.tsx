@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { buildMetadata, JsonLd } from "@/lib/seo";
-import { Section } from "@/components/blocks/Section";
-import { Kicker } from "@/components/ui/Rule";
-import { RuleHeading } from "@/components/pages/content/RuleHeading";
 import { Badge } from "@/components/ui/Badge";
+import { InkArt } from "@/components/ui/InkArt";
 import { ButtonLink } from "@/components/ui/Button";
-import { LineArtBleed } from "@/components/ui/LineArt";
-import { Lead } from "@/components/pages/content/Prose";
+import {
+  ContentSection,
+  PageHead,
+  SectionHead,
+} from "@/components/pages/content/PageShell";
 import { JOURNAL_BODIES } from "@/components/pages/content/journal-bodies";
 import { GUIDE_BODIES } from "@/components/pages/content/guide-bodies";
 import { getGuides, getJournalPosts } from "@/lib/content";
@@ -19,130 +20,128 @@ const PATH = "/journal";
 export const metadata: Metadata = buildMetadata(PATH);
 
 /**
- * From the van — site-content.md, Section: Journal.
+ * From the van — PAGES-v2 Journal.
  *
- * The old blog was 23 auto-generated stubs titled "Discover [product]", each
- * repeating the shop description word for word, with every Read More pointing
- * at /blogpage/undefined. All 23 are gone; /blogpage 301s here.
- *
- * The index lists the eight commissioned pieces exactly as the content spec
- * numbers them: four dated posts here, four undated guides in /guides. A
- * post that has not been written says so — the state is copy, not a comment.
+ * Photo cards: title, one line, date. A piece that has not been written
+ * carries a "Coming soon" tag and no body — the old site's 23 auto-generated
+ * stubs were the reason this section exists at all.
  */
 export default function JournalIndexPage() {
   const posts = getJournalPosts();
   const guides = getGuides();
-  const published = posts.filter((p) => JOURNAL_BODIES[p.slug]?.published);
 
   return (
     <>
       <JsonLd path={PATH} crumbs={[{ name: "Journal", path: PATH }]} />
 
-      <Section surface="paper-50" size="none" className="overflow-hidden pt-[var(--section-y)] pb-[calc(var(--section-y)/2)]">
-        <LineArtBleed glyph="van" side="right" size={640} />
-        <div className="relative max-w-[var(--max-narrow)]">
-          <Kicker>Journal</Kicker>
-          <h1 className="mt-4 text-display-lg text-ink-800">From the van</h1>
-          <Lead className="mt-6">
-            Notes on bread, the route, and what didn&rsquo;t rise. One post a
-            fortnight, 250 to 700 words, no listicles.
-          </Lead>
-          <p className="micro mt-8 text-ink-500">
-            <span className="tabular">{published.length}</span> written ·{" "}
-            <span className="tabular">{posts.length - published.length}</span>{" "}
-            commissioned
-          </p>
-        </div>
-      </Section>
+      <ContentSection
+        surface="paper"
+        size="none"
+        className="overflow-hidden pt-10 pb-8 lg:pt-14"
+      >
+        <InkArt
+          name="croissant"
+          width={380}
+          opacity={0.1}
+          className="top-1/2 right-[-60px] hidden -translate-y-1/2 lg:block"
+        />
+        <PageHead
+          script="From the van."
+          title="The journal"
+          lead="Notes on bread, the route, and what did not rise. One post a fortnight."
+        />
+      </ContentSection>
 
-      <Section surface="paper-50" size="half">
-        <RuleHeading trailing="Dated, never updated">Posts</RuleHeading>
-        <ul className="mt-2">
-          {posts.map((post) => {
+      <ContentSection surface="paper" size="half">
+        <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {posts.map((post, index) => {
             const body = JOURNAL_BODIES[post.slug];
-            const isDraft = !body?.published;
+            const soon = !body?.published;
             return (
-              <li key={post.slug} className="border-b border-b-paper-300">
+              <li key={post.slug}>
                 <Link
                   href={post.path}
-                  className="group grid gap-4 py-8 lg:grid-cols-12 lg:gap-12"
+                  className="group flex h-full flex-col overflow-hidden rounded-lg border border-line bg-card transition-[box-shadow,transform] duration-[var(--dur-base)] ease-[var(--ease-standard)] hover:-translate-y-0.5 hover:shadow-lift"
                 >
-                  <p className="micro text-ink-500 lg:col-span-2">
-                    {body?.published ? (
-                      <span className="tabular">
-                        {formatLongDate(body.published)}
+                  <div className="relative aspect-[16/10] overflow-hidden bg-well">
+                    {body?.image ? (
+                      <Image
+                        src={body.image.src}
+                        alt=""
+                        fill
+                        priority={index < 2}
+                        sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                        className={
+                          soon
+                            ? "object-cover object-[50%_60%] opacity-70 grayscale-[.5]"
+                            : "object-cover object-[50%_60%] transition-transform duration-[var(--dur-base)] group-hover:scale-105 motion-reduce:transform-none"
+                        }
+                      />
+                    ) : null}
+                    {soon ? (
+                      <span className="absolute top-3 left-3">
+                        <Badge variant="outline">Coming soon</Badge>
                       </span>
-                    ) : (
-                      "Not published"
-                    )}
-                  </p>
-                  <div className="lg:col-span-6">
-                    <h3 className="text-display-sm text-ink-800 transition-colors duration-[var(--dur-fast)] group-hover:text-ink-900">
+                    ) : null}
+                  </div>
+                  <div className="flex flex-1 flex-col p-6">
+                    <h2 className="font-display text-[24px] leading-tight text-ink">
                       {post.h1}
-                    </h3>
-                    <p className="mt-3 max-w-[52ch] text-body text-ink-600">
+                    </h2>
+                    <p className="mt-3 line-clamp-2 text-body-sm text-ink-2">
                       {body?.standfirst ?? post.description}
                     </p>
-                  </div>
-                  <div className="lg:col-span-4 lg:text-right">
-                    {isDraft ? (
-                      <Badge variant="outline">Being written</Badge>
-                    ) : (
-                      <span className="micro inline-flex items-center gap-2 text-kiln">
-                        Read
-                        <ArrowRight
-                          size={16}
-                          strokeWidth={1.5}
-                          aria-hidden="true"
-                          className="transition-transform duration-[var(--dur-fast)] group-hover:translate-x-1"
-                        />
-                      </span>
-                    )}
+                    {body?.published ? (
+                      <p className="mt-5 text-body-sm text-muted tabular">
+                        {formatLongDate(body.published)}
+                      </p>
+                    ) : null}
                   </div>
                 </Link>
               </li>
             );
           })}
         </ul>
-      </Section>
+      </ContentSection>
 
-      <Section surface="paper-100" size="half">
-        <RuleHeading trailing="Undated, maintained">
-          And the guides
-        </RuleHeading>
-        <p className="mt-6 max-w-[62ch] text-body text-ink-600">
-          Four of the eight pieces are definition pages rather than posts. They
-          live in their own section because they get corrected when we learn
-          something, and a dated post never does.
-        </p>
-        <ul className="mt-8 grid gap-x-12 gap-y-1 sm:grid-cols-2">
+      <ContentSection surface="paper-2">
+        <SectionHead
+          eyebrow="Guides"
+          heading="And the ones we keep up to date."
+          lead="Four definition pages rather than posts. A guide is corrected when we learn something; a dated post stands as written."
+          link={{ href: "/guides", label: "All four guides" }}
+        />
+        <ul className="mt-10 grid gap-x-10 sm:grid-cols-2">
           {guides.map((guide) => (
-            <li key={guide.slug} className="border-t border-t-paper-300">
+            <li key={guide.slug} className="border-t border-line">
               <Link
                 href={guide.path}
-                className="group flex min-h-14 items-center justify-between gap-6 py-3"
+                className="group flex min-h-14 items-center justify-between gap-6 py-4"
               >
-                <span className="text-body text-ink-700 group-hover:text-ink-900">
+                <span className="font-display text-[20px] leading-snug text-ink">
                   {guide.h1}
                 </span>
                 {GUIDE_BODIES[guide.slug]?.state === "part-published" ? (
-                  <span className="micro shrink-0 text-ink-500">Part-published</span>
-                ) : (
-                  <ArrowRight
-                    size={16}
-                    strokeWidth={1.5}
-                    aria-hidden="true"
-                    className="shrink-0 text-ink-500 transition-transform duration-[var(--dur-fast)] group-hover:translate-x-1"
-                  />
-                )}
+                  <Badge variant="outline" className="shrink-0">
+                    In progress
+                  </Badge>
+                ) : null}
               </Link>
             </li>
           ))}
         </ul>
-        <ButtonLink href="/guides" variant="secondary" className="mt-10">
-          All four guides
-        </ButtonLink>
-      </Section>
+      </ContentSection>
+
+      <ContentSection surface="peach" size="half">
+        <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
+          <h2 className="max-w-[20ch] text-h2 text-ink">
+            The bread is better than the writing.
+          </h2>
+          <ButtonLink href="/shop" className="shrink-0">
+            See the menu
+          </ButtonLink>
+        </div>
+      </ContentSection>
     </>
   );
 }

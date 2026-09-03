@@ -18,17 +18,27 @@ import { useCartStore, useCartHydrated, qtyOf } from "@/store/cart";
  *
  * A card ground with a 1:1 well behind a cutout at 78% width. Below it: the
  * category in small caps, the name in the display serif, the kana directly
- * under the name, one line of description, then price and one accent Add that
- * becomes a stepper.
+ * under the name, then price and one accent Add that becomes a stepper.
+ *
+ * There is deliberately no description. A menu board lists the bake and the
+ * price; the sentence about it belongs on the product page, and stripping it
+ * out is what lets eight cards read as one grid rather than eight paragraphs.
+ *
+ * Heights are equalised structurally, not by hope: the category line is a
+ * single truncated line, the name is clamped to two and reserves both, and the
+ * kana never wraps. So the price row lands on the same baseline in every card
+ * of a row whether the name is "Fruit Sando" or "Japanese Marble Bread".
  *
  * Hover swaps the `-v1` cutout for `-v2` on a 250ms cross-fade, both frames
  * loaded up front so the second one never pops in late. Where only one
  * revision exists the card falls back to a gentle scale, and on touch — where
  * there is no hover — the resting frame is all anyone ever sees.
  *
- * Sold out desaturates the cutout and swaps the button for a secondary
- * "Notify me": running out is good news, not a fault, so nothing turns red and
- * nothing leaves the grid. "Few left" is a gold tag and never a number.
+ * Sold out keeps the card warm rather than killing it grey: the cutout
+ * desaturates halfway and no further, the ground stays card white, and the
+ * button becomes a secondary "Notify me". Running out is good news, not a
+ * fault, so nothing turns red and nothing leaves the grid. "Few left" is gold
+ * type on a paper pill, and never a number.
  */
 
 export type ProductCardStock = {
@@ -89,7 +99,7 @@ export function ProductCard({
   const cutoutBox = cn(
     "absolute top-1/2 left-1/2 w-[78%] -translate-x-1/2 -translate-y-1/2",
     "object-contain cutout transition-opacity duration-[250ms] ease-[var(--ease-standard)]",
-    soldOut && "opacity-70 grayscale-[.6]",
+    soldOut && "opacity-80 grayscale-[.5]",
   );
 
   return (
@@ -156,7 +166,7 @@ export function ProductCard({
                 "absolute inset-[7%] size-[86%] rounded-md object-cover",
                 "transition-transform duration-[var(--dur-base)] ease-[var(--ease-standard)]",
                 "group-hover:scale-103 motion-reduce:transform-none",
-                soldOut && "opacity-70 grayscale-[.6]",
+                soldOut && "opacity-80 grayscale-[.5]",
               )}
             />
           ) : (
@@ -168,11 +178,11 @@ export function ProductCard({
 
         {/* -------- One tag, top-left. Never two. ------------------------ */}
         {soldOut ? (
-          <span className="pointer-events-none absolute top-3 left-3 inline-flex h-6 items-center rounded-pill bg-card/90 px-2.5 text-[11px] font-medium tracking-[0.08em] text-muted uppercase">
+          <span className="pointer-events-none absolute top-3 left-3 inline-flex h-6 items-center rounded-pill bg-paper px-2.5 text-[11px] font-medium tracking-[0.08em] text-ink-2 uppercase">
             Sold out today
           </span>
         ) : few ? (
-          <span className="pointer-events-none absolute top-3 left-3 inline-flex h-6 items-center rounded-pill border border-gold bg-card/90 px-2.5 text-[11px] font-medium tracking-[0.08em] text-crumb-ink uppercase">
+          <span className="pointer-events-none absolute top-3 left-3 inline-flex h-6 items-center rounded-pill bg-paper px-2.5 text-[11px] font-medium tracking-[0.08em] text-gold uppercase">
             Few left
           </span>
         ) : stock?.isNew ? (
@@ -184,24 +194,20 @@ export function ProductCard({
 
       {/* -------- Meta ------------------------------------------------- */}
       <div className="flex flex-1 flex-col p-4 lg:p-5">
-        <p className="text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
+        {/* One line each, always. "Pies and strudels" is the longest label in
+            the catalogue and is the reason this truncates rather than wraps. */}
+        <p className="truncate text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
           {category?.label}
         </p>
 
-        <h3 className="mt-1.5 font-display text-[20px] leading-[1.15] text-ink lg:text-[22px]">
+        {/* Two lines reserved whether the name needs them or not, so the price
+            row sits on one baseline across the row. */}
+        <h3 className="mt-1.5 line-clamp-2 min-h-[2lh] font-display text-[20px] leading-[1.15] text-ink lg:text-[22px]">
           <Link href={product.href} className="link-underline">
             {product.name}
           </Link>
         </h3>
-        <KanaLabel kana={product.kana} className="mt-0.5" />
-
-        {/* The clamp needs `display: -webkit-box`, so the responsive hide
-            goes on a wrapper rather than on the paragraph itself. */}
-        <div className="mt-2 hidden sm:block">
-          <p className="line-clamp-1 text-body-sm text-ink-2">
-            {product.shortDescription}
-          </p>
-        </div>
+        <KanaLabel kana={product.kana} className="mt-0.5 whitespace-nowrap" />
 
         <div className="mt-auto flex flex-col items-start gap-3 pt-4 sm:flex-row sm:items-center sm:justify-between">
           <Price amount={product.price} muted={soldOut} />

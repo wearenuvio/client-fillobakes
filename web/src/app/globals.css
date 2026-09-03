@@ -659,6 +659,76 @@
     background-size: var(--lineart-size, 460px auto);
   }
 
+  /* ---- Ink art ---------------------------------------------------------
+     The hand-drawn PNGs in /images/lineart, placed behind a section. They are
+     decoration: aria-hidden, never clickable, never over body copy, and they
+     never darken the ground enough to move text contrast. `.ink-art` is the
+     positioning wrapper; the <Image> inside carries its own intrinsic size so
+     nothing shifts while it loads.
+
+     Below 480px the drawings crowd a phone column, so every placement that
+     sits beside text is hidden outright rather than faded further. */
+  .ink-art {
+    position: absolute;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+  }
+  .ink-art > img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  /* Fit the whole drawing inside the box the caller sized, whatever its
+     aspect. Used in the category tiles, where a portrait drawing scaled to
+     the tile's width would be cropped down to a few vertical strokes. */
+  .ink-art-contain > img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  @media (max-width: 479px) {
+    .ink-art-phone-hide {
+      display: none;
+    }
+  }
+  /* Fades a drawing out towards its own edges. Used where art sits behind a
+     smaller object — the wheat behind the seal — so it reads as tucked in
+     rather than cropped by a hard box. */
+  .ink-art-fade {
+    /* `circle` matters: the default ellipse takes a closest-side radius per
+       axis, which on a tall drawing masks nothing vertically. */
+    mask-image: radial-gradient(
+      circle closest-side,
+      #000 38%,
+      rgb(0 0 0 / 0.3) 70%,
+      transparent 100%
+    );
+  }
+
+  /* ---- Warm photo ------------------------------------------------------
+     Stock lifestyle photography is lit cool and grey next to this palette.
+     A little sepia plus a peach multiply pulls it onto the same paper as
+     everything else. Wrap the image; the overlay is the wrapper's ::after so
+     no extra element is needed at the call site. */
+  .photo-warm {
+    position: relative;
+    isolation: isolate;
+  }
+  .photo-warm img {
+    filter: sepia(0.18) saturate(1.05);
+  }
+  .photo-warm::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background-color: var(--color-peach);
+    mix-blend-mode: multiply;
+    opacity: 0.12;
+  }
+
   /* Scroll reveal — once, on first entry. 400ms, never re-animates. */
   .reveal {
     opacity: 0;

@@ -7,12 +7,12 @@ import { useCartStore, useCartHydrated, computeTotals } from "@/store/cart";
 import { useSessionStore } from "@/store/session";
 
 /**
- * The sticky bottom bar (site-content, /shop §6): `2 items · Continue · ₹359`.
+ * The sticky bottom bar — PAGES-v2: `2 items · ₹449 · View order`.
  *
  * Mobile only in v2: on a phone the header cart icon is small and far away, so
  * the running total follows the thumb. On desktop the header carries it.
  *
- * It appears only when the box has something in it, and the number on it is
+ * It appears only when the order has something in it, and the number on it is
  * `computeTotals` — the same number the drawer shows and the same number
  * checkout charges (DECISIONS.md §5). Delivery is already inside it.
  */
@@ -41,7 +41,7 @@ export function StickyCartBar({ className }: { className?: string }) {
           <span className="font-semibold text-ink">{formatINR(totals.total)}</span>
         </p>
         <Button size="md" onClick={open}>
-          Continue
+          View order
         </Button>
       </div>
     </div>

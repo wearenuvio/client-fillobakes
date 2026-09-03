@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { ButtonLink } from "@/components/ui/Button";
+import { InkArt, type InkArtName } from "@/components/ui/InkArt";
 import { getCategories, getProductBySlug } from "@/lib/catalog";
 
 /**
@@ -108,6 +109,15 @@ const CATEGORY_FACE: Record<string, string> = {
   "fruit-sandos": "fruit-sando",
 };
 
+/** The drawn twin of each tile's photograph, faint behind the cutout. */
+const CATEGORY_MARK: Record<string, InkArtName> = {
+  breads: "shokupan-loaf",
+  anpan: "anpan-bun",
+  karepan: "karepan",
+  "pies-strudels": "croissant",
+  "fruit-sandos": "fruit-sando",
+};
+
 export function CategoryTiles() {
   const tiles = getCategories().filter(
     (c) => c.count > 0 && CATEGORY_FACE[c.slug],
@@ -121,13 +131,27 @@ export function CategoryTiles() {
         <ul className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-5">
           {tiles.map((category) => {
             const face = getProductBySlug(CATEGORY_FACE[category.slug]);
+            const mark = CATEGORY_MARK[category.slug];
             return (
               <li key={category.slug}>
                 <Link
                   href={`/shop/${category.slug}`}
                   className="group block rounded-lg transition-transform duration-[var(--dur-base)] ease-[var(--ease-standard)] hover:-translate-y-0.5"
                 >
-                  <div className="grid aspect-[4/3] place-items-center overflow-hidden rounded-lg bg-well">
+                  <div className="relative grid aspect-[4/3] place-items-center overflow-hidden rounded-lg bg-well">
+                    {/* The drawn twin, faint behind the photograph. Nothing
+                        here is text, so it can sit under the whole tile. */}
+                    {mark ? (
+                      <InkArt
+                        name={mark}
+                        width={220}
+                        fit="contain"
+                        opacity={0.11}
+                        hideOnPhone={false}
+                        sizes="(min-width: 1024px) 220px, 40vw"
+                        className="inset-[9%]"
+                      />
+                    ) : null}
                     {face?.image ? (
                       <Image
                         src={face.image.src}
@@ -136,7 +160,10 @@ export function CategoryTiles() {
                         height={400}
                         sizes="(min-width: 1024px) 220px, 40vw"
                         className={cn(
-                          "transition-transform duration-[var(--dur-base)] ease-[var(--ease-standard)]",
+                          // `relative` so it paints above the drawn mark: an
+                          // absolutely positioned sibling otherwise wins over
+                          // a static one whatever the source order.
+                          "relative transition-transform duration-[var(--dur-base)] ease-[var(--ease-standard)]",
                           "group-hover:scale-105 motion-reduce:transform-none",
                           face.image.kind === "cutout"
                             ? "w-[74%] object-contain cutout-sm"
@@ -174,12 +201,24 @@ export function CategoryTiles() {
 
 export function StorySplit() {
   return (
-    <section data-reveal className="bg-peach py-[var(--section-y)]">
-      <div className="container-content">
+    <section
+      data-reveal
+      className="relative overflow-hidden bg-peach py-[var(--section-y)]"
+    >
+      {/* The mb7 cue: rolling pin and flour bag, low on the left behind the
+          photographs, at a strength you notice only once. */}
+      <InkArt
+        name="rolling-pin-and-flour-bag"
+        width={420}
+        opacity={0.12}
+        className="bottom-[-30px] left-[-70px] w-[420px]"
+      />
+      <div className="relative container-content">
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          {/* Two photos: one tall, one small and offset. */}
+          {/* Two photos: one tall, one small and offset. Both warmed: the
+              stock frames are lit cool and sit grey against the peach. */}
           <div className="relative">
-            <div className="relative aspect-[4/5] w-[82%] overflow-hidden rounded-xl">
+            <div className="photo-warm relative aspect-[4/5] w-[82%] overflow-hidden rounded-xl">
               <Image
                 src="/images/stock/lifestyle/hands-holding-loaf-linen-table.jpg"
                 alt="Hands lifting a loaf off a linen-covered table"
@@ -188,7 +227,7 @@ export function StorySplit() {
                 className="object-cover object-[50%_45%]"
               />
             </div>
-            <div className="absolute right-0 bottom-[-28px] aspect-square w-[44%] overflow-hidden rounded-xl border-[6px] border-peach">
+            <div className="photo-warm absolute right-0 bottom-[-28px] aspect-square w-[44%] overflow-hidden rounded-xl border-[6px] border-peach">
               <Image
                 src="/images/stock/hero/milk-bread-loaves-cooling-rack.jpg"
                 alt="Milk bread loaves cooling on a rack"
@@ -261,8 +300,17 @@ const REASONS = [
 
 export function WhyReturn() {
   return (
-    <section data-reveal className="bg-paper py-[var(--section-y)]">
-      <div className="container-content">
+    <section
+      data-reveal
+      className="relative overflow-hidden bg-paper py-[var(--section-y)]"
+    >
+      <InkArt
+        name="oven-with-loaves"
+        width={480}
+        opacity={0.1}
+        className="right-[-80px] bottom-[-50px] w-[480px]"
+      />
+      <div className="relative container-content">
         <SectionHead
           eyebrow="Why people return"
           heading="The four things they say back to us."
@@ -353,24 +401,30 @@ function ComeBackCard({
 /* 9 — Reviews (the eight real ones from the live site; three shown)          */
 /* -------------------------------------------------------------------------- */
 
+/**
+ * The quotes are the approved live-site testimonials, unedited. Only the area
+ * under each one changed: three lines reading "Bengaluru" said nothing the
+ * hero and the trust strip had not already said twice, and a route the van
+ * actually runs is both more specific and more useful.
+ */
 const REVIEWS = [
   {
     quote:
       "Beautiful flavours, not overly greasy, and very filling. Will definitely order again.",
     name: "Aman K.",
-    meta: "Bengaluru",
+    meta: "Indiranagar",
   },
   {
     quote:
       "The shokupan was fabulous, just melt in the mouth delicious. With bread like that, who needs cake.",
     name: "Riya S.",
-    meta: "Bengaluru",
+    meta: "Koramangala",
   },
   {
     quote:
       "Every item feels crafted, not mass-produced. You can taste the care.",
     name: "Rahul D.",
-    meta: "Bengaluru",
+    meta: "HSR Layout",
   },
 ] as const;
 
@@ -468,7 +522,7 @@ export function JournalRow() {
               href={post.href}
               className="group flex flex-col overflow-hidden rounded-lg border border-line bg-card transition-[box-shadow,transform] duration-[var(--dur-base)] hover:-translate-y-0.5 hover:shadow-lift"
             >
-              <div className="relative aspect-[16/10] overflow-hidden">
+              <div className="photo-warm relative aspect-[16/10] overflow-hidden">
                 <Image
                   src={post.image}
                   alt={post.alt}

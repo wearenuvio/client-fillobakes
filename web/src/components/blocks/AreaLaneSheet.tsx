@@ -1,387 +1,420 @@
 "use client";
 
 import * as React from "react";
-import { Check, ExternalLink, MapPin, Truck } from "lucide-react";
+import { Check, MapPin, Truck } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { Dialog } from "@/components/ui/Dialog";
 import { Button } from "@/components/ui/Button";
-import { Field, Input } from "@/components/ui/Field";
-import { Price, FreeLabel } from "@/components/ui/Price";
-import { Skeleton } from "@/components/ui/Skeleton";
-import { LANES, COMMERCE, type LaneId } from "@/lib/config";
+import { COMMERCE, type LaneId } from "@/lib/config";
 import { formatINR } from "@/lib/format";
-import { getAllStops, getAreas, resolveAreaQuery } from "@/lib/mock";
+import { getAreas, type Area } from "@/lib/mock";
+import { useFocusTrap, useLockBodyScroll } from "@/components/ui/overlay";
 import { useSessionStore } from "@/store/session";
 
 /**
- * Area & lane sheet — journey-recommendation.md §2.3.
+ * Area & lane sheet — PAGES-v2 "Area & lane sheet".
  *
- * ONE sheet, reached from the header chip, the home lane cards, the PDP route
- * line and checkout. It is where lane and area get chosen before the cart
- * (DECISIONS.md §2), and the catalogue stays browsable without it.
+ * Two steps. Never more.
  *
- * All eight states the doc asks for are mocked here:
- *   lane · van-stop · delivery-area · success-van · success-delivery ·
- *   no-run · out-of-area · loading/error
+ *   1. Where should we bring it?   an area input over six real suggestions
+ *   2. How do you want it?         home delivery or catch the van
+ *
+ * Step 1 resolves to exactly three results — served, van only, not yet — and
+ * only "served" carries on to step 2. Van-only areas have one honest lane, so
+ * offering a choice would be a lie; the result itself is the button.
+ *
+ * The nine-step version this replaces asked the lane first and then the area,
+ * which meant a Whitefield visitor picked a delivery lane before being told we
+ * do not go there. Area first, always.
  */
 
-export type SheetStep =
-  | "lane"
-  | "van-stop"
-  | "delivery-area"
-  | "success-van"
-  | "success-delivery"
-  | "no-run"
-  | "out-of-area"
-  | "loading"
-  | "error";
+type Step = "where" | "lane";
+type Result = "served" | "van-only" | "not-yet";
 
 export function AreaLaneSheet({
   open,
   onClose,
-  initialStep = "lane",
 }: {
   open: boolean;
   onClose: () => void;
-  initialStep?: SheetStep;
 }) {
-  const [step, setStep] = React.useState<SheetStep>(initialStep);
+  const panelRef = React.useRef<HTMLDivElement>(null);
+  const titleId = React.useId();
+
+  const [step, setStep] = React.useState<Step>("where");
+  const [result, setResult] = React.useState<Result | null>(null);
+  const [query, setQuery] = React.useState("");
+  const [phone, setPhone] = React.useState("");
+  const [notified, setNotified] = React.useState(false);
+  const [picked, setPicked] = React.useState<Area | null>(null);
+
   const setArea = useSessionStore((s) => s.setArea);
   const setLane = useSessionStore((s) => s.setLane);
-  const setStop = useSessionStore((s) => s.setStop);
-  const setSlot = useSessionStore((s) => s.setSlot);
 
+  useLockBodyScroll(open);
+  useFocusTrap(panelRef, open, onClose);
+
+  // Every open starts at step one. A sheet that remembers a half-finished
+  // answer from twenty minutes ago is a sheet nobody trusts.
   React.useEffect(() => {
-    if (open) setStep(initialStep);
-  }, [open, initialStep]);
+    if (!open) return;
+    setStep("where");
+    setResult(null);
+    setQuery("");
+    setPhone("");
+    setNotified(false);
+    setPicked(null);
+  }, [open]);
+
+  if (!open) return null;
+
+  function choose(area: Area) {
+    setPicked(area);
+    setQuery(area.name);
+    if (area.serviceability === "not_yet") {
+      setArea(area.name, "out_of_area");
+      setResult("not-yet");
+      return;
+    }
+    setArea(area.name, "served");
+    if (area.serviceability === "catch_van_only") {
+      setResult("van-only");
+      return;
+    }
+    setResult("served");
+  }
+
+  function takeVan() {
+    setLane("catch_the_van");
+    onClose();
+  }
+
+  function takeLane(lane: LaneId) {
+    setLane(lane);
+    onClose();
+  }
+
+  const q = query.trim().toLowerCase();
+  const matches =
+    q && picked?.name.toLowerCase() !== q
+      ? getAreas().filter(
+          (a) => a.name.toLowerCase().includes(q) || a.pincode.startsWith(q),
+        )
+      : getAreas();
 
   return (
-    <Dialog open={open} onClose={onClose} variant="sheet" title={titleFor(step)}>
-      <AreaLaneSheetBody
-        step={step}
-        onStep={setStep}
-        onChooseLane={(lane) => {
-          setLane(lane);
-          setStep(lane === "catch_the_van" ? "van-stop" : "delivery-area");
-        }}
-        onChooseStop={(stopId, area, band) => {
-          setStop(stopId);
-          setArea(area, "served");
-          setSlot(null, band);
-          setStep("success-van");
-        }}
-        onChooseArea={(name) => {
-          const resolved = resolveAreaQuery(name);
-          if (!resolved || resolved.serviceability === "not_yet") {
-            setArea(resolved?.name ?? name, "out_of_area");
-            setStep("out-of-area");
-            return;
-          }
-          setArea(resolved.name, "served");
-          if (resolved.serviceability === "catch_van_only") {
-            setLane("catch_the_van");
-            setStep("van-stop");
-            return;
-          }
-          setLane("home_delivery");
-          setStep("success-delivery");
-        }}
-        onDone={onClose}
+    <div className="fixed inset-0 z-[var(--z-dialog)]">
+      <button
+        type="button"
+        tabIndex={-1}
+        aria-hidden="true"
+        onClick={onClose}
+        className="absolute inset-0 w-full cursor-default bg-scrim motion-safe:animate-[fade_var(--dur-base)_var(--ease-standard)]"
       />
-    </Dialog>
+
+      <div className="absolute inset-0 flex items-end sm:items-center sm:justify-center sm:p-6">
+        <div
+          ref={panelRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={titleId}
+          tabIndex={-1}
+          className={cn(
+            "relative flex max-h-[88vh] w-full flex-col bg-card outline-none",
+            "rounded-t-xl shadow-overlay sm:max-w-[460px] sm:rounded-xl",
+            "motion-safe:animate-[sheet-in_var(--dur-slow)_var(--ease-out)]",
+            "sm:motion-safe:animate-[dialog-in_var(--dur-slow)_var(--ease-out)]",
+          )}
+        >
+          <SheetHandle />
+
+          <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-8 sm:px-8">
+            <h2
+              id={titleId}
+              className="font-display text-[26px] leading-[1.1] text-ink sm:text-[30px]"
+            >
+              {step === "lane" ? "How do you want it?" : "Where should we bring it?"}
+            </h2>
+
+            {step === "where" ? (
+              <>
+                {/* -------- The input ---------------------------------- */}
+                <div className="relative mt-5">
+                  <MapPin
+                    size={20}
+                    strokeWidth={1.5}
+                    aria-hidden="true"
+                    className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-muted"
+                  />
+                  <input
+                    autoFocus
+                    value={query}
+                    onChange={(e) => {
+                      setQuery(e.target.value);
+                      setResult(null);
+                      setPicked(null);
+                    }}
+                    placeholder="Area or pincode"
+                    aria-label="Area or pincode"
+                    autoComplete="off"
+                    className={cn(
+                      "h-13 w-full rounded-md border border-line bg-paper pr-4 pl-12",
+                      "text-body text-ink placeholder:text-muted",
+                      "transition-colors duration-[var(--dur-fast)]",
+                      "hover:border-muted focus:border-ink focus:outline-none",
+                    )}
+                  />
+                </div>
+
+                {/* -------- The answer, or the six areas ---------------- */}
+                {result ? (
+                  <AreaResult
+                    result={result}
+                    area={picked}
+                    phone={phone}
+                    notified={notified}
+                    onPhone={setPhone}
+                    onNotify={() => setNotified(true)}
+                    onContinue={() => setStep("lane")}
+                    onTakeVan={takeVan}
+                  />
+                ) : (
+                  <ul className="mt-4 divide-y divide-line">
+                    {matches.map((area) => (
+                      <li key={area.slug}>
+                        <button
+                          type="button"
+                          onClick={() => choose(area)}
+                          className={cn(
+                            "flex min-h-13 w-full items-center gap-3 py-3 text-left",
+                            "transition-colors duration-[var(--dur-fast)] hover:text-accent",
+                          )}
+                        >
+                          <span className="min-w-0 flex-1">
+                            <span className="block text-body text-ink">
+                              {area.name}
+                            </span>
+                            <span className="block text-body-sm text-muted tabular">
+                              {area.pincode}
+                            </span>
+                          </span>
+                        </button>
+                      </li>
+                    ))}
+                    {matches.length === 0 ? (
+                      <li className="py-4 text-body-sm text-ink-2">
+                        Nothing by that name yet. Try an area or a 6-digit
+                        pincode.
+                      </li>
+                    ) : null}
+                  </ul>
+                )}
+              </>
+            ) : (
+              /* -------- Step 2: the two lanes ----------------------- */
+              <div className="mt-5 grid gap-3">
+                <LaneCard
+                  icon={<Truck size={22} strokeWidth={1.5} aria-hidden="true" />}
+                  title="Home delivery"
+                  price={formatINR(COMMERCE.deliveryFee)}
+                  line="Two-hour window, to your door."
+                  onClick={() => takeLane("home_delivery")}
+                />
+                <LaneCard
+                  icon={<MapPin size={22} strokeWidth={1.5} aria-hidden="true" />}
+                  title="Catch the van"
+                  price="Free"
+                  line="Pick a stop, we hold your order on board."
+                  onClick={() => takeLane("catch_the_van")}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
-function titleFor(step: SheetStep): string {
-  switch (step) {
-    case "lane":
-      return "How do you want it?";
-    case "van-stop":
-      return "Pick a stop";
-    case "delivery-area":
-      return "Where should we bring it?";
-    case "success-van":
-    case "success-delivery":
-      return "You're set";
-    case "no-run":
-      return "No run this week";
-    case "out-of-area":
-      return "Not yet";
-    case "error":
-      return "That didn't load";
-    default:
-      return "One moment";
+/** The grab handle. Decorative on desktop, the affordance on a phone. */
+function SheetHandle() {
+  return (
+    <div className="flex shrink-0 justify-center pt-3 pb-5 sm:pt-6">
+      <span
+        aria-hidden="true"
+        className="h-1 w-10 rounded-pill bg-line sm:hidden"
+      />
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* The three results                                                           */
+/* -------------------------------------------------------------------------- */
+
+function AreaResult({
+  result,
+  area,
+  phone,
+  notified,
+  onPhone,
+  onNotify,
+  onContinue,
+  onTakeVan,
+}: {
+  result: Result;
+  area: Area | null;
+  phone: string;
+  notified: boolean;
+  onPhone: (value: string) => void;
+  onNotify: () => void;
+  onContinue: () => void;
+  onTakeVan: () => void;
+}) {
+  const name = area?.name ?? "your area";
+
+  if (result === "served") {
+    return (
+      <div className="mt-6">
+        <p className="flex items-start gap-2.5 text-body-lg text-ink">
+          <Check
+            size={20}
+            strokeWidth={1.5}
+            aria-hidden="true"
+            className="mt-1 shrink-0 text-success"
+          />
+          <span>
+            We deliver to {name} on {daysOf(area)}.
+          </span>
+        </p>
+        <Button className="mt-6" size="lg" fullWidth onClick={onContinue}>
+          Choose how
+        </Button>
+      </div>
+    );
   }
+
+  if (result === "van-only") {
+    return (
+      <div className="mt-6">
+        <p className="flex items-start gap-2.5 text-body-lg text-ink">
+          <Check
+            size={20}
+            strokeWidth={1.5}
+            aria-hidden="true"
+            className="mt-1 shrink-0 text-success"
+          />
+          <span>
+            The van stops in {name} {daysOf(area, true)}. Home delivery is
+            coming soon.
+          </span>
+        </p>
+        <Button className="mt-6" size="lg" fullWidth onClick={onTakeVan}>
+          Catch the van
+        </Button>
+      </div>
+    );
+  }
+
+  if (notified) {
+    return (
+      <div className="mt-6">
+        <p className="flex items-start gap-2.5 text-body-lg text-ink">
+          <Check
+            size={20}
+            strokeWidth={1.5}
+            aria-hidden="true"
+            className="mt-1 shrink-0 text-success"
+          />
+          <span className="tabular">
+            Done. We&rsquo;ll message +91 {phone} the week we reach {name}.
+          </span>
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-6">
+      <p className="text-body-lg text-ink">
+        Not yet in {name}. Leave your number and we&rsquo;ll tell you first.
+      </p>
+      <div className="mt-5 flex items-stretch rounded-md border border-line bg-paper focus-within:border-ink">
+        <span className="flex items-center pl-4 text-body text-muted tabular">
+          +91
+        </span>
+        <span aria-hidden="true" className="my-3 ml-3 w-px bg-line" />
+        <input
+          value={phone}
+          onChange={(e) => onPhone(e.target.value.replace(/\D/g, ""))}
+          inputMode="tel"
+          maxLength={10}
+          placeholder="98765 43210"
+          aria-label="Mobile number"
+          className={cn(
+            "h-13 min-w-0 flex-1 bg-transparent px-3 text-body text-ink tabular",
+            "placeholder:text-muted focus:outline-none",
+          )}
+        />
+      </div>
+      <Button
+        className="mt-4"
+        size="lg"
+        fullWidth
+        disabled={phone.length !== 10}
+        onClick={onNotify}
+      >
+        Notify me
+      </Button>
+    </div>
+  );
 }
 
 /**
- * The sheet's body, exported separately so the styleguide can render every
- * step side by side without eight open dialogs.
+ * "Saturdays" → "on Saturdays"; the van-only voice wants the bare label. The
+ * fixture already writes these as sentences, so nothing is assembled here
+ * beyond the preposition.
  */
-export function AreaLaneSheetBody({
-  step,
-  onStep,
-  onChooseLane,
-  onChooseStop,
-  onChooseArea,
-  onDone,
-}: {
-  step: SheetStep;
-  onStep: (step: SheetStep) => void;
-  onChooseLane: (lane: LaneId) => void;
-  onChooseStop: (stopId: string, area: string, band: string) => void;
-  onChooseArea: (area: string) => void;
-  onDone: () => void;
-}) {
-  const [query, setQuery] = React.useState("");
-  const [phone, setPhone] = React.useState("");
-  const area = useSessionStore((s) => s.area);
-  const stopId = useSessionStore((s) => s.stopId);
-
-  const stops = getAllStops();
-  const chosenStop = stops.find((s) => s.id === stopId);
-
-  switch (step) {
-    /* ---- 1. Choose a lane, with true prices on both --------------------- */
-    case "lane":
-      return (
-        <div className="grid gap-3 min-[560px]:grid-cols-2">
-          {(["catch_the_van", "home_delivery"] as LaneId[]).map((id) => {
-            const lane = LANES[id];
-            const Icon = id === "catch_the_van" ? MapPin : Truck;
-            return (
-              <button
-                key={id}
-                type="button"
-                onClick={() => onChooseLane(id)}
-                className={cn(
-                  "flex flex-col items-start gap-2 rounded-md border-[1.5px] border-paper-400",
-                  "bg-paper-0 p-5 text-left transition-colors duration-[var(--dur-fast)]",
-                  "hover:border-ink-600",
-                )}
-              >
-                <Icon size={20} strokeWidth={1.5} aria-hidden="true" className="text-ink-800" />
-                <span className="text-title font-sans font-semibold text-ink-800">
-                  {lane.label}
-                </span>
-                {lane.price === 0 ? <FreeLabel /> : <Price amount={lane.price} />}
-                <span className="micro text-ink-500">{lane.qualifier}</span>
-              </button>
-            );
-          })}
-        </div>
-      );
-
-    /* ---- 2. Van lane → pick a stop -------------------------------------- */
-    case "van-stop":
-      return (
-        <ul className="divide-y divide-paper-300">
-          {stops.map((stop) => (
-            <li key={stop.id}>
-              <div className="flex items-center gap-3 py-3">
-                <button
-                  type="button"
-                  onClick={() => onChooseStop(stop.id, stop.area, stop.band)}
-                  className="min-w-0 flex-1 text-left"
-                >
-                  <span className="block text-body font-semibold text-ink-800">
-                    {stop.name}
-                  </span>
-                  <span className="micro block text-ink-500">
-                    {stop.descriptor} · {stop.runDaysLabel} · {stop.bandLabel}
-                  </span>
-                </button>
-                <a
-                  href={`https://www.google.com/maps/search/${encodeURIComponent(`${stop.name} Bengaluru`)}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label={`Open ${stop.name} in maps`}
-                  className="grid size-11 shrink-0 place-items-center rounded-md text-ink-600 hover:bg-veil"
-                >
-                  <ExternalLink size={20} strokeWidth={1.5} aria-hidden="true" />
-                </a>
-              </div>
-            </li>
-          ))}
-        </ul>
-      );
-
-    /* ---- 3. Delivery lane → area name first, never a raw pincode -------- */
-    case "delivery-area": {
-      const q = query.trim().toLowerCase();
-      const matches = q
-        ? getAreas().filter(
-            (a) => a.name.toLowerCase().includes(q) || a.pincode.startsWith(q),
-          )
-        : getAreas();
-      return (
-        <div>
-          <Button variant="ghost" size="sm" className="-ml-3 mb-2">
-            Use my location
-          </Button>
-          <Field label="Area" htmlFor="lane-sheet-area">
-            <Input
-              id="lane-sheet-area"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Start typing an area"
-              leadingIcon={<MapPin size={20} strokeWidth={1.5} aria-hidden="true" />}
-              autoComplete="off"
-            />
-          </Field>
-          <ul className="mt-4 divide-y divide-paper-300">
-            {matches.map((a) => (
-              <li key={a.slug}>
-                <button
-                  type="button"
-                  onClick={() => onChooseArea(a.name)}
-                  className="flex min-h-11 w-full items-center gap-2 py-3 text-left text-body text-ink-800"
-                >
-                  <MapPin size={16} strokeWidth={1.5} aria-hidden="true" className="text-ink-500" />
-                  <span className="min-w-0 flex-1">
-                    {a.name}
-                    <span className="micro block text-ink-500">
-                      {a.serviceability === "not_yet"
-                        ? "Not yet"
-                        : a.runDaysLabel ?? "Van stops nearby"}
-                    </span>
-                  </span>
-                </button>
-              </li>
-            ))}
-            {matches.length === 0 ? (
-              <li>
-                <button
-                  type="button"
-                  onClick={() => onChooseArea(query.trim())}
-                  className="flex min-h-11 w-full items-center py-3 text-left text-body text-ink-600"
-                >
-                  Check “{query.trim()}” anyway
-                </button>
-              </li>
-            ) : null}
-          </ul>
-        </div>
-      );
-    }
-
-    /* ---- 4. Success, van ------------------------------------------------ */
-    case "success-van":
-      return (
-        <SheetSuccess
-          line={`You're on ${chosenStop?.runDaysLabel ?? "this week"}'s ${area ?? ""} list.`}
-          sub={`Orders close ${COMMERCE.cutoffLabel}.`}
-          onDone={onDone}
-        />
-      );
-
-    /* ---- 5. Success, delivery ------------------------------------------ */
-    case "success-delivery":
-      return (
-        <SheetSuccess
-          line={`We deliver to ${area ?? "your area"}.`}
-          sub={`${formatINR(COMMERCE.deliveryFee)}, free over ${formatINR(
-            COMMERCE.freeDeliveryThreshold,
-          )}.`}
-          onDone={onDone}
-        />
-      );
-
-    /* ---- 6. No run this week — a schedule, never an error --------------- */
-    case "no-run":
-      return (
-        <div>
-          <p className="text-body text-ink-600">
-            The van isn&rsquo;t doing {area ?? "your area"} this week. Next: Saturday.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Button size="md">Notify me</Button>
-            <Button variant="ghost" size="md" onClick={() => onStep("lane")}>
-              Pick another lane
-            </Button>
-          </div>
-        </div>
-      );
-
-    /* ---- 7. Out of area — a waitlist, never a dead end ------------------ */
-    case "out-of-area": {
-      const waitlist = area ? resolveAreaQuery(area) : undefined;
-      return (
-        <div>
-          <p className="text-body text-ink-600">
-            The van hasn&rsquo;t reached {area ?? "there"} yet. Tell us you&rsquo;re
-            there and we&rsquo;ll come sooner — we plan routes by demand.
-          </p>
-          <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
-            <Field label="Mobile number" htmlFor="lane-sheet-phone" className="sm:flex-1">
-              <Input
-                id="lane-sheet-phone"
-                prefix="+91"
-                inputMode="tel"
-                maxLength={10}
-                value={phone}
-                onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
-                className="font-mono tabular"
-              />
-            </Field>
-            <Button size="md" disabled={phone.length !== 10}>
-              Add my area
-            </Button>
-          </div>
-          {waitlist?.waitlist?.requests ? (
-            <p className="micro mt-3 text-ink-500 tabular">
-              {waitlist.waitlist.requests} PEOPLE IN {waitlist.name.toUpperCase()} HAVE
-              ASKED
-            </p>
-          ) : null}
-        </div>
-      );
-    }
-
-    /* ---- 8. Loading and error ------------------------------------------ */
-    case "loading":
-      return (
-        <div className="grid gap-3 min-[560px]:grid-cols-2">
-          <Skeleton rounded="md" className="h-40" />
-          <Skeleton rounded="md" className="h-40" />
-        </div>
-      );
-
-    case "error":
-    default:
-      return (
-        <div>
-          <p className="text-body text-ink-600">
-            Something broke at our end. Nothing was charged. Try again, or
-            WhatsApp us.
-          </p>
-          <Button size="md" className="mt-6" onClick={() => onStep("lane")}>
-            Try again
-          </Button>
-        </div>
-      );
-  }
+function daysOf(area: Area | null, bare = false): string {
+  const label = area?.runDaysLabel ?? "the days we run";
+  if (bare) return label.toLowerCase() === "every day" ? "every day" : `on ${label}`;
+  return label;
 }
 
-function SheetSuccess({
+function LaneCard({
+  icon,
+  title,
+  price,
   line,
-  sub,
-  onDone,
+  onClick,
 }: {
+  icon: React.ReactNode;
+  title: string;
+  price: string;
   line: string;
-  sub: string;
-  onDone: () => void;
+  onClick: () => void;
 }) {
   return (
-    <div>
-      <p className="flex items-start gap-2 text-body font-semibold text-ink-800">
-        <Check size={20} strokeWidth={1.5} className="mt-0.5 shrink-0 text-success" aria-hidden="true" />
-        {line}
-      </p>
-      <p className="mt-1 pl-7 text-body-sm text-ink-600">{sub}</p>
-      <Button size="md" className="mt-6" onClick={onDone}>
-        See this week&rsquo;s bake
-      </Button>
-    </div>
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "flex items-start gap-4 rounded-lg border border-line bg-paper p-5 text-left",
+        "transition-[border-color,transform] duration-[var(--dur-base)] ease-[var(--ease-standard)]",
+        "hover:-translate-y-0.5 hover:border-ink",
+      )}
+    >
+      <span className="mt-0.5 shrink-0 text-ink">{icon}</span>
+      <span className="min-w-0 flex-1">
+        <span className="flex flex-wrap items-baseline justify-between gap-x-4">
+          <span className="font-display text-[22px] leading-tight text-ink">
+            {title}
+          </span>
+          <span className="text-body-lg font-semibold text-ink tabular">
+            {price}
+          </span>
+        </span>
+        <span className="mt-1 block text-body-sm text-ink-2">{line}</span>
+      </span>
+    </button>
   );
 }

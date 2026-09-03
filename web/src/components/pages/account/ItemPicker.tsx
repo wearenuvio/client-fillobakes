@@ -61,8 +61,10 @@ export function ItemPicker({
     <div className={cn("flex flex-col gap-8", className)}>
       {groups.map(({ category, items }) => (
         <div key={category.slug}>
-          <p className="micro text-ink-500">{category.label}</p>
-          <ul className="mt-3 divide-y divide-paper-300 border-y border-paper-300">
+          <p className="text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
+            {category.label}
+          </p>
+          <ul className="mt-3 divide-y divide-line border-t border-line">
             {items.map((product) => {
               const qty = lines[product.slug] ?? 0;
               const stock = getStockFor(product.slug);
@@ -71,7 +73,7 @@ export function ItemPicker({
                 <li key={product.slug} className="flex items-center gap-4 py-3">
                   <span
                     data-surface="well"
-                    className="grid size-12 shrink-0 place-items-center bg-paper-200"
+                    className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-md bg-well"
                   >
                     {product.image ? (
                       <Image
@@ -81,27 +83,33 @@ export function ItemPicker({
                         height={120}
                         sizes="48px"
                         className={cn(
-                          "w-[62%] object-contain drop-shadow-[0_18px_24px_rgba(4,33,47,0.35)]",
-                          soldOut && "opacity-55 grayscale",
+                          product.image.kind === "cutout"
+                            ? "w-[76%] object-contain cutout-sm"
+                            : "size-full object-cover",
+                          soldOut && "opacity-60 grayscale-[.6]",
                         )}
                       />
                     ) : (
-                      <LoafGlyph size={34} />
+                      <LoafGlyph size={28} className="text-muted opacity-60" />
                     )}
                   </span>
 
+                  {/* Name and price share the flexible column: at 375 there
+                      is not room for three, and a truncated product name is
+                      the one thing this list cannot afford. */}
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-body-sm font-semibold text-ink-800">
+                    <span className="block text-body-sm font-semibold text-ink">
                       {product.name}
                     </span>
-                    <KanaLabel kana={product.kana} />
+                    <span className="mt-0.5 flex items-baseline gap-2">
+                      <Price amount={product.price} size="sm" />
+                      <KanaLabel kana={product.kana} />
+                    </span>
                   </span>
 
-                  <Price amount={product.price} size="sm" className="shrink-0" />
-
-                  <span className="w-28 shrink-0 text-right">
+                  <span className="shrink-0 text-right">
                     {soldOut ? (
-                      <span className="nano text-ink-500">Gone this week</span>
+                      <span className="text-body-sm text-muted">Sold out</span>
                     ) : qty > 0 ? (
                       <QtyStepper
                         qty={qty}

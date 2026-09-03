@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AtSign, MessageCircle } from "lucide-react";
+import { InkArt } from "@/components/ui/InkArt";
 import { CONTACT, SITE } from "@/lib/config";
 
 /**
@@ -52,8 +53,16 @@ const COLUMNS = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-line bg-paper-2 pt-14 pb-10 lg:pt-20">
-      <div className="container-content">
+    <footer className="relative overflow-hidden border-t border-line bg-paper-2 pt-14 pb-10 lg:pt-20">
+      {/* The mirrored stalk, low on the left. Hidden on a phone, where the
+          columns run edge to edge and it would sit under the link text. */}
+      <InkArt
+        name="wheat-stalk-v2"
+        width={150}
+        opacity={0.14}
+        className="bottom-[-40px] left-[-38px] w-[150px] -rotate-6"
+      />
+      <div className="relative container-content">
         {/* -------- Wordmark and the newsletter field ------------------- */}
         <div className="flex flex-col gap-10 border-b border-line pb-12 lg:flex-row lg:items-end lg:justify-between">
           <div>

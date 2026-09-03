@@ -2,14 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { buildMetadata, JsonLd, articleLd } from "@/lib/seo";
-import { Section } from "@/components/blocks/Section";
-import { Rule } from "@/components/ui/Rule";
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/Button";
 import { ArticleHeader } from "@/components/pages/content/ArticleHeader";
 import { Prose } from "@/components/pages/content/Prose";
 import { EditorialImage } from "@/components/pages/content/EditorialImage";
 import { RelatedProducts } from "@/components/pages/content/RelatedProducts";
+import {
+  ContentSection,
+  Eyebrow,
+} from "@/components/pages/content/PageShell";
 import { JOURNAL_BODIES } from "@/components/pages/content/journal-bodies";
 import { getJournalPost, getJournalPosts } from "@/lib/content";
 import { formatLongDate } from "@/lib/format";
@@ -23,7 +25,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const body = JOURNAL_BODIES[slug];
-  // A commissioned post is a real URL with an outline on it. It should not
+  // A commissioned post is a real URL with nothing on it yet. It should not
   // compete in search with the pieces that are actually written.
   return buildMetadata(`/journal/${slug}`, {
     noindex: body ? !body.published : undefined,
@@ -33,10 +35,10 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 /**
  * A journal post — dated, and never updated.
  *
- * Prose at `--max-prose`, one photograph, links out to the bakes it mentions.
- * A post that has not been written renders the same layout with the outline
- * and a plain sentence saying what it is waiting on, because a reader who
- * arrives from search deserves to be told rather than to find filler.
+ * Prose at the reading measure, one photograph, and the bakes it is about at
+ * the end. A post that has not been written renders the same page with a
+ * "Coming soon" tag and one sentence saying what it is waiting on. No outline
+ * dressed up as an article: a reader arriving from search is told, not filled.
  */
 export default async function JournalPostPage({ params }: Params) {
   const { slug } = await params;
@@ -44,7 +46,7 @@ export default async function JournalPostPage({ params }: Params) {
   const body = JOURNAL_BODIES[slug];
   if (!post || !body) notFound();
 
-  const isDraft = !body.published;
+  const soon = !body.published;
 
   return (
     <>
@@ -64,7 +66,7 @@ export default async function JournalPostPage({ params }: Params) {
         ]}
       />
 
-      <Section surface="paper-50" size="none" className="pt-[var(--section-y)] pb-[calc(var(--section-y)/2)]">
+      <ContentSection surface="paper" size="none" className="pt-10 pb-8 lg:pt-14">
         <ArticleHeader
           kicker="From the van"
           title={post.h1}
@@ -77,72 +79,75 @@ export default async function JournalPostPage({ params }: Params) {
                 {formatLongDate(body.published)}
               </span>
             ) : (
-              "Not published yet"
+              <Badge key="soon" variant="outline">
+                Coming soon
+              </Badge>
             ),
             "Fillo Bakes, Bengaluru",
           ]}
         />
+      </ContentSection>
 
-        {isDraft && body.draftNote ? (
-          <div className="mt-10 max-w-[var(--max-narrow)] border-y border-y-paper-300 py-6">
-            <Badge variant="outline">Being written</Badge>
-            <p className="mt-3 max-w-[62ch] text-body text-ink-600">
-              {body.draftNote}
-            </p>
-          </div>
-        ) : null}
-      </Section>
-
-      <Section surface="paper-50" size="half">
-        <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
-          <article className="lg:col-span-7">
-            <Prose>{body.body}</Prose>
-
-            <Rule tone="strong" className="mt-16" />
-            <p className="micro mt-6 text-ink-500">Read next</p>
-            <ul className="mt-3 space-y-1">
+      <ContentSection surface="paper" size="half">
+        <div className="grid gap-12 lg:grid-cols-12 lg:gap-14">
+          {/* The rail mirrors the policies' contents column, so the library
+              and the small print are visibly the same object. */}
+          <nav
+            aria-label="Read next"
+            className="order-2 lg:order-1 lg:col-span-4 lg:sticky lg:top-24 lg:self-start"
+          >
+            <Eyebrow>Read next</Eyebrow>
+            <ul className="mt-4 divide-y divide-line border-y border-line">
               {body.related.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="link-underline inline-flex min-h-11 items-center text-body text-kiln"
+                    className="link-underline flex min-h-11 items-center py-2 text-body-sm font-medium text-accent"
                   >
                     {item.label}
                   </Link>
                 </li>
               ))}
             </ul>
-          </article>
+          </nav>
 
-          <aside className="lg:col-span-5">
+          <div className="order-1 lg:order-2 lg:col-span-8">
             <EditorialImage
               src={body.image.src}
               alt={body.image.alt}
-              ratio="4 / 5"
-              sizes="(min-width: 1024px) 40vw, 100vw"
+              ratio="16 / 9"
+              sizes="(min-width: 1024px) 700px, 100vw"
               priority
               caption={body.image.caption}
               credit={body.image.credit}
-              className="lg:sticky lg:top-24"
             />
-          </aside>
-        </div>
-      </Section>
 
-      <Section surface="paper-100">
-        <RelatedProducts
-          slugs={body.productSlugs}
-          heading={isDraft ? "What it will be about" : "What this one is about"}
-        />
-        <div className="mt-10 flex flex-wrap gap-3">
-          <ButtonLink href="/shop" size="lg">
-            See this week&rsquo;s bake
-          </ButtonLink>
-          <ButtonLink href="/journal" variant="secondary" size="lg">
-            The rest of the journal
-          </ButtonLink>
+            {soon ? (
+              <div className="mt-10 rounded-lg border border-line bg-card p-6 lg:p-8">
+                <Eyebrow>Not written yet</Eyebrow>
+                <p className="mt-3 max-w-[52ch] text-body-lg text-ink-2">
+                  {body.draftNote}
+                </p>
+              </div>
+            ) : (
+              <article className="mt-10">
+                <Prose>{body.body}</Prose>
+              </article>
+            )}
+          </div>
         </div>
-      </Section>
+      </ContentSection>
+
+      <ContentSection surface="paper-2">
+        <RelatedProducts
+          slugs={body.productSlugs.slice(0, 2)}
+          eyebrow="Pairs well with"
+          heading={soon ? "What it will be about." : "What this one is about."}
+        />
+        <ButtonLink href="/shop" size="lg" className="mt-10">
+          See the menu
+        </ButtonLink>
+      </ContentSection>
     </>
   );
 }

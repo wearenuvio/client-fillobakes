@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Search } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 import { cn } from "@/lib/cn";
 import type { Product } from "@/lib/catalog";
 import { ProductCard } from "@/components/blocks/ProductCard";
@@ -62,14 +62,34 @@ export function ShopGrid({ items }: { items: ShopItem[] }) {
 
   return (
     <>
-      {/* -------- Search and sort -------------------------------------- */}
+      {/* -------- Search and sort --------------------------------------
+          The sort stays a real <select> — a phone should get its own wheel and
+          a keyboard should get type-ahead for free — but nothing about it is
+          left to the browser to draw. `appearance-none` strips the platform
+          chrome, the pill radius and the paper ground match the tabs above it,
+          and the chevron is the same Lucide line as everywhere else. */}
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
-        <label className="order-2 shrink-0 sm:order-1">
-          <span className="sr-only">Sort by</span>
+        <div className="relative order-2 shrink-0 sm:order-1">
+          <label htmlFor="shop-sort" className="sr-only">
+            Sort by
+          </label>
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-[12px] font-medium tracking-[0.12em] text-muted uppercase"
+          >
+            Sort
+          </span>
           <select
+            id="shop-sort"
             value={sort}
             onChange={(e) => setSort(e.target.value as Sort)}
-            className="h-11 w-full rounded-md border border-line bg-card px-3 text-body-sm text-ink-2 focus:border-ink focus:outline-none sm:w-auto"
+            className={cn(
+              "h-11 w-full appearance-none rounded-pill border border-line bg-card",
+              "pr-10 pl-[4.4rem] text-body-sm font-medium text-ink",
+              "transition-colors duration-[var(--dur-base)] hover:border-ink",
+              "focus-visible:border-ink focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:outline-none",
+              "sm:w-auto",
+            )}
           >
             {SORTS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -77,14 +97,20 @@ export function ShopGrid({ items }: { items: ShopItem[] }) {
               </option>
             ))}
           </select>
-        </label>
+          <ChevronDown
+            size={16}
+            strokeWidth={1.5}
+            aria-hidden="true"
+            className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-muted"
+          />
+        </div>
 
         <div className="relative order-1 w-full sm:order-2 sm:max-w-[300px]">
           <Search
             size={17}
             strokeWidth={1.5}
             aria-hidden="true"
-            className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-muted"
+            className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-muted"
           />
           <label htmlFor="shop-search" className="sr-only">
             Search the menu
@@ -95,7 +121,12 @@ export function ShopGrid({ items }: { items: ShopItem[] }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search the menu"
-            className="h-11 w-full rounded-md border border-line bg-card pr-3.5 pl-10 text-body-sm text-ink placeholder:text-muted focus:border-ink focus:outline-none"
+            className={cn(
+              "h-11 w-full rounded-pill border border-line bg-card pr-4 pl-11",
+              "text-body-sm text-ink placeholder:text-muted",
+              "transition-colors duration-[var(--dur-base)] hover:border-ink",
+              "focus-visible:border-ink focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:outline-none",
+            )}
           />
         </div>
       </div>
@@ -183,10 +214,13 @@ export function ShopTabs({
             );
           })}
         </div>
-        {/* The fade tells a thumb there is more to the right. */}
+        {/* The fade tells a thumb there is more to the right. It ends on
+            `paper/0` rather than `transparent`: interpolating a colour to
+            keyword transparent runs through a grey midpoint and leaves a dirty
+            band across the pills. */}
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-linear-to-l from-paper to-transparent lg:hidden"
+          className="pointer-events-none absolute inset-y-0 right-0 w-14 bg-linear-to-l from-paper via-paper/80 to-paper/0 lg:hidden"
         />
       </div>
     </div>

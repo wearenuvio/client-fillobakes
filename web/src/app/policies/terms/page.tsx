@@ -29,7 +29,7 @@ export default function TermsPage() {
       <PolicyLayout
         current={PATH}
         title="Terms and conditions"
-        updated="3 October 2026"
+        updated="3 September 2026"
         lead={`These terms govern orders placed with Fillo Bakes, a brand operated by ${SITE.legalName}, registered in ${SITE.city}, ${SITE.state}.`}
         sections={[
           {
@@ -42,7 +42,7 @@ export default function TermsPage() {
                 Bakes&rdquo;, &ldquo;we&rdquo; and &ldquo;us&rdquo; on this site
                 mean that company. Contact is{" "}
                 <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> or{" "}
-                <span className="tabular">{CONTACT.phone}</span>.
+                {CONTACT.phone}.
               </p>
             ),
           },
@@ -52,10 +52,9 @@ export default function TermsPage() {
             body: (
               <p>
                 You may browse the catalogue freely. Placing an order requires a
-                phone number, which becomes your account identifier &mdash;
-                there is no password anywhere on this site. Keep access to that
-                number secure; anyone who can receive its messages can see your
-                orders.
+                phone number, which becomes your account identifier. There is no
+                password anywhere on this site, so keep access to that number
+                secure: anyone who can receive its messages can see your orders.
               </p>
             ),
           },
@@ -83,11 +82,10 @@ export default function TermsPage() {
             title: "Delivery",
             body: (
               <p>
-                Delivery is described in full in the{" "}
-                <Link href="/policies/shipping">Delivery policy</Link>: fixed
-                neighbourhood routes with their own run days, two-hour windows,
-                the cutoff the evening before a run, and what happens if we
-                cannot reach you. Those terms form part of these.
+                Delivery is set out in full in the{" "}
+                <Link href="/policies/shipping">Delivery policy</Link>, which
+                covers where we go, when we go there, what it costs and what
+                happens if we cannot reach you. Those terms form part of these.
               </p>
             ),
           },
@@ -108,11 +106,10 @@ export default function TermsPage() {
             title: "Food, allergens and storage",
             body: (
               <p>
-                Everything we bake is vegetarian and eggless. Individual
-                products carry their own allergen information, and where a fact
-                has not been confirmed by the kitchen the product page says so
-                instead of estimating. Bread has no preservatives in it and is
-                at its best on the day it is baked.
+                Everything we bake is vegetarian and eggless, and individual
+                products carry their own allergen information on the product
+                page. Bread has no preservatives in it and is at its best on the
+                day it is baked.
               </p>
             ),
           },
@@ -134,7 +131,7 @@ export default function TermsPage() {
             title: "Changes, and which law applies",
             body: (
               <p>
-                We may update these terms; the version that applies to an order
+                We may update these terms. The version that applies to an order
                 is the one published when you placed it, and the date at the top
                 of this page tells you which that is. These terms are governed
                 by the laws of India, and the courts of {SITE.city},{" "}

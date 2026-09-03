@@ -40,7 +40,7 @@ import { SlotPicker } from "@/components/blocks/SlotPicker";
 import { AreaCheck, AreaResultBlock } from "@/components/blocks/AreaCheck";
 import { FulfilmentLane, FulfilmentSummary } from "@/components/blocks/FulfilmentLane";
 import { LocationChip } from "@/components/blocks/LocationChip";
-import { AreaLaneSheetBody, type SheetStep } from "@/components/blocks/AreaLaneSheet";
+import { AreaLaneSheet } from "@/components/blocks/AreaLaneSheet";
 import { DropCard } from "@/components/blocks/DropCard";
 import { ProofBlock, SpecList, HowToEatIt } from "@/components/blocks/ProofBlock";
 import { ThreeDoors } from "@/components/blocks/ThreeDoors";
@@ -575,7 +575,7 @@ function Commerce() {
   const [date, setDate] = React.useState<string | null>("2026-10-03");
   const [band, setBand] = React.useState<string | null>("16:00-18:00");
   const [lane, setLane] = React.useState<"catch_the_van" | "home_delivery" | null>("catch_the_van");
-  const [sheetStep, setSheetStep] = React.useState<SheetStep>("lane");
+  const [sheetOpen, setSheetOpen] = React.useState(false);
   const areas = getAreas();
 
   const served = areas.find((a) => a.serviceability === "served")!;
@@ -635,28 +635,28 @@ function Commerce() {
         id="slotpicker"
         title="SlotPicker"
         section="§12.8"
-        note="Date chips then time bands. Unavailable is greyed with a diagonal strike and the cut-off rule stated — never a countdown."
+        note="Date chips then windows. A day that cannot take an order stays in the rail, greyed, with the reason set beneath it."
       >
         <SlotPicker
           dates={[
-            { date: "2026-10-01", available: false, isToday: true, reason: "Closed 8pm yesterday" },
-            { date: "2026-10-03", available: true },
+            { date: "2026-10-03", available: false, reason: "Orders closed" },
+            { date: "2026-10-04", available: false, reason: "No run" },
             { date: "2026-10-05", available: true },
-            { date: "2026-10-07", available: false, reason: "No run this week" },
-            { date: "2026-10-10", available: true },
+            { date: "2026-10-06", available: true },
+            { date: "2026-10-07", available: false, reason: "No run" },
+            { date: "2026-10-08", available: true },
           ]}
           bands={[
             { band: "12:00-14:00", available: true },
             { band: "14:00-16:00", available: false },
-            { band: "16:00-18:00", available: true, left: 2 },
+            { band: "16:00-18:00", available: true },
             { band: "18:00-20:00", available: true },
           ]}
           selectedDate={date}
           selectedBand={band}
           onSelectDate={setDate}
           onSelectBand={setBand}
-          cutoffWarning="This window closes in 40 minutes."
-          cutoffNote="Orders close 8pm the evening before a run. No restocks, it is a van."
+          note="Order by 8pm for next-day delivery."
         />
       </SpecSection>
 
@@ -741,51 +741,19 @@ function Commerce() {
         note="The chip holds three facts — place, mode, next slot — and is the single source of truth for every location-dependent answer on the site. It is the entry point to the sheet, which is where lane and area are chosen before the cart."
       >
         <SpecRow label="The chip, reading the live session store">
-          <LocationChip onOpen={() => setSheetStep("lane")} />
+          <LocationChip onOpen={() => setSheetOpen(true)} />
           <span className="text-body-sm text-ink-500">
-            Set an area in the sheet below to watch it change.
+            Set an area in the sheet to watch it change.
           </span>
         </SpecRow>
 
-        <SpecRow label="Sheet steps — pick one" full>
-          <div className="mb-4 flex flex-wrap gap-2">
-            {(
-              [
-                "lane",
-                "van-stop",
-                "delivery-area",
-                "success-van",
-                "success-delivery",
-                "no-run",
-                "out-of-area",
-                "loading",
-                "error",
-              ] as SheetStep[]
-            ).map((step) => (
-              <button
-                key={step}
-                type="button"
-                onClick={() => setSheetStep(step)}
-                className={
-                  step === sheetStep
-                    ? "micro rounded-sm bg-ink-800 px-3 py-2 text-paper-0"
-                    : "micro rounded-sm border border-paper-300 px-3 py-2 text-ink-600"
-                }
-              >
-                {step}
-              </button>
-            ))}
-          </div>
-          <div className="rounded-lg bg-paper-0 p-6 outline outline-paper-300">
-            <AreaLaneSheetBody
-              step={sheetStep}
-              onStep={setSheetStep}
-              onChooseLane={(l) => setSheetStep(l === "catch_the_van" ? "van-stop" : "delivery-area")}
-              onChooseStop={() => setSheetStep("success-van")}
-              onChooseArea={() => setSheetStep("success-delivery")}
-              onDone={() => setSheetStep("lane")}
-            />
-          </div>
+        <SpecRow label="The sheet — two steps, three results">
+          <Button onClick={() => setSheetOpen(true)}>Open the sheet</Button>
+          <span className="text-body-sm text-ink-500">
+            Step 1 resolves to served (Indiranagar), van only (HSR Layout) or
+            not yet (Whitefield). Only served carries on to step 2.
+          </span>
+          <AreaLaneSheet open={sheetOpen} onClose={() => setSheetOpen(false)} />
         </SpecRow>
       </SpecSection>
 

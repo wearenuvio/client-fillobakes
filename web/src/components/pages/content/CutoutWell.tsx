@@ -4,15 +4,12 @@ import { LoafGlyph } from "@/components/ui/LineArt";
 import { getProductBySlug } from "@/lib/catalog";
 
 /**
- * A single product cutout on a tinted well — DESIGN.md §10.1 and §12.3.
+ * A single product cutout floating on a tinted well — DESIGN-v2 §2.
  *
- * Hero variant A's right column is a cutout, not a photograph: centred in a
- * `paper-200` well at `--radius-none`, occupying 55–62% of the well's width,
- * with `--shadow-contact` on the image itself so it sits ON the well rather
- * than floating above it.
- *
- * When no cutout has been delivered for the SKU, the line-art loaf takes its
- * place rather than a stretched photograph.
+ * The same object as a ProductCard's image area: a 1:1 well in `--color-well`
+ * with the cutout at roughly three quarters of its width and the one drop
+ * shadow the system allows. When no cutout exists for the SKU the line-art
+ * loaf takes its place rather than a stretched photograph.
  */
 export function CutoutWell({
   slug,
@@ -26,12 +23,13 @@ export function CutoutWell({
   className?: string;
 }) {
   const product = getProductBySlug(slug);
+  const cutout = product?.image?.kind === "cutout";
 
   return (
     <div
       data-surface="well"
       className={cn(
-        "relative grid aspect-square w-full place-items-center rounded-none bg-paper-200",
+        "relative grid aspect-square w-full place-items-center overflow-hidden rounded-lg bg-well",
         className,
       )}
     >
@@ -43,10 +41,12 @@ export function CutoutWell({
           height={800}
           priority={priority}
           sizes={sizes}
-          className="w-[58%] object-contain drop-shadow-[0_18px_24px_rgba(4,33,47,0.35)]"
+          className={
+            cutout ? "w-[74%] object-contain cutout" : "size-full object-cover"
+          }
         />
       ) : (
-        <LoafGlyph size={180} className="opacity-70" />
+        <LoafGlyph size={160} className="text-muted opacity-50" />
       )}
     </div>
   );

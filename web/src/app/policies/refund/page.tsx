@@ -14,7 +14,8 @@ export const metadata: Metadata = buildMetadata(PATH);
  * aftermath. "We can't take returns" is the first sentence and it is not
  * hedged; everything after it is the recovery.
  *
- * "Before dispatch" is gone. Dispatch means nothing on a route.
+ * "Before dispatch" is gone, because dispatch means nothing on a route. The
+ * cutoff itself lives in the Delivery policy and is linked, not restated.
  */
 export default function RefundPolicyPage() {
   return (
@@ -29,7 +30,7 @@ export default function RefundPolicyPage() {
       <PolicyLayout
         current={PATH}
         title="Refunds"
-        updated="3 October 2026"
+        updated="3 September 2026"
         lead="We can't take returns. Everything is baked for the day it's made. But if your box arrives damaged, wrong, or just not right, message us within 24 hours with a photo and we'll sort it. Every time."
         sections={[
           {
@@ -55,28 +56,27 @@ export default function RefundPolicyPage() {
                   <li>the box arrived damaged, crushed or leaking;</li>
                   <li>you were sent the wrong item, or an item is missing;</li>
                   <li>
-                    something is genuinely not right &mdash; under-baked, stale
+                    something is genuinely not right, whether under-baked, stale
                     on arrival, or not what the product page described.
                   </li>
                 </ul>
                 <p>
                   We will replace it on the next run for your area, or refund
-                  it. Your order ID and a photo are all we need; we are not
+                  it. Your order ID and a photo are all we need, and we are not
                   going to ask you to return the bread.
                 </p>
               </>
             ),
           },
           {
-            id: "cancelling-an-order",
-            title: "Cancelling an order",
+            id: "changing-or-cancelling",
+            title: "Changing or cancelling an order",
             body: (
               <p>
-                Free until 8pm the evening before your run &mdash; the same
-                moment the order closes, because that is when the dough goes in.
-                The exact cutoff hour is still being confirmed, so your order
-                page carries the one that applies to you. After it, message us:
-                we cannot promise anything, but we will do what we can.
+                Changes and cancellations are free until your run closes; the{" "}
+                <Link href="/policies/shipping">Delivery policy</Link> says when
+                that is. After it the dough is already in, so message us: we
+                cannot promise anything, but we will do what we can.
               </p>
             ),
           },
@@ -87,9 +87,10 @@ export default function RefundPolicyPage() {
               <>
                 <p>
                   Refunds go back through Razorpay, to the method you paid with.
-                  They take 7 to 10 working days to appear, which is the bank&rsquo;s
-                  pace and not ours. We do not hold store credit against your
-                  account instead of refunding you, unless you ask us to.
+                  They take 7 to 10 working days to appear, which is the
+                  bank&rsquo;s pace and not ours. We do not hold store credit
+                  against your account instead of refunding you, unless you ask
+                  us to.
                 </p>
                 <p>
                   See <Link href="/policies/payment">Payment and security</Link>{" "}

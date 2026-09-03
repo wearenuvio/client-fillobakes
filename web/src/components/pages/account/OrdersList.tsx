@@ -1,137 +1,92 @@
 "use client";
 
-import * as React from "react";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/Button";
-import { EmptyState } from "@/components/ui/EmptyState";
 import { LoafGlyph } from "@/components/ui/LineArt";
 import { Price } from "@/components/ui/Price";
-import { cn } from "@/lib/cn";
 import { getOrders } from "@/lib/mock";
+import { Panel } from "@/components/pages/account/Panel";
 import { ItemThumbs } from "@/components/pages/account/ItemThumbs";
 import { ReorderButton } from "@/components/pages/account/AddAgain";
 import { whereLabel } from "@/components/pages/account/orderData";
-import { isUpcoming, statusSpec } from "@/components/pages/account/orderStatus";
+import { statusSpec } from "@/components/pages/account/orderStatus";
 import type { OrdersListState } from "@/components/pages/account/states";
 
 /**
- * Orders — site-content "Screen: Orders".
+ * Orders — PAGES-v2 Account, "Orders".
  *
- * Rows, newest first: date, thumbnails, stop or address, total, status pill,
- * reorder and the invoice. Filtering is client-side over the fixture; there
- * is no search, because three orders do not need one.
+ * One card per order, newest first: date, items, where, total, a status chip
+ * and one way back into the box. Three orders do not need a filter bar, and a
+ * second row of tabs under the account tabs would be two navigations arguing
+ * on a 375px screen.
  */
-
-const FILTERS = ["All", "Upcoming", "Delivered", "Cancelled"] as const;
-type Filter = (typeof FILTERS)[number];
-
 export function OrdersList({ state = "default" }: { state?: OrdersListState }) {
-  const [filter, setFilter] = React.useState<Filter>("All");
   const orders = state === "empty" ? [] : getOrders();
-
-  const visible = orders.filter((order) => {
-    if (filter === "All") return true;
-    if (filter === "Upcoming") return isUpcoming(order.status);
-    if (filter === "Delivered") return ["delivered", "collected"].includes(order.status);
-    return ["cancelled", "refunded"].includes(order.status);
-  });
 
   if (orders.length === 0) {
     return (
-      <EmptyState
-        glyph={<LoafGlyph size={96} />}
-        title="No orders yet."
-        body="The first one is the hard one. Bangalore Bloom is ₹99 and most people start there."
-        action={<ButtonLink href="/shop">See this week&rsquo;s bake</ButtonLink>}
-      />
+      <div className="rounded-lg border border-line bg-card px-6 py-16 text-center">
+        <span aria-hidden="true" className="mx-auto mb-6 block w-fit opacity-20">
+          <LoafGlyph size={88} />
+        </span>
+        <p className="font-display text-[26px] leading-tight text-ink">
+          No orders yet.
+        </p>
+        <p className="mx-auto mt-2 max-w-[38ch] text-body text-ink-2">
+          Twenty-three bakes, all eggless, all out of the oven this morning.
+        </p>
+        <ButtonLink href="/shop" className="mt-7">
+          See the menu
+        </ButtonLink>
+      </div>
     );
   }
 
   return (
-    <div>
-      <div
-        role="tablist"
-        aria-label="Filter orders"
-        className="scroll-rail -mx-[var(--gutter)] gap-2 px-[var(--gutter)] sm:mx-0 sm:px-0"
-      >
-        {FILTERS.map((option) => {
-          const active = option === filter;
-          return (
-            <button
-              key={option}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              onClick={() => setFilter(option)}
-              className={cn(
-                "micro h-11 rounded-sm px-4 whitespace-nowrap transition-colors",
-                "duration-[var(--dur-fast)]",
-                active
-                  ? "bg-ink-800 text-paper-0"
-                  : "border border-paper-300 text-ink-600 hover:text-ink-800",
-              )}
-            >
-              {option}
-            </button>
-          );
-        })}
-      </div>
+    <ul className="flex flex-col gap-5 lg:gap-6">
+      {orders.map((order) => {
+        const spec = statusSpec(order.status);
+        return (
+          <Panel as="li" key={order.id}>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-[12px] font-medium tracking-[0.12em] text-muted uppercase tabular">
+                {order.fulfilment.dateLabel}
+              </p>
+              <Badge variant={spec.tone}>{spec.label}</Badge>
+            </div>
 
-      {visible.length === 0 ? (
-        <p className="mt-10 text-body text-ink-600">
-          Nothing in that filter yet.
-        </p>
-      ) : (
-        <ul className="mt-8 divide-y divide-paper-300 border-y border-paper-300">
-          {visible.map((order) => {
-            const spec = statusSpec(order.status);
-            return (
-              <li key={order.id} className="py-6">
-                <div className="flex flex-wrap items-start justify-between gap-4">
-                  <div className="min-w-0">
-                    <p className="micro text-ink-500 tabular">
-                      {order.fulfilment.dateLabel} · {order.id}
-                    </p>
-                    <p className="mt-2 text-title text-ink-800">
-                      {order.items.map((i) => `${i.qty} ${i.name}`).join(", ")}
-                    </p>
-                    <p className="mt-1 text-body-sm text-ink-600 tabular">
-                      {order.fulfilment.laneLabel} · {whereLabel(order)}
-                      {order.fulfilment.windowLabel ? ` · ${order.fulfilment.windowLabel}` : ""}
-                    </p>
-                  </div>
-                  <div className="flex w-full shrink-0 items-center justify-between gap-3 sm:w-auto sm:flex-col sm:items-end">
-                    <Badge variant={spec.tone}>{spec.label}</Badge>
-                    <Price amount={order.money.total} size="md" />
-                  </div>
-                </div>
+            <h2 className="mt-4 font-display text-[22px] leading-snug text-ink">
+              {order.items.map((i) => `${i.qty} ${i.name}`).join(", ")}
+            </h2>
+            <p className="mt-1 text-body-sm text-ink-2 tabular">
+              {order.fulfilment.laneLabel} · {whereLabel(order)}
+              {order.fulfilment.windowLabel ? ` · ${order.fulfilment.windowLabel}` : ""}
+            </p>
 
-                <div className="mt-4 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <ItemThumbs items={order.items} />
-                  <div className="flex flex-wrap items-center gap-3">
-                    <ReorderButton
-                      items={order.items.map((i) => ({ slug: i.slug, qty: i.qty }))}
-                    />
-                    <Link
-                      href={`/account/orders/${order.id}#invoice`}
-                      className="link-underline text-body-sm text-ink-700 hover:text-ink-900"
-                    >
-                      Invoice
-                    </Link>
-                    <Link
-                      href={`/account/orders/${order.id}`}
-                      className="link-underline text-body-sm text-ink-700 hover:text-ink-900"
-                    >
-                      See this order
-                    </Link>
-                  </div>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      )}
-    </div>
+            <div className="mt-5 flex items-center gap-4 border-t border-line pt-5">
+              <ItemThumbs items={order.items} size={44} max={2} className="shrink-0" />
+              <span className="flex-1" />
+              <Price amount={order.money.total} size="lg" className="shrink-0" />
+            </div>
+
+            <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3">
+              <ReorderButton
+                items={order.items.map((i) => ({ slug: i.slug, qty: i.qty }))}
+                variant="secondary"
+              />
+              <Link
+                href={`/account/orders/${order.id}`}
+                className="link-underline inline-flex items-center gap-2 text-body-sm font-semibold text-accent"
+              >
+                See this order
+                <ArrowRight size={16} strokeWidth={1.5} aria-hidden="true" />
+              </Link>
+            </div>
+          </Panel>
+        );
+      })}
+    </ul>
   );
 }

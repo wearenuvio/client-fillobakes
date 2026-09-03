@@ -4,12 +4,11 @@ import { cn } from "@/lib/cn";
 /**
  * A reviewer's control, not a feature.
  *
- * The tracker has one master state on any given day, and the mock carries nine.
- * This lets a reviewer walk all of them without editing a fixture. It renders
- * only when `?state=` is already in the URL, or in development — so it is never
- * part of the page a customer sees.
+ * The tracker has one master state on any given day and the fixture carries
+ * nine, so this walks a reviewer through all of them without editing data. It
+ * draws only when `?state=` is already in the URL, or in development — a
+ * customer never meets it.
  */
-
 export function StateSwitcher({
   states,
   current,
@@ -26,8 +25,10 @@ export function StateSwitcher({
   if (!visible) return null;
 
   return (
-    <div className={cn("border-t border-t-paper-300 pt-4", className)}>
-      <p className="micro text-ink-500">Preview state — reviewers only</p>
+    <div className={cn("border-t border-line pt-5", className)}>
+      <p className="text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
+        Preview state — reviewers only
+      </p>
       <ul className="mt-3 flex flex-wrap gap-2">
         {states.map((state) => {
           const active = state === current;
@@ -37,10 +38,10 @@ export function StateSwitcher({
                 href={`${basePath}?state=${state}`}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "nano inline-flex h-11 items-center rounded-sm px-3",
+                  "inline-flex h-11 items-center rounded-pill px-4 text-body-sm",
                   active
-                    ? "bg-ink-800 text-paper-0"
-                    : "border border-paper-400 text-ink-600 hover:border-ink-600",
+                    ? "bg-ink text-on-accent"
+                    : "border border-line text-ink-2 hover:border-muted",
                 )}
               >
                 {state.replace(/_/g, " ")}

@@ -21,7 +21,7 @@ export default function StandingOrderSetupPage() {
       <AccountPage
         h1="Set up a standing order"
         kicker="The Standing Order"
-        lead="Four steps, one screen. The bread turns up on the same day every week and you stop thinking about it."
+        lead="Four steps, one screen. The bread turns up on the same day every week, and you stop thinking about it."
       >
         <SubscriptionBuilder />
       </AccountPage>

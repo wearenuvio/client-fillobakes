@@ -5,10 +5,10 @@ import { AlertCircle, Check, Info } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 /**
- * Toast — DESIGN.md §12.22.
+ * Toast — DESIGN-v2 §1.
  *
- * Bottom-centre on mobile, bottom-right at ≥768. ink-900 surface, paper-0
- * text, a 20px crumb status icon, one ghost action in crumb. Auto-dismisses
+ * Bottom-centre on mobile, bottom-right at ≥768. The chocolate band's ground,
+ * its text, a 20px gold status glyph, one ghost action in gold. Auto-dismisses
  * at 4.5s (7s with an action); the timer pauses on hover. Stacks to three,
  * oldest dropping first. `role="status"`, `aria-live="polite"`.
  *
@@ -114,7 +114,7 @@ export function Toast({
       onMouseLeave={() => setPaused(false)}
       className={cn(
         "pointer-events-auto flex w-full max-w-[400px] items-start gap-3 rounded-md",
-        "bg-ink-900 p-4 text-paper-0 shadow-overlay",
+        "bg-choc p-4 text-on-choc shadow-overlay",
         "motion-safe:animate-[toast-in_var(--dur-base)_var(--ease-out)]",
       )}
       data-surface="dark"
@@ -123,9 +123,9 @@ export function Toast({
         size={20}
         strokeWidth={1.5}
         aria-hidden="true"
-        className={cn("mt-px shrink-0", tone === "error" ? "text-danger" : "text-crumb")}
+        className="mt-px shrink-0 text-gold"
       />
-      <p className="min-w-0 flex-1 text-body-sm text-paper-0">{message}</p>
+      <p className="min-w-0 flex-1 text-body-sm text-on-choc">{message}</p>
       {action ? (
         <button
           type="button"
@@ -133,7 +133,7 @@ export function Toast({
             action.onClick();
             onDismiss?.();
           }}
-          className="link-underline shrink-0 text-body-sm text-crumb"
+          className="link-underline shrink-0 text-body-sm font-semibold text-gold"
         >
           {action.label}
         </button>

@@ -5,7 +5,7 @@ import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 /**
- * FAQ accordion — DESIGN.md §12.19.
+ * FAQ accordion — DESIGN-v2 §2.
  *
  * A hairline-separated list. No card, no radius, capped at `--max-narrow`.
  * The panel animates via `grid-template-rows: 0fr → 1fr`, which is the only
@@ -23,10 +23,17 @@ export type FaqItem = { question: string; answer: React.ReactNode };
 export function Faq({
   items,
   headingLevel = 3,
+  /**
+   * "narrow" caps the list at the reading measure, which is right when it
+   * sits in a full-width section. "full" lets a column that is already
+   * measured — a 8-of-12 grid cell — set the width instead.
+   */
+  measure = "narrow",
   className,
 }: {
   items: FaqItem[];
   headingLevel?: 2 | 3 | 4;
+  measure?: "narrow" | "full";
   className?: string;
 }) {
   const [open, setOpen] = React.useState<Set<number>>(() => new Set());
@@ -43,13 +50,15 @@ export function Faq({
   }
 
   return (
-    <div className={cn("max-w-[var(--max-narrow)]", className)}>
+    <div
+      className={cn(measure === "narrow" && "max-w-[var(--max-narrow)]", className)}
+    >
       {items.map((item, index) => {
         const isOpen = open.has(index);
         const panelId = `${baseId}-panel-${index}`;
         const buttonId = `${baseId}-button-${index}`;
         return (
-          <div key={item.question} className="border-b border-b-paper-300">
+          <div key={item.question} className="border-b border-b-line">
             <Heading className="m-0">
               <button
                 type="button"
@@ -57,9 +66,9 @@ export function Faq({
                 aria-expanded={isOpen}
                 aria-controls={panelId}
                 onClick={() => toggle(index)}
-                className="flex w-full items-center justify-between gap-6 py-5 text-left"
+                className="group flex w-full items-center justify-between gap-6 py-5 text-left"
               >
-                <span className="text-title font-sans font-semibold text-ink-800 hover:text-ink-900">
+                <span className="font-display text-[20px] leading-snug text-ink lg:text-[22px]">
                   {item.question}
                 </span>
                 <ChevronDown
@@ -67,9 +76,10 @@ export function Faq({
                   strokeWidth={1.5}
                   aria-hidden="true"
                   className={cn(
-                    "shrink-0 text-ink-500 transition-transform",
+                    "shrink-0 text-muted transition-transform",
                     "duration-[var(--dur-base)] ease-[var(--ease-standard)]",
-                    isOpen && "rotate-180",
+                    "group-hover:text-accent",
+                    isOpen && "rotate-180 text-accent",
                   )}
                 />
               </button>
@@ -87,7 +97,7 @@ export function Faq({
               )}
             >
               <div className="overflow-hidden">
-                <div className="max-w-[var(--max-prose)] pb-6 text-body text-ink-600">
+                <div className="max-w-[var(--max-prose)] pb-6 text-body text-ink-2 [&_a]:link-underline [&_a]:font-medium [&_a]:text-accent">
                   {item.answer}
                 </div>
               </div>

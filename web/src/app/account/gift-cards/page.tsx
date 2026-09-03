@@ -26,7 +26,7 @@ export default async function AccountGiftCardsPage({ searchParams }: Search) {
       <AccountPage
         h1="Gift cards"
         kicker="Your account"
-        lead="The ones you've sent, and the ones sent to you. A balance comes off your next order on its own."
+        lead="The ones you have sent, and the ones sent to you. A balance comes off your next order on its own."
       >
         <GiftCards state={state} />
       </AccountPage>

@@ -39,10 +39,19 @@ export type SessionState = {
   /** 24h band, e.g. "16:00-18:00". */
   band: string | null;
 
+  /* ---- Identity, written by checkout, read by the confirmation ------- */
+  /** Ten digits, no country code. Null until checkout verifies one. */
+  phone: string | null;
+  phoneVerified: boolean;
+  /** Optional at checkout, so the confirmation can greet by name. */
+  customerName: string | null;
+
   setArea: (area: string, status: AreaStatus) => void;
   setLane: (lane: LaneId) => void;
   setStop: (stopId: string | null) => void;
   setSlot: (date: string | null, band: string | null) => void;
+  setPhone: (phone: string | null, verified: boolean) => void;
+  setCustomerName: (name: string | null) => void;
   clearLocation: () => void;
 };
 
@@ -60,6 +69,9 @@ export const useSessionStore = create<SessionState>()(
     (set) => ({
       version: 1,
       ...EMPTY,
+      phone: null,
+      phoneVerified: false,
+      customerName: null,
 
       setArea: (area, status) =>
         set((s) => ({
@@ -76,6 +88,10 @@ export const useSessionStore = create<SessionState>()(
 
       setSlot: (date, band) => set({ date, band }),
 
+      setPhone: (phone, verified) => set({ phone, phoneVerified: verified }),
+
+      setCustomerName: (name) => set({ customerName: name }),
+
       clearLocation: () => set({ ...EMPTY }),
     }),
     {
@@ -90,6 +106,9 @@ export const useSessionStore = create<SessionState>()(
         stopId: s.stopId,
         date: s.date,
         band: s.band,
+        phone: s.phone,
+        phoneVerified: s.phoneVerified,
+        customerName: s.customerName,
       }),
     },
   ),

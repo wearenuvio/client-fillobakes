@@ -1,18 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CalendarCheck, EggOff, Leaf } from "lucide-react";
 import { buildMetadata, JsonLd, faqLd, bakeryLd } from "@/lib/seo";
-import { Section } from "@/components/blocks/Section";
-import { Rule, Kicker } from "@/components/ui/Rule";
-import { RingSeal } from "@/components/ui/Stamp";
+import { Stamp } from "@/components/ui/Stamp";
 import { Faq } from "@/components/blocks/Faq";
 import { ButtonLink } from "@/components/ui/Button";
 import { Price } from "@/components/ui/Price";
-import { ProofBlock } from "@/components/blocks/ProofBlock";
-import { Prose, Lead, Footnote } from "@/components/pages/content/Prose";
+import { Prose } from "@/components/pages/content/Prose";
 import { CutoutWell } from "@/components/pages/content/CutoutWell";
 import { RelatedProducts } from "@/components/pages/content/RelatedProducts";
+import {
+  ContentSection,
+  SectionHead,
+  Eyebrow,
+} from "@/components/pages/content/PageShell";
 import { SHOKUPAN_FAQ } from "@/components/pages/content/faq-items";
-import { getProducts, getProductsByCategory, getProductBySlug } from "@/lib/catalog";
+import { getProductsByCategory, getProductBySlug } from "@/lib/catalog";
 import { COMMERCE } from "@/lib/config";
 
 const PATH = "/shokupan";
@@ -20,18 +23,24 @@ const PATH = "/shokupan";
 export const metadata: Metadata = buildMetadata(PATH);
 
 /**
- * /shokupan — the one page on the old site that ranks, and the only URL in the
- * redirect map with `to: null`. It keeps its path.
+ * /shokupan — the one page on the old site that ranks, and the only entry in
+ * the redirect map with `to: null`. It keeps its path.
  *
  * It is the commercial landing page: what shokupan is in two paragraphs, the
- * four loaves you can actually buy, how you get one, and four questions. The
+ * loaves you can actually buy, how you get one, and four questions. The
  * editorial companion is /guides/what-is-shokupan — two intents, two pages,
  * cross-linked, no cannibalisation.
  */
+
+const FACTS = [
+  { icon: EggOff, label: "Eggless" },
+  { icon: Leaf, label: "Vegetarian" },
+  { icon: CalendarCheck, label: "Baked daily" },
+] as const;
+
 export default function ShokupanPage() {
   const breads = getProductsByCategory("breads");
   const signature = getProductBySlug("milk-shokupan");
-  const itemCount = getProducts().length;
 
   return (
     <>
@@ -44,91 +53,92 @@ export default function ShokupanPage() {
         ]}
       />
 
-      {/* Paper hero (§12.3): 7/5, kicker, display headline, lead, buttons,
-          proof lockup — no photo behind the type, no gradient. */}
-      <Section surface="paper-50" className="overflow-hidden">
-        <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
+      {/* ---- Hero: the line left, the cutout on a well right ---------- */}
+      <ContentSection surface="paper" size="none" className="pt-8 pb-[var(--section-y)] lg:pt-12">
+        <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-7">
-            <Kicker>Japanese milk bread · Bengaluru</Kicker>
-            <h1 className="mt-4 text-display-xl text-ink-800">
-              Shokupan &mdash; Japanese milk bread
+            <p className="script">Japan&rsquo;s everyday loaf.</p>
+            <h1 className="mt-3 max-w-[13ch] text-display-1 text-ink">
+              Shokupan, baked eggless in Bengaluru.
             </h1>
-            <Lead className="mt-6">
-              Japan&rsquo;s everyday loaf, baked eggless in Bengaluru and
-              brought to your street by van. Fine crumb, thin crust, and slices
-              that pull apart in soft sheets.
-            </Lead>
+            <p className="mt-6 max-w-[50ch] text-body-lg text-ink-2">
+              A fine, even crumb, a thin crust, and slices that pull apart in
+              soft sheets. Brought to your street by van.
+            </p>
 
-            <div className="mt-8 flex flex-wrap items-center gap-3">
+            <div className="mt-8 flex flex-wrap items-center gap-4">
               <ButtonLink href="/shop" size="lg">
-                See this week&rsquo;s bake
+                See the menu
               </ButtonLink>
-              <ButtonLink
+              <Link
                 href="/guides/what-is-shokupan"
-                variant="secondary"
-                size="lg"
+                className="link-underline text-body-sm font-semibold text-accent"
               >
                 What is shokupan
-              </ButtonLink>
+              </Link>
             </div>
 
             {signature ? (
-              <p className="mt-8 text-body-sm text-ink-500">
-                Milk Shokupan is{" "}
-                <Price amount={signature.price} size="sm" /> a loaf, 100%
-                eggless, baked the morning of your run.
+              <p className="mt-7 flex items-baseline gap-2 text-body-sm text-muted">
+                Milk Shokupan is <Price amount={signature.price} size="sm" /> a
+                loaf.
               </p>
             ) : null}
 
-            <ProofBlock
-              className="mt-10 max-w-[52ch]"
-              specs={[
-                { label: "Egg", value: `ALL ${itemCount} EGGLESS` },
-                { label: "Diet", value: "100% VEGETARIAN" },
-                { label: "Cutoff", value: "8PM, EVENING BEFORE" },
-              ]}
-            />
+            <ul className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-3 border-t border-line pt-6">
+              {FACTS.map(({ icon: Icon, label }) => (
+                <li key={label} className="flex items-center gap-2">
+                  <Icon
+                    size={18}
+                    strokeWidth={1.5}
+                    aria-hidden="true"
+                    className="text-accent"
+                  />
+                  <span className="text-body-sm text-ink-2">{label}</span>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          {/* Hero A's right column is the cutout on a well (§12.3, §10.1),
-              with the one seal this page gets overlapping its edge. */}
           <div className="relative lg:col-span-5">
             <CutoutWell
               slug="milk-shokupan"
               priority
               sizes="(min-width: 1024px) 40vw, 100vw"
             />
-            <RingSeal className="absolute -right-6 -bottom-8 hidden lg:block" />
+            <Stamp
+              lines={["baked this", "morning"]}
+              size={80}
+              className="absolute right-4 bottom-4 lg:right-6 lg:bottom-6"
+            />
           </div>
         </div>
-      </Section>
+      </ContentSection>
 
-      {/* What it is — two paragraphs, then the door to the full guide. */}
-      <Section surface="paper-100">
-        <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
+      {/* ---- What it is ------------------------------------------------ */}
+      <ContentSection surface="paper-2">
+        <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-4">
-            <Rule label="What it is" tone="strong" />
-            <h2 className="mt-6 text-display-md text-ink-800">
-              The loaf you keep in the house
+            <Eyebrow>What it is</Eyebrow>
+            <h2 className="mt-3 max-w-[14ch] text-h2 text-ink">
+              The loaf you keep in the house.
             </h2>
           </div>
           <div className="lg:col-span-8">
             <Prose>
               <p>
-                Shokupan is written 食パン &mdash; roughly, eating bread. It is
-                the loaf a Japanese household keeps on the counter, the way pav
-                or a sliced white loaf is the default here. The crumb is fine
-                and even, the crust is thin, and a slice holds a shape under
-                butter, jam or a sandwich filling without going to pieces.
+                Shokupan is written 食パン, roughly eating bread. It is the loaf
+                a Japanese household keeps on the counter, the way pav or a
+                sliced white loaf is the default here. The crumb is fine and
+                even, the crust is thin, and a slice holds a shape under butter,
+                jam or a sandwich filling without going to pieces.
               </p>
               <p>
                 Ours is made without eggs, which is the part that took the
-                longest. Egg is what usually gives a milk loaf its softness and
+                longest. Egg is usually what gives a milk loaf its softness and
                 its structure, so removing it means finding that softness
                 somewhere else. We found it in a wetter dough, a longer and
-                cooler fermentation, and shaping by hand in small batches. More
-                than 300 first-time tasters worked through the menu before the
-                van ran a single route.
+                cooler ferment, and shaping by hand in small batches.
               </p>
               <p>
                 <Link href="/guides/what-is-shokupan">
@@ -137,93 +147,55 @@ export default function ShokupanPage() {
                 .
               </p>
             </Prose>
-            <Footnote>
-              Tear it, don&rsquo;t slice it. That is not a flourish, it is the
-              best way to find out whether a loaf is any good.
-            </Footnote>
           </div>
         </div>
-      </Section>
+      </ContentSection>
 
-      {/* The four you can actually buy. */}
-      <Section surface="paper-50">
+      {/* ---- The loaves you can buy ------------------------------------ */}
+      <ContentSection surface="paper">
         <RelatedProducts
           slugs={breads.map((b) => b.slug)}
-          label="The loaves"
-          heading="Four shokupan on the menu"
+          eyebrow="On the menu"
+          heading={`${breads.length} shokupan to choose from.`}
         />
-      </Section>
+      </ContentSection>
 
-      {/* How you get one — the certainty sentence, once. */}
-      <Section surface="dark" size="lg">
-        <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
-          <div className="lg:col-span-6">
-            <Kicker tone="crumb">How you get one</Kicker>
-            <h2 className="mt-4 text-display-lg text-paper-0">
-              Two lanes, one cutoff
+      {/* ---- The dark band: one line, one sentence, two doors ---------- */}
+      <section data-surface="dark" className="bg-choc py-[var(--section-y-lg)]">
+        <div className="container-content">
+          <div className="max-w-[24ch]">
+            <h2 className="text-display-2 text-on-choc">
+              Order by 8pm. At your door tomorrow.
             </h2>
-            <p className="mt-6 max-w-[46ch] text-body-lg text-ink-400">
-              Meet the van at a stop on its run and pay no delivery fee, or have
-              it brought to your door in a two-hour window for ₹
-              <span className="tabular">{COMMERCE.deliveryFee}</span>. Orders
-              for a run close at 8pm the evening before it, because that is when
-              the dough goes in.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <ButtonLink href="/van" variant="onPhotoPrimary" size="lg">
-                Track the van
-              </ButtonLink>
-              <ButtonLink href="/areas" variant="onPhotoSecondary" size="lg">
-                Set your area
-              </ButtonLink>
-            </div>
           </div>
-
-          <dl className="lg:col-span-6">
-            {[
-              {
-                term: "Catch the van",
-                detail:
-                  "Pick a stop on your route, turn up in the ten-minute band we give you, and pay nothing for delivery.",
-              },
-              {
-                term: "Home delivery",
-                detail: `To your door inside a two-hour window. ₹${COMMERCE.deliveryFee}, free over ₹${COMMERCE.freeDeliveryThreshold} — that threshold is still being confirmed.`,
-              },
-              {
-                term: "Walk up to it",
-                detail:
-                  "If the van is on your street you do not need an order. What is on board is what is on board.",
-              },
-            ].map((row) => (
-              <div
-                key={row.term}
-                className="border-t border-t-[var(--hairline-dark-color)] py-6 last:border-b last:border-b-[var(--hairline-dark-color)]"
-              >
-                <dt className="micro text-crumb">{row.term}</dt>
-                <dd className="mt-2 max-w-[52ch] text-body text-ink-400">
-                  {row.detail}
-                </dd>
-              </div>
-            ))}
-          </dl>
+          <p className="mt-6 max-w-[52ch] text-body-lg text-on-choc-2">
+            Meet the van at a stop and pay nothing for delivery, or have it
+            brought to your door in a two-hour window for ₹
+            <span className="tabular">{COMMERCE.deliveryFee}</span>.
+          </p>
+          <div className="mt-8 flex flex-wrap items-center gap-4">
+            <ButtonLink href="/van" variant="onPhotoPrimary" size="lg">
+              Track the van
+            </ButtonLink>
+            <ButtonLink href="/areas" variant="onPhotoSecondary" size="lg">
+              Where we deliver
+            </ButtonLink>
+          </div>
         </div>
-      </Section>
+      </section>
 
-      {/* Four questions — the same array feeds FAQPage JSON-LD above. */}
-      <Section surface="paper-50">
-        <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
+      {/* ---- Four questions -------------------------------------------- */}
+      <ContentSection surface="paper">
+        <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-4">
-            <Rule label="Questions" tone="strong" />
-            <h2 className="mt-6 text-display-md text-ink-800">
-              The four we get asked
-            </h2>
-            <ButtonLink href="/faq" variant="ghost" className="mt-6">
-              All fifteen
+            <SectionHead eyebrow="Questions" heading="The four we get asked." />
+            <ButtonLink href="/faq" variant="secondary" className="mt-7">
+              Read them all
             </ButtonLink>
           </div>
           <div className="lg:col-span-8">
             <Faq
+              measure="full"
               items={SHOKUPAN_FAQ.map((item) => ({
                 question: item.question,
                 answer: (
@@ -231,12 +203,7 @@ export default function ShokupanPage() {
                     <p>{item.answer}</p>
                     {item.link ? (
                       <p className="mt-4">
-                        <Link
-                          href={item.link.href}
-                          className="micro link-underline text-kiln"
-                        >
-                          {item.link.label}
-                        </Link>
+                        <Link href={item.link.href}>{item.link.label}</Link>
                       </p>
                     ) : null}
                   </>
@@ -245,7 +212,7 @@ export default function ShokupanPage() {
             />
           </div>
         </div>
-      </Section>
+      </ContentSection>
     </>
   );
 }

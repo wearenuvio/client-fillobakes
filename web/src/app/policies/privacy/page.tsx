@@ -30,12 +30,12 @@ export default function PrivacyPage() {
       <PolicyLayout
         current={PATH}
         title="Privacy policy"
-        updated="3 October 2026"
+        updated="3 September 2026"
         lead={`What we collect, why we collect it, and how to have it deleted. Fillo Bakes is operated by ${SITE.legalName}, ${SITE.city}.`}
         sections={[
           {
             id: "what-we-collect",
-            title: "What we collect",
+            title: "Information we collect",
             body: (
               <ul>
                 <li>
@@ -68,10 +68,10 @@ export default function PrivacyPage() {
                   collect your device location.
                 </strong>{" "}
                 The tracker shows you where our van is and how many stops away
-                it is from the stop you picked. If you use{" "}
-                <em>Use my location</em> when setting your area, that lookup
-                happens in your browser to fill in the field and we keep the area
-                you confirm, not the coordinates.
+                it is from the stop you picked. If you use &ldquo;Use my
+                location&rdquo; when setting your area, that lookup happens in
+                your browser to fill in the field, and we keep the area you
+                confirm rather than the coordinates.
               </p>
             ),
           },
@@ -83,9 +83,8 @@ export default function PrivacyPage() {
                 Payments are processed by Razorpay. Card numbers, CVVs and UPI
                 credentials are handled by Razorpay under their own terms and
                 never reach us. We keep the fact of a payment, its amount and
-                its status &mdash; nothing that could be used to charge you
-                again. See{" "}
-                <Link href="/policies/payment">Payment and security</Link>.
+                its status, and nothing that could be used to charge you again.
+                See <Link href="/policies/payment">Payment and security</Link>.
               </p>
             ),
           },
@@ -95,11 +94,11 @@ export default function PrivacyPage() {
             body: (
               <p>
                 Order updates go to the number you ordered with, because that is
-                the service you bought. Anything else &mdash; the Sunday
-                newsletter, a nudge when the van is near your stop, a note when
-                a sold-out item is back &mdash; is a separate opt-in you choose,
-                and every one of them can be turned off from your account
-                without turning off the others.
+                the service you bought. Anything else, such as the Sunday
+                newsletter, a nudge when the van is near your stop, or a note
+                when a sold-out item is back, is a separate opt-in you choose.
+                Every one of them can be turned off from your account without
+                turning off the others.
               </p>
             ),
           },
@@ -108,10 +107,10 @@ export default function PrivacyPage() {
             title: "We don't sell it",
             body: (
               <p>
-                We do not sell, rent or trade your personal information. We share
-                it only with the services that make an order work &mdash;
-                Razorpay for payment, and the messaging provider that sends your
-                order updates &mdash; and only the part they need.
+                We do not sell, rent or trade your personal information. We
+                share it only with the services that make an order work, namely
+                Razorpay for payment and the messaging provider that sends your
+                order updates, and only the part they need.
               </p>
             ),
           },
@@ -122,11 +121,10 @@ export default function PrivacyPage() {
               <p>
                 Write to{" "}
                 <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> from the
-                address on your account, or message{" "}
-                <span className="tabular">{CONTACT.phone}</span> from the number
-                on it, and ask. We will send you what we hold or delete it. We
-                keep what tax law requires us to keep on a completed order, and
-                nothing beyond that.
+                address on your account, or message {CONTACT.phone} from the
+                number on it, and ask. We will send you what we hold or delete
+                it. We keep what tax law requires us to keep on a completed
+                order, and nothing beyond that.
               </p>
             ),
           },

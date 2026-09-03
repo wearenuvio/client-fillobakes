@@ -13,6 +13,7 @@ import {
 import { galleryFor } from "@/components/pages/commerce/gallery";
 import { stockFor } from "@/components/pages/commerce/run";
 import { StickyCartBar } from "@/components/pages/commerce/StickyCartBar";
+import { CartBarSpacer } from "@/components/pages/commerce/CartBarSpacer";
 import {
   getProductBySlug,
   getProducts,
@@ -126,7 +127,7 @@ export default async function ProductPage({ params }: Params) {
 
       {/* -------- 1. Breadcrumb ---------------------------------------- */}
       <nav aria-label="Breadcrumb" className="bg-paper pt-6">
-        <ol className="container-content flex flex-wrap items-center gap-1.5 text-body-sm text-muted">
+        <ol className="container-content flex flex-wrap items-center gap-1.5 text-[13px] leading-[1.5] text-muted">
           <li>
             <Link href="/shop" className="link-underline hover:text-ink">
               Shop
@@ -146,7 +147,7 @@ export default async function ProductPage({ params }: Params) {
               <ChevronRight size={14} strokeWidth={1.5} aria-hidden="true" />
             </>
           ) : null}
-          <li aria-current="page" className="text-ink-2">
+          <li aria-current="page" className="text-muted">
             {product.name}
           </li>
         </ol>
@@ -283,14 +284,14 @@ export default async function ProductPage({ params }: Params) {
       {/* -------- 5. Two reviews --------------------------------------- */}
       <section className="border-t border-line bg-paper-2 py-[var(--section-y)]">
         <div className="container-content">
-          <div className="grid gap-10 md:grid-cols-2 md:gap-16">
+          <div className="grid gap-12 md:grid-cols-2 md:gap-16">
             {REVIEWS.map((review) => (
               <figure key={review.name}>
                 <Stars />
-                <blockquote className="mt-4 font-display text-[24px] leading-[1.25] text-ink italic">
+                <blockquote className="mt-5 max-w-[34ch] font-display text-[24px] leading-[1.25] text-ink italic">
                   {review.quote}
                 </blockquote>
-                <figcaption className="mt-4 text-body-sm text-muted">
+                <figcaption className="mt-5 text-body-sm text-muted">
                   {review.name} · {review.meta}
                 </figcaption>
               </figure>
@@ -301,7 +302,7 @@ export default async function ProductPage({ params }: Params) {
 
       {/* The running total follows the thumb on a phone. */}
       <StickyCartBar />
-      <div aria-hidden="true" className="h-16 md:hidden" />
+      <CartBarSpacer />
     </>
   );
 }

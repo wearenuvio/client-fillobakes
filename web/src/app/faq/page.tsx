@@ -2,25 +2,27 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 import { buildMetadata, JsonLd, faqLd } from "@/lib/seo";
-import { Section } from "@/components/blocks/Section";
-import { Kicker } from "@/components/ui/Rule";
 import { Faq } from "@/components/blocks/Faq";
+import { InkArt } from "@/components/ui/InkArt";
 import { ButtonLink } from "@/components/ui/Button";
-import { LineArtBleed } from "@/components/ui/LineArt";
-import { Lead } from "@/components/pages/content/Prose";
+import {
+  ContentSection,
+  PageHead,
+  Eyebrow,
+} from "@/components/pages/content/PageShell";
 import { FAQ_GROUPS, FAQ_ITEMS } from "@/components/pages/content/faq-items";
-import { whatsappHref, CONTACT } from "@/lib/config";
+import { whatsappHref } from "@/lib/config";
 
 const PATH = "/faq";
 
 export const metadata: Metadata = buildMetadata(PATH);
 
 /**
- * Questions — site-content.md, Page: FAQ.
+ * Questions — PAGES-v2 FAQ.
  *
- * Fifteen answers in three groups. The accordion and the FAQPage JSON-LD are
- * built from one array (faq-items.ts) so the rich result can never describe a
- * page that no longer says that.
+ * Four groups, one accordion, and a WhatsApp line at the bottom. The
+ * accordion and the FAQPage JSON-LD are built from one array so the rich
+ * result can never describe a page that no longer says that.
  */
 export default function FaqPage() {
   return (
@@ -31,104 +33,116 @@ export default function FaqPage() {
         nodes={[faqLd(FAQ_ITEMS.map(({ question, answer }) => ({ question, answer })))]}
       />
 
-      <Section surface="paper-50" size="none" className="overflow-hidden pt-[var(--section-y)] pb-[calc(var(--section-y)/2)]">
-        <LineArtBleed glyph="anpan" side="right" size={560} />
-        <div className="relative max-w-[var(--max-narrow)]">
-          <Kicker>Questions</Kicker>
-          <h1 className="mt-4 text-display-lg text-ink-800">Questions</h1>
-          <Lead className="mt-6">
-            If the answer isn&rsquo;t here, WhatsApp us. We reply faster than we
-            update this page.
-          </Lead>
+      <ContentSection
+        surface="paper"
+        size="none"
+        className="overflow-hidden pt-10 pb-8 lg:pt-14"
+      >
+        {/* Decoration only, in the dead half of the head block. Never over
+            text, never on a phone. */}
+        <InkArt
+          name="wheat-pair-v2"
+          width={340}
+          opacity={0.1}
+          className="top-1/2 right-[-50px] hidden -translate-y-1/2 lg:block"
+        />
+        <PageHead
+          script="Ask us anything."
+          title="Questions"
+          lead="Everything people ask before their first order, and most of what they ask after it."
+        />
 
-          <nav aria-label="Jump to a group" className="mt-10">
-            <ul className="flex flex-wrap gap-x-6 gap-y-2">
-              {FAQ_GROUPS.map((group) => (
-                <li key={group.id}>
-                  <a
-                    href={`#${group.id}`}
-                    className="micro link-underline inline-flex min-h-11 items-center text-ink-500 hover:text-ink-800"
-                  >
-                    {group.title}
-                    <span className="ml-2 text-ink-400 tabular">
-                      ({group.items.length})
-                    </span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </div>
-      </Section>
+        <nav aria-label="Jump to a group" className="relative mt-8">
+          <ul className="scroll-rail -mx-[var(--gutter)] gap-2 px-[var(--gutter)]">
+            {FAQ_GROUPS.map((group) => (
+              <li key={group.id}>
+                <a
+                  href={`#${group.id}`}
+                  className="inline-flex h-11 items-center gap-2 rounded-pill border border-line bg-card px-4 text-body-sm whitespace-nowrap text-ink-2 transition-colors duration-[var(--dur-base)] hover:border-ink hover:text-ink"
+                >
+                  {group.title}
+                  <span className="text-muted tabular">{group.items.length}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 right-[calc(var(--gutter)*-1)] w-12 bg-linear-to-l from-paper to-transparent sm:hidden"
+          />
+        </nav>
+      </ContentSection>
 
-      <Section surface="paper-50" size="half">
+      <ContentSection surface="paper" size="half">
         {FAQ_GROUPS.map((group, index) => (
           <section
             key={group.id}
             id={group.id}
-            className={index === 0 ? "scroll-mt-24" : "mt-20 scroll-mt-24"}
+            className={index === 0 ? "scroll-mt-24" : "mt-14 scroll-mt-24 lg:mt-20"}
           >
-            {/* The group title is the h2 the accordion questions sit under, so
-                the heading order is h1 > h2 > h3 rather than h1 > h3. It is
-                still the system's labelled hairline (§6), just semantic. */}
-            <div className="flex max-w-[var(--max-narrow)] items-center gap-4">
-              <h2 className="micro shrink-0 font-mono text-kiln">
-                {group.title}
-              </h2>
-              <span className="h-px flex-1 bg-paper-400" aria-hidden="true" />
-              <span className="micro shrink-0 text-ink-500">
-                <span className="tabular">{group.items.length}</span> answers
-              </span>
+            <div className="grid gap-4 lg:grid-cols-12 lg:gap-14">
+              {/* The group title takes the policies' contents column, so the
+                  FAQ and the small print sit on the same grid. */}
+              <div className="lg:col-span-4 lg:sticky lg:top-24 lg:self-start">
+                <div className="flex items-center gap-4 lg:block">
+                  <h2 className="shrink-0 font-display text-[26px] leading-tight text-ink">
+                    {group.title}
+                  </h2>
+                  <span
+                    className="h-px flex-1 bg-line lg:hidden"
+                    aria-hidden="true"
+                  />
+                </div>
+                <p className="mt-2 hidden text-body-sm text-muted tabular lg:block">
+                  {group.items.length} answers
+                </p>
+              </div>
+
+              <div className="lg:col-span-8">
+                <Faq
+                  measure="full"
+                  headingLevel={3}
+                  items={group.items.map((item) => ({
+                    question: item.question,
+                    answer: (
+                      <>
+                        <p>{item.answer}</p>
+                        {item.link ? (
+                          <p className="mt-4">
+                            <Link href={item.link.href}>{item.link.label}</Link>
+                          </p>
+                        ) : null}
+                      </>
+                    ),
+                  }))}
+                />
+              </div>
             </div>
-            <Faq
-              className="mt-2"
-              headingLevel={3}
-              items={group.items.map((item) => ({
-                question: item.question,
-                answer: (
-                  <>
-                    <p>{item.answer}</p>
-                    {item.link ? (
-                      <p className="mt-4">
-                        <Link
-                          href={item.link.href}
-                          className="micro link-underline text-kiln"
-                        >
-                          {item.link.label}
-                        </Link>
-                      </p>
-                    ) : null}
-                  </>
-                ),
-              }))}
-            />
           </section>
         ))}
-      </Section>
+      </ContentSection>
 
-      <Section surface="paper-100" size="half">
+      <ContentSection surface="peach">
         <div className="max-w-[var(--max-narrow)]">
-          <h2 className="text-display-sm text-ink-800">Still stuck?</h2>
-          <p className="mt-3 max-w-[46ch] text-body text-ink-600">
+          <Eyebrow>Still wondering</Eyebrow>
+          <h2 className="mt-3 max-w-[16ch] text-h2 text-ink">
+            Message us and a person replies.
+          </h2>
+          <p className="mt-4 max-w-[46ch] text-body-lg text-ink-2">
             A question this page cannot answer is usually a question about your
-            order, and that is faster in chat. The number is{" "}
-            <span className="tabular">{CONTACT.phone}</span>.
+            order, and that is faster in chat.
           </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <ButtonLink
-              href={whatsappHref("Hi Fillo — a question the FAQ didn't answer.")}
-              size="lg"
-              icon={<MessageCircle size={20} strokeWidth={1.5} />}
-              iconPosition="leading"
-            >
-              Message us on WhatsApp
-            </ButtonLink>
-            <ButtonLink href="/contact" variant="secondary" size="lg">
-              Other ways to reach us
-            </ButtonLink>
-          </div>
+          <ButtonLink
+            href={whatsappHref("Hi Fillo — a question the FAQ didn't answer.")}
+            size="lg"
+            className="mt-7"
+            icon={<MessageCircle size={18} strokeWidth={1.5} />}
+            iconPosition="leading"
+          >
+            Message us on WhatsApp
+          </ButtonLink>
         </div>
-      </Section>
+      </ContentSection>
     </>
   );
 }

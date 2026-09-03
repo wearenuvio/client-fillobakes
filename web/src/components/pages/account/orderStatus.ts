@@ -160,3 +160,39 @@ export function isUpcoming(status: string): boolean {
 export function isClosed(status: string): boolean {
   return ["delivered", "collected", "missed"].includes(status);
 }
+
+/* -------------------------------------------------------------------------- */
+/* The four-step bake status                                                   */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * PAGES-v2 asks the order screens for four steps — Ordered, Baking, On the
+ * van, Delivered — while the fixture carries five, splitting "loaded" from
+ * "out". They are the same event to a customer (the bread is on the van), so
+ * the two are folded into one cell that takes whichever timestamp is later.
+ *
+ * A folded cell is still only ticked when the underlying step actually ran:
+ * nothing here invents a clock.
+ */
+const STRIP_GROUPS: { key: string; label: string; from: string[] }[] = [
+  { key: "ordered", label: "Ordered", from: ["confirmed", "placed"] },
+  { key: "baking", label: "Baking", from: ["baking"] },
+  { key: "on_the_van", label: "On the van", from: ["loaded", "loading", "out", "on_the_van"] },
+  { key: "delivered", label: "Delivered", from: ["delivered", "collected"] },
+];
+
+export function bakeStripFour(steps: BakeStripStep[]): BakeStripStep[] {
+  return STRIP_GROUPS.map(({ key, label, from }) => {
+    const matched = steps.filter((s) => from.includes(s.step));
+    const done = matched.filter((s) => s.done);
+    const last = done.length ? done[done.length - 1] : undefined;
+    return {
+      step: key,
+      label,
+      done: done.length > 0,
+      at: last?.at ?? null,
+      atLabel: last?.atLabel,
+      sentence: last?.sentence,
+    };
+  });
+}

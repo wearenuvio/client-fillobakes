@@ -1,9 +1,9 @@
 import { cn } from "@/lib/cn";
 
 /**
- * Coins progress — crumb is one of exactly five permitted uses of the signal
- * colour (DESIGN.md §2.5: "Fillo+ coins and tier chrome"). It is a fill here,
- * never text on paper.
+ * Coins progress — gold is a highlight, never a page colour (DESIGN-v2 §1).
+ * A 4px track on the well tint with a gold fill, and the count underneath in
+ * plain sentence case rather than the label layer.
  */
 export function CoinProgress({
   balance,
@@ -14,7 +14,8 @@ export function CoinProgress({
   threshold: number;
   className?: string;
 }) {
-  const pct = Math.max(0, Math.min(100, Math.round((balance / threshold) * 100)));
+  const capped = Math.max(0, Math.min(balance, threshold));
+  const pct = threshold > 0 ? Math.round((capped / threshold) * 100) : 0;
   return (
     <div className={cn("min-w-0", className)}>
       <div
@@ -23,12 +24,17 @@ export function CoinProgress({
         aria-valuemin={0}
         aria-valuemax={threshold}
         aria-label={`${balance} of ${threshold} coins`}
-        className="h-1 w-full bg-paper-200"
+        className="h-1 w-full overflow-hidden rounded-pill bg-well"
       >
-        <div className="h-full bg-crumb" style={{ width: `${pct}%` }} />
+        <div
+          className="h-full rounded-pill bg-gold transition-[width] duration-[var(--dur-slow)] ease-[var(--ease-out)]"
+          style={{ width: `${pct}%` }}
+        />
       </div>
-      <p className="nano mt-2 text-ink-500 tabular">
-        {balance} of {threshold} coins
+      <p className="mt-2 text-body-sm text-muted tabular">
+        {balance >= threshold
+          ? `Ready to redeem`
+          : `${capped} of ${threshold} coins`}
       </p>
     </div>
   );

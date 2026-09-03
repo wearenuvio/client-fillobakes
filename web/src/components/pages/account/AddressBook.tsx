@@ -1,17 +1,17 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { MapPin, Truck } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
-import { Button, ButtonLink } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { Field, Input, Checkbox } from "@/components/ui/Field";
 import { LoafGlyph } from "@/components/ui/LineArt";
 import { useToast } from "@/components/ui/Toast";
 import { cn } from "@/lib/cn";
 import { getAddresses, getArea, resolveAreaQuery, type Address } from "@/lib/mock";
 import { Panel } from "@/components/pages/account/Panel";
+import { TextField, CheckRow } from "@/components/pages/content/Form";
 import type { AddressState } from "@/components/pages/account/states";
 
 /**
@@ -119,12 +119,20 @@ export function AddressBook({ state = "default" }: { state?: AddressState }) {
   return (
     <div className="flex flex-col gap-6">
       {addresses.length === 0 ? (
-        <EmptyState
-          glyph={<LoafGlyph size={96} />}
-          title="No addresses saved."
-          body="Add one and we'll tell you which day the van reaches it."
-          action={<Button onClick={() => setEditing(toDraft())}>Add an address</Button>}
-        />
+        <div className="rounded-lg border border-line bg-card px-6 py-16 text-center">
+          <span aria-hidden="true" className="mx-auto mb-6 block w-fit opacity-20">
+            <LoafGlyph size={88} />
+          </span>
+          <p className="font-display text-[26px] leading-tight text-ink">
+            No addresses saved.
+          </p>
+          <p className="mx-auto mt-2 max-w-[38ch] text-body text-ink-2">
+            Add one and we will tell you which day the van reaches it.
+          </p>
+          <Button className="mt-7" onClick={() => setEditing(toDraft())}>
+            Add an address
+          </Button>
+        </div>
       ) : (
         <>
           <ul className="grid gap-4 md:grid-cols-2">
@@ -134,12 +142,14 @@ export function AddressBook({ state = "default" }: { state?: AddressState }) {
                 <li key={address.id}>
                   <Panel as="div" className="flex h-full flex-col">
                     <div className="flex flex-wrap items-start justify-between gap-3">
-                      <p className="text-title text-ink-800">{address.label}</p>
+                      <p className="font-display text-[22px] leading-snug text-ink">
+                        {address.label}
+                      </p>
                       {address.isDefault ? (
                         <Badge variant="outline">Default</Badge>
                       ) : null}
                     </div>
-                    <address className="mt-3 flex-1 text-body-sm text-ink-600 not-italic">
+                    <address className="mt-3 flex-1 text-body-sm text-ink-2 not-italic">
                       {address.blockAndFlat}, {address.society}
                       <br />
                       {address.landmark ? (
@@ -158,29 +168,39 @@ export function AddressBook({ state = "default" }: { state?: AddressState }) {
                     </address>
                     <p
                       className={cn(
-                        "mt-4 flex items-start gap-2 text-caption",
-                        badge.tone === "success" ? "text-success" : "text-ink-600",
+                        "mt-4 flex items-start gap-2 text-body-sm",
+                        badge.tone === "muted" ? "text-muted" : "text-ink-2",
                       )}
                     >
                       {badge.tone === "tint" ? (
-                        <MapPin size={16} strokeWidth={1.5} className="mt-px shrink-0" aria-hidden="true" />
+                        <MapPin
+                          size={16}
+                          strokeWidth={1.5}
+                          className="mt-0.5 shrink-0 text-accent"
+                          aria-hidden="true"
+                        />
                       ) : (
-                        <Truck size={16} strokeWidth={1.5} className="mt-px shrink-0" aria-hidden="true" />
+                        <Truck
+                          size={16}
+                          strokeWidth={1.5}
+                          className="mt-0.5 shrink-0 text-accent"
+                          aria-hidden="true"
+                        />
                       )}
                       {badge.label}
                     </p>
-                    <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-paper-300 pt-4">
+                    <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-line pt-4">
                       <button
                         type="button"
                         onClick={() => setEditing(toDraft(address))}
-                        className="link-underline text-body-sm text-ink-700 hover:text-ink-900"
+                        className="link-underline text-body-sm font-semibold text-accent"
                       >
                         Edit
                       </button>
                       <button
                         type="button"
                         onClick={() => setRemoving(address)}
-                        className="link-underline text-body-sm text-ink-700 hover:text-ink-900"
+                        className="link-underline text-body-sm font-semibold text-accent"
                       >
                         Remove
                       </button>
@@ -193,7 +213,7 @@ export function AddressBook({ state = "default" }: { state?: AddressState }) {
                             );
                             toast({ message: `${address.label} is your default now.` });
                           }}
-                          className="link-underline text-body-sm text-ink-700 hover:text-ink-900"
+                          className="link-underline text-body-sm font-semibold text-accent"
                         >
                           Make default
                         </button>
@@ -257,11 +277,11 @@ export function AddressBook({ state = "default" }: { state?: AddressState }) {
         }
       />
 
-      <p className="text-caption text-ink-500">
+      <p className="text-body-sm text-muted">
         Not on the route yet?{" "}
-        <ButtonLink href="/areas" variant="ghost" size="sm">
+        <Link href="/areas" className="link-underline font-semibold text-accent">
           See where the van goes
-        </ButtonLink>
+        </Link>
       </p>
     </div>
   );
@@ -320,93 +340,79 @@ function AddressDialog({
         </>
       }
     >
-      <div className="mt-6 flex flex-col gap-4">
-        <Field label="Label" htmlFor="addr-label" helper="Home, Amma's, the office.">
-          <Input
-            id="addr-label"
-            value={value.label}
-            onChange={(e) => set("label", e.target.value)}
-            placeholder="Home"
-          />
-        </Field>
-        <Field label="Flat or house number" htmlFor="addr-flat">
-          <Input
-            id="addr-flat"
-            value={value.blockAndFlat}
-            onChange={(e) => set("blockAndFlat", e.target.value)}
-            placeholder="B Block, 402"
-          />
-        </Field>
-        <Field label="Apartment or building name" htmlFor="addr-society">
-          <Input
-            id="addr-society"
-            value={value.society}
-            onChange={(e) => set("society", e.target.value)}
-            placeholder="Sundarban Apartments"
-          />
-        </Field>
-        <Field label="Street" htmlFor="addr-street">
-          <Input
-            id="addr-street"
-            value={value.street}
-            onChange={(e) => set("street", e.target.value)}
-            placeholder="12th Main"
-          />
-        </Field>
-        <Field
+      <div className="mt-6 flex flex-col gap-5">
+        <TextField
+          id="addr-label"
+          label="Label"
+          helper="Home, Amma's, the office."
+          value={value.label}
+          onChange={(e) => set("label", e.target.value)}
+          placeholder="Home"
+        />
+        <TextField
+          id="addr-flat"
+          label="Flat or house number"
+          value={value.blockAndFlat}
+          onChange={(e) => set("blockAndFlat", e.target.value)}
+          placeholder="B Block, 402"
+        />
+        <TextField
+          id="addr-society"
+          label="Apartment or building"
+          value={value.society}
+          onChange={(e) => set("society", e.target.value)}
+          placeholder="Sundarban Apartments"
+        />
+        <TextField
+          id="addr-street"
+          label="Street"
+          value={value.street}
+          onChange={(e) => set("street", e.target.value)}
+          placeholder="12th Main"
+        />
+        <TextField
+          id="addr-landmark"
           label="Landmark"
-          htmlFor="addr-landmark"
-          helper="Opposite the Nandini booth, behind the water tank — whatever you would say on the phone."
-        >
-          <Input
-            id="addr-landmark"
-            value={value.landmark}
-            onChange={(e) => set("landmark", e.target.value)}
-            placeholder="Opposite the Ramamurthy Nagar bus stand"
-          />
-        </Field>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field
+          helper="Whatever you would say on the phone. This is the line the rider reads."
+          value={value.landmark}
+          onChange={(e) => set("landmark", e.target.value)}
+          placeholder="Opposite the Ramamurthy Nagar bus stand"
+        />
+        <div className="grid gap-5 sm:grid-cols-2">
+          <TextField
+            id="addr-area"
             label="Area"
-            htmlFor="addr-area"
             helper={
               notServed
-                ? `We don't reach ${value.area} yet. You can still save this, and we'll tell you when the route changes.`
+                ? `We do not reach ${value.area} yet. Save it anyway and we will tell you when the route changes.`
                 : (area?.answer ?? "Indiranagar, Banaswadi, HSR Layout and more.")
             }
-          >
-            <Input
-              id="addr-area"
-              value={value.area}
-              onChange={(e) => set("area", e.target.value)}
-              onBlur={() => setTouched(true)}
-              leadingIcon={<MapPin size={20} strokeWidth={1.5} />}
-              placeholder="Indiranagar"
-            />
-          </Field>
-          <Field label="Pincode" htmlFor="addr-pin" helper="Fills the area in for you.">
-            <Input
-              id="addr-pin"
-              value={value.pincode}
-              onChange={(e) => set("pincode", e.target.value.replace(/\D/g, "").slice(0, 6))}
-              inputMode="numeric"
-              className="font-mono tabular"
-              placeholder="560038"
-            />
-          </Field>
-        </div>
-        <Field label="City" htmlFor="addr-city">
-          <Input id="addr-city" value="Bengaluru" readOnly disabled />
-        </Field>
-        <Field label="Leave it with" htmlFor="addr-leave" helper="Optional.">
-          <Input
-            id="addr-leave"
-            value={value.leaveItWith}
-            onChange={(e) => set("leaveItWith", e.target.value)}
-            placeholder="Security, if nobody answers"
+            value={value.area}
+            onChange={(e) => set("area", e.target.value)}
+            onBlur={() => setTouched(true)}
+            placeholder="Indiranagar"
           />
-        </Field>
-        <Checkbox
+          <TextField
+            id="addr-pin"
+            label="Pincode"
+            helper="Fills the area in for you."
+            value={value.pincode}
+            onChange={(e) => set("pincode", e.target.value.replace(/\D/g, "").slice(0, 6))}
+            inputMode="numeric"
+            className="[&_input]:tabular"
+            placeholder="560038"
+          />
+        </div>
+        <TextField
+          id="addr-leave"
+          label="Leave it with"
+          helper="Optional."
+          value={value.leaveItWith}
+          onChange={(e) => set("leaveItWith", e.target.value)}
+          placeholder="Security, if nobody answers"
+        />
+        <CheckRow
+          id="addr-default"
           label="Make this my default"
           checked={value.isDefault}
           onChange={(e) => set("isDefault", e.target.checked)}

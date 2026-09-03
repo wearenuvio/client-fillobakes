@@ -1,19 +1,15 @@
 import * as React from "react";
 import Link from "next/link";
-import { Section } from "@/components/blocks/Section";
-import { Rule, Kicker } from "@/components/ui/Rule";
-import { Prose, Lead } from "@/components/pages/content/Prose";
-import { LineArtBleed } from "@/components/ui/LineArt";
+import { cn } from "@/lib/cn";
+import { ContentSection, PageHead, Eyebrow } from "@/components/pages/content/PageShell";
+import { Prose } from "@/components/pages/content/Prose";
 
 /**
- * One shared shell for the five policies.
+ * One shell for the five policies — PAGES-v2 Policies.
  *
- * Policies live at `--max-narrow` (§8) with a contents rail beside them, built
- * from the same array that renders the sections so the two cannot drift. The
- * rail is a hairline list, not a card — §6: let one hairline do the work of a
- * border, a card and a shadow.
- *
- * Voice rule 1: plainness where they pay. There is no humour in a refund line
+ * Serif title, the date it was last changed, a contents list, then the prose.
+ * The contents list and the sections are built from the same array so the two
+ * cannot drift. Plainness where they pay: there is no humour in a refund line
  * and none is provided for.
  */
 
@@ -26,8 +22,8 @@ export type PolicySection = {
 export const POLICY_LINKS = [
   { href: "/policies/shipping", label: "Delivery" },
   { href: "/policies/refund", label: "Refunds" },
-  { href: "/policies/payment", label: "Payment and security" },
-  { href: "/policies/terms", label: "Terms and conditions" },
+  { href: "/policies/payment", label: "Payment" },
+  { href: "/policies/terms", label: "Terms" },
   { href: "/policies/privacy", label: "Privacy" },
 ] as const;
 
@@ -48,54 +44,66 @@ export function PolicyLayout({
 }) {
   return (
     <>
-      <Section surface="paper-50" size="none" className="overflow-hidden pt-[var(--section-y)] pb-[calc(var(--section-y)/2)]">
-        <LineArtBleed glyph="wheat" side="right" size={520} />
-        <div className="relative max-w-[var(--max-narrow)]">
-          <Kicker>Policies</Kicker>
-          <h1 className="mt-4 text-display-lg text-ink-800">{title}</h1>
-          <Lead className="mt-6">{lead}</Lead>
-          <p className="micro mt-8 text-ink-500">Last updated {updated}</p>
-        </div>
-      </Section>
+      <ContentSection surface="paper" size="none" className="pt-10 pb-8 lg:pt-14">
+        <PageHead
+          eyebrow="Policies"
+          title={title}
+          lead={lead}
+          meta={
+            <p className="text-body-sm text-muted">Last updated {updated}</p>
+          }
+        />
 
-      <Section surface="paper-50" size="half">
-        <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
+        <nav aria-label="Policies" className="relative mt-8">
+          <ul className="scroll-rail -mx-[var(--gutter)] gap-2 px-[var(--gutter)]">
+            {POLICY_LINKS.map((policy) => {
+              const active = policy.href === current;
+              return (
+                <li key={policy.href}>
+                  <Link
+                    href={policy.href}
+                    aria-current={active ? "page" : undefined}
+                    className={cn(
+                      "inline-flex h-11 items-center rounded-pill border px-4 text-body-sm whitespace-nowrap",
+                      "transition-colors duration-[var(--dur-base)]",
+                      active
+                        ? "border-accent bg-accent font-semibold text-on-accent"
+                        : "border-line bg-card text-ink-2 hover:border-ink",
+                    )}
+                  >
+                    {policy.label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 right-[calc(var(--gutter)*-1)] w-12 bg-linear-to-l from-paper to-transparent sm:hidden"
+          />
+        </nav>
+      </ContentSection>
+
+      <ContentSection surface="paper" size="half">
+        <div className="grid gap-12 lg:grid-cols-12 lg:gap-14">
           <div className="lg:col-span-4 lg:sticky lg:top-24 lg:self-start">
             <nav aria-label="On this page">
-              <Rule label="Contents" />
-              <ol className="mt-4 divide-y divide-paper-300 border-b border-b-paper-300">
+              <Eyebrow>Contents</Eyebrow>
+              <ol className="mt-4 divide-y divide-line border-y border-line">
                 {sections.map((section, index) => (
                   <li key={section.id}>
                     <a
                       href={`#${section.id}`}
-                      className="link-underline flex min-h-11 items-center gap-4 py-2 text-body-sm text-ink-600 hover:text-ink-800"
+                      className="link-underline flex min-h-11 items-center gap-4 py-2 text-body-sm text-ink-2 hover:text-ink"
                     >
-                      <span className="micro w-6 shrink-0 text-ink-400 tabular">
-                        {String(index + 1).padStart(2, "0")}
+                      <span className="w-5 shrink-0 text-muted tabular">
+                        {index + 1}
                       </span>
                       <span>{section.title}</span>
                     </a>
                   </li>
                 ))}
               </ol>
-            </nav>
-
-            <nav aria-label="Other policies">
-              <Rule label="Other policies" className="mt-12" />
-              <ul className="mt-4 space-y-1">
-                {POLICY_LINKS.filter((p) => p.href !== current).map(
-                  (policy) => (
-                    <li key={policy.href}>
-                      <Link
-                        href={policy.href}
-                        className="link-underline flex min-h-11 items-center text-body-sm text-ink-600 hover:text-ink-800"
-                      >
-                        {policy.label}
-                      </Link>
-                    </li>
-                  ),
-                )}
-              </ul>
             </nav>
           </div>
 
@@ -104,25 +112,22 @@ export function PolicyLayout({
               <section
                 key={section.id}
                 id={section.id}
-                className={index === 0 ? "scroll-mt-24" : "mt-16 scroll-mt-24"}
+                className={index === 0 ? "scroll-mt-24" : "mt-14 scroll-mt-24"}
               >
-                <Rule label={String(index + 1).padStart(2, "0")} />
-                <h2 className="mt-6 text-display-sm text-ink-800">
+                <h2 className="font-display text-[clamp(26px,3vw,34px)] leading-tight text-ink">
                   {section.title}
                 </h2>
-                <Prose className="mt-6">{section.body}</Prose>
+                <Prose className="mt-5">{section.body}</Prose>
               </section>
             ))}
 
-            <Rule tone="strong" className="mt-16" />
-            <p className="mt-6 max-w-[62ch] text-body-sm text-ink-500">
-              Something here unclear, or contradicted by what actually happened
-              to your order? Message us and we will fix the page as well as the
-              order.
+            <p className="mt-14 max-w-[58ch] border-t border-line pt-6 text-body-sm text-muted">
+              Something here unclear, or contradicted by what actually happened to
+              your order? Message us and we will fix the page as well as the order.
             </p>
           </div>
         </div>
-      </Section>
+      </ContentSection>
     </>
   );
 }

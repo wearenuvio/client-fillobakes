@@ -4,9 +4,11 @@ import { LoafGlyph } from "@/components/ui/LineArt";
 import { getProductBySlug } from "@/lib/catalog";
 
 /**
- * The thumbnail row on an order line. Cutouts sit in a paper-200 well at
- * --radius-none with the contact shadow (§10.1); a SKU with no photograph
- * falls back to the line-art glyph rather than a broken frame.
+ * The thumbnail row on an order line — DESIGN-v2 §2.
+ *
+ * The same object as a ProductCard's well, shrunk: a tinted square with the
+ * cutout floating on it. A SKU with no cutout falls back to the line-art loaf
+ * rather than a stretched photograph.
  */
 export function ItemThumbs({
   items,
@@ -30,7 +32,7 @@ export function ItemThumbs({
           <span
             key={item.slug}
             data-surface="well"
-            className="grid shrink-0 place-items-center bg-paper-200"
+            className="grid shrink-0 place-items-center overflow-hidden rounded-md bg-well"
             style={{ width: size, height: size }}
           >
             {product?.image ? (
@@ -40,16 +42,20 @@ export function ItemThumbs({
                 width={120}
                 height={120}
                 sizes="48px"
-                className="w-[62%] object-contain drop-shadow-[0_18px_24px_rgba(4,33,47,0.35)]"
+                className={
+                  product.image.kind === "cutout"
+                    ? "w-[76%] object-contain cutout-sm"
+                    : "size-full object-cover"
+                }
               />
             ) : (
-              <LoafGlyph size={Math.round(size * 0.7)} />
+              <LoafGlyph size={Math.round(size * 0.6)} className="text-muted opacity-60" />
             )}
           </span>
         );
       })}
       {rest > 0 ? (
-        <span className="nano text-ink-500 tabular">+{rest}</span>
+        <span className="text-body-sm text-muted tabular">+{rest}</span>
       ) : null}
     </div>
   );

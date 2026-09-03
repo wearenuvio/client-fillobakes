@@ -26,7 +26,7 @@ export default async function AlertsPage({ searchParams }: Search) {
       <AccountPage
         h1="What we send you"
         kicker="Your account"
-        lead="WhatsApp by default. We don't have a mailing list you didn't ask for."
+        lead="WhatsApp by default. There is no mailing list you did not ask for."
       >
         <AlertsPrefs state={state} />
       </AccountPage>

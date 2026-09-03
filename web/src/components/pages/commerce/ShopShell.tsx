@@ -7,6 +7,7 @@ import {
 import { getCategories, getProducts, type Product } from "@/lib/catalog";
 import { stockFor } from "@/components/pages/commerce/run";
 import { StickyCartBar } from "@/components/pages/commerce/StickyCartBar";
+import { CartBarSpacer } from "@/components/pages/commerce/CartBarSpacer";
 
 /**
  * The shop page — DESIGN-v2 §3 Shop. `/shop`, `/shop/all` and every
@@ -78,10 +79,10 @@ export function ShopShell({
         </div>
       </section>
 
-      {/* The running total follows the thumb on a phone; this keeps the last
-          row of the grid clear of it. */}
+      {/* The running total follows the thumb on a phone; the spacer keeps the
+          last row of the grid clear of it, and collapses when it is not up. */}
       <StickyCartBar />
-      <div aria-hidden="true" className="h-16 md:hidden" />
+      <CartBarSpacer />
     </>
   );
 }

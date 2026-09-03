@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { resolveAreaQuery, getAreas } from "@/lib/mock";
+import { InkArt } from "@/components/ui/InkArt";
 import { useSessionStore } from "@/store/session";
 import type { ProductImage } from "@/lib/images";
 
@@ -15,6 +16,10 @@ import type { ProductImage } from "@/lib/images";
  * Chocolate full-bleed, two cutouts floating off the left and right edges, one
  * display-2 line, one sentence, and the area check inline. The answer is a
  * single sentence in the band, never a modal and never a new section.
+ *
+ * This is the only surface in the site that takes the `-light` colourway of
+ * the line art: the van at the right edge and the tied sheaf at the left, both
+ * behind the photographic cutouts, per `lineart/INDEX.md`.
  */
 
 type Result =
@@ -75,6 +80,22 @@ export function HomeVanBand({
       data-reveal
       className="relative overflow-hidden bg-choc py-[var(--section-y-lg)]"
     >
+      {/* -------- Line art, behind the cutouts ----------------------- */}
+      <InkArt
+        name="wheat-pair-v2"
+        tone="light"
+        width={360}
+        opacity={0.18}
+        className="bottom-[-40px] left-[-90px] w-[360px]"
+      />
+      <InkArt
+        name="bakery-van"
+        tone="light"
+        width={420}
+        opacity={0.18}
+        className="top-1/2 right-[-70px] w-[420px] -translate-y-1/2"
+      />
+
       {/* -------- Cutouts floating off both edges -------------------- */}
       {leftCutout ? (
         <Image
@@ -104,9 +125,11 @@ export function HomeVanBand({
           <h2 className="text-display-2 text-on-choc">
             Order by 8pm. At your door tomorrow.
           </h2>
+          {/* The hero and the trust strip both name the city already; §6 caps
+              a fact at two mentions, so this sentence drops it. */}
           <p className="mx-auto mt-5 max-w-[52ch] text-body-lg text-on-choc-2">
-            Two-hour delivery windows across Bengaluru, or catch the van at a
-            stop near you and skip the delivery fee.
+            Two-hour delivery windows, or catch the van at a stop near you and
+            skip the delivery fee.
           </p>
 
           <form

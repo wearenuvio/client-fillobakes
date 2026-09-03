@@ -8,7 +8,7 @@ import { Price } from "@/components/ui/Price";
 import { useToast } from "@/components/ui/Toast";
 import { cn } from "@/lib/cn";
 import { formatINR } from "@/lib/format";
-import { getAddresses, getAllStops, isTbc } from "@/lib/mock";
+import { getAddresses, getAllStops } from "@/lib/mock";
 import { Panel, PanelHead, MetaRow } from "@/components/pages/account/Panel";
 import {
   ItemPicker,
@@ -67,13 +67,18 @@ export function SubscriptionBuilder() {
   if (done) {
     return (
       <Panel>
-        <p className="flex items-start gap-2 text-display-sm text-ink-800">
-          <Check size={24} strokeWidth={1.5} className="mt-1 shrink-0 text-success" aria-hidden="true" />
-          You&rsquo;re on the {dayName(routeDay)} list for {where}.
+        <p className="flex items-start gap-3 font-display text-[28px] leading-tight text-ink">
+          <Check
+            size={24}
+            strokeWidth={1.5}
+            className="mt-1.5 shrink-0 text-success"
+            aria-hidden="true"
+          />
+          You are on the {dayName(routeDay)} list for {where}.
         </p>
-        <p className="mt-3 text-body text-ink-600 tabular">
-          First delivery {base.nextDelivery.dateLabel}. We&rsquo;ll message you Wednesday
-          with what&rsquo;s coming.
+        <p className="mt-3 max-w-[46ch] text-body text-ink-2 tabular">
+          First delivery {base.nextDelivery.dateLabel}. We message you Wednesday
+          with what is coming.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <ButtonLink href="/account/subscription">Manage it</ButtonLink>
@@ -93,13 +98,13 @@ export function SubscriptionBuilder() {
           label="1 · What"
           trailing={
             count ? (
-              <span className="micro text-ink-500 tabular">
+              <span className="text-body-sm text-muted tabular">
                 {count} in the plan
               </span>
             ) : null
           }
         />
-        <h2 className="mt-3 text-title-lg text-ink-800">
+        <h2 className="mt-3 font-display text-[24px] leading-snug text-ink">
           Pick the loaves and buns you want every {dayName(routeDay)}.
         </h2>
         <ItemPicker
@@ -113,15 +118,15 @@ export function SubscriptionBuilder() {
       {/* 2 — Where and when */}
       <Panel>
         <PanelHead label="2 · Where and when" />
-        <h2 className="mt-3 text-title-lg text-ink-800">
+        <h2 className="mt-3 font-display text-[24px] leading-snug text-ink">
           {where}, {dayName(routeDay)}s, {base.windowLabel}.
         </h2>
-        <p className="mt-2 text-body-sm text-ink-600">
+        <p className="mt-2 text-body-sm text-ink-2">
           Taken from the area you&rsquo;ve already set. Change it here if you want it
           somewhere else.
         </p>
 
-        <p className="micro mt-6 text-ink-500">Run day</p>
+        <p className="mt-6 text-[12px] font-medium tracking-[0.12em] text-muted uppercase">Run day</p>
         <ul className="mt-3 flex flex-wrap gap-2">
           {WEEKDAYS.map((day) => {
             const available = base.actions.availableRouteDays.includes(day);
@@ -134,13 +139,13 @@ export function SubscriptionBuilder() {
                   aria-disabled={!available}
                   onClick={() => setRouteDay(day)}
                   className={cn(
-                    "h-11 rounded-sm border px-4 text-body-sm transition-colors",
+                    "h-11 rounded-md border px-4 text-body-sm transition-colors",
                     "duration-[var(--dur-fast)]",
                     active
-                      ? "border-ink-800 bg-ink-800 text-paper-0"
+                      ? "border-accent bg-accent font-semibold text-on-accent"
                       : available
-                        ? "border-paper-400 bg-paper-0 text-ink-800 hover:border-ink-600"
-                        : "cursor-not-allowed border-paper-300 bg-paper-100 text-ink-400",
+                        ? "border-line bg-card text-ink hover:border-ink"
+                        : "cursor-not-allowed border-line bg-paper-2 text-muted",
                   )}
                   title={available ? undefined : "Not on this route"}
                 >
@@ -150,11 +155,11 @@ export function SubscriptionBuilder() {
             );
           })}
         </ul>
-        <p className="micro mt-2 text-ink-500">
+        <p className="mt-2 text-body-sm text-muted">
           Greyed days are not on this route
         </p>
 
-        <p className="micro mt-6 text-ink-500">Stop or address</p>
+        <p className="mt-6 text-[12px] font-medium tracking-[0.12em] text-muted uppercase">Stop or address</p>
         <ul className="mt-3 grid gap-2 sm:grid-cols-2">
           {[
             ...stops.slice(0, 4).map((s) => ({
@@ -178,21 +183,21 @@ export function SubscriptionBuilder() {
                     "flex h-full w-full items-start justify-between gap-3 rounded-md border p-4 text-left",
                     "transition-colors duration-[var(--dur-fast)]",
                     active
-                      ? "border-ink-800 bg-paper-100"
-                      : "border-paper-400 bg-paper-0 hover:border-ink-600",
+                      ? "border-ink bg-paper-2"
+                      : "border-line bg-card hover:border-ink",
                   )}
                 >
                   <span className="min-w-0">
-                    <span className="flex items-center gap-2 text-body-sm font-semibold text-ink-800">
+                    <span className="flex items-center gap-2 text-body-sm font-semibold text-ink">
                       <MapPin size={16} strokeWidth={1.5} aria-hidden="true" />
                       {option.title}
                     </span>
-                    <span className="mt-1 block text-caption text-ink-500">
+                    <span className="mt-1 block text-body-sm text-muted">
                       {option.detail}
                     </span>
                   </span>
                   {active ? (
-                    <Check size={20} strokeWidth={1.5} className="shrink-0 text-ink-800" aria-hidden="true" />
+                    <Check size={20} strokeWidth={1.5} className="shrink-0 text-accent" aria-hidden="true" />
                   ) : null}
                 </button>
               </li>
@@ -212,10 +217,10 @@ export function SubscriptionBuilder() {
                 onClick={() => setFrequency(option)}
                 className={cn(
                   "flex min-h-11 w-full items-center justify-between rounded-md border px-4 py-3",
-                  "text-body text-ink-800 transition-colors duration-[var(--dur-fast)]",
+                  "text-body text-ink transition-colors duration-[var(--dur-fast)]",
                   option === frequency
-                    ? "border-ink-800 bg-paper-100"
-                    : "border-paper-400 bg-paper-0 hover:border-ink-600",
+                    ? "border-ink bg-paper-2"
+                    : "border-line bg-card hover:border-ink",
                 )}
               >
                 {option === "weekly" ? "Every week" : "Every other week"}
@@ -231,10 +236,10 @@ export function SubscriptionBuilder() {
       {/* 4 — Confirm */}
       <Panel>
         <PanelHead label="4 · Confirm" />
-        <h2 className="mt-3 text-display-sm text-ink-800">
+        <h2 className="mt-3 font-display text-[26px] leading-tight text-ink">
           {describeLines(lines) || "Nothing picked yet"}
         </h2>
-        <p className="mt-1 text-body-sm text-ink-600">
+        <p className="mt-1 text-body-sm text-ink-2">
           {dayName(routeDay)}s · {where} · {base.windowLabel} ·{" "}
           {frequency === "weekly" ? "every week" : "every other week"}
         </p>
@@ -246,23 +251,17 @@ export function SubscriptionBuilder() {
           <MetaRow label="Orders close" value={base.cutoff.label.replace("Closes ", "")} />
         </div>
 
-        <div className="mt-4 flex items-baseline justify-between gap-3 border-t border-paper-300 pt-4">
-          <span className="text-title text-ink-800">
+        <div className="mt-4 flex items-baseline justify-between gap-3 border-t border-line pt-4">
+          <span className="font-display text-[22px] text-ink">
             Every {frequency === "weekly" ? "week" : "fortnight"}
           </span>
           <Price amount={weeklyTotal} size="lg" />
         </div>
-        {isTbc(base.plan.priceConfidence) ? (
-          <p className="mt-2 text-caption text-ink-500">
-            Standing-order prices are an estimate from retail until the founders set
-            them.
-          </p>
-        ) : null}
 
         {needsSignIn ? (
-          <div className="mt-6 border-t border-paper-300 pt-6">
-            <p className="micro text-ink-500">Your number</p>
-            <p className="mt-2 text-body-sm text-ink-600">
+          <div className="mt-6 border-t border-line pt-6">
+            <p className="text-[12px] font-medium tracking-[0.12em] text-muted uppercase">Your number</p>
+            <p className="mt-2 text-body-sm text-ink-2">
               Your number is your account. No password to forget.
             </p>
             {otpStep === "number" ? (
@@ -309,8 +308,8 @@ export function SubscriptionBuilder() {
         ) : null}
 
         {/* The reassurance line sits ABOVE the confirm button, not below it. */}
-        <p className="mt-6 text-body text-ink-800">
-          Skip any week. Pause anytime. Cancel in one tap.
+        <p className="mt-6 text-body text-ink">
+          Skip any week. Pause any time. Cancel in one tap.
         </p>
         <Button
           className="mt-4"
@@ -331,7 +330,7 @@ export function SubscriptionBuilder() {
           Start my standing order
         </Button>
         {count === 0 ? (
-          <p className="mt-3 text-caption text-ink-500">
+          <p className="mt-3 text-body-sm text-muted">
             Pick at least one thing above and this button wakes up.
           </p>
         ) : null}
